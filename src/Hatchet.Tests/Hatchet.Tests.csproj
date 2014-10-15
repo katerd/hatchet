@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ParserTests\BlockCommentTests.cs" />
+    <Compile Include="ParserTests\LineCommentTests.cs" />
     <Compile Include="ParserTests\ListPropertyTests.cs" />
     <Compile Include="ParserTests\NestedObjectTests.cs" />
     <Compile Include="ParserTests\SingleStringPropertyTests.cs" />

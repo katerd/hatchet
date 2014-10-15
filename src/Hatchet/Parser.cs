@@ -49,11 +49,11 @@ namespace Hatchet
             if (PeekChars("/*"))
             {
                 Debug.WriteLine("Open block comment");
+
                 ReadBlockComment();
 
                 /* a second attempt at reading a value is needed 
                  * when the comment exists at the top of the input text. */
-
                 ChompWhitespace();
                 if (_index == _input.Length)
                     return null;
@@ -61,12 +61,22 @@ namespace Hatchet
                 return ReadValue();
             }
             // single line comment
-            else if (PeekChars("//"))
+            if (PeekChars("//"))
             {
                 Debug.WriteLine("Open line comment");
+
+                ReadLineComment();
+
+                /* a second attempt at reading a value is needed 
+                 * when the comment exists at the top of the input text. */
+                ChompWhitespace();
+                if (_index == _input.Length)
+                    return null;
+
+                return ReadValue();
             }
             // text block
-            else if (PeekChars("!["))
+            if (PeekChars("!["))
             {
                 Debug.WriteLine("Open text block");
             }
@@ -78,6 +88,34 @@ namespace Hatchet
             }
 
             return null;
+        }
+
+        private void ReadLineComment()
+        {
+            Expect("//");
+
+            while (_index < _input.Length)
+            {
+                Debug.WriteLine("Reading comment char `{0}` {1}", (byte)_input[_index], _input[_index]);
+
+                if (_input[_index] == '\n')
+                {
+                    _index += 1;
+                    return;
+                }
+                if (_input[_index] == '\r' && _index < _input.Length - 2 && _input[_index+1] == '\n')
+                {
+                    _index += 2;
+                    return;
+                }
+                if (_input[_index] == '\r')
+                {
+                    _index += 1;
+                    return;
+                }
+
+                _index++;
+            }
         }
 
         private void ReadBlockComment()
@@ -132,22 +170,21 @@ namespace Hatchet
 
             var obj = new Dictionary<string, object>();
 
-            while (PeekName())
+            while (true)
             {
-                var name = ReadName();
+                var name = ReadValue() as string;
+
+                if (name == null)
+                {
+                    Expect("}");
+                    return obj;
+                }
                 
                 var value = ReadValue();
                 obj[name] = value;
 
-                Debug.WriteLine("`{0}` = `{1}`", name, value);
-
+                Debug.WriteLine("Object property `{0}` = `{1}`", name, value);
             }
-
-            Debug.WriteLine("End of object definition");
-
-            Expect('}');
-
-            return obj;
         }
 
         private object ReadString()
@@ -180,7 +217,7 @@ namespace Hatchet
 
             var result = stringBuilder.ToString();
 
-            Debug.WriteLine("String = `{0}`", result); 
+            Debug.WriteLine(string.Format("String = `{0}`", result)); 
 
             return result;
         }
@@ -205,62 +242,6 @@ namespace Hatchet
                 _index++;
             }
             throw new Exception("Fell off the edge of the file.");
-        }
-
-        private string ReadName()
-        {
-            ChompWhitespace();
-
-            var startIndex = _index;
-
-            while (_index < _input.Length)
-            {
-                var c = _input[_index];
-
-                if (!IsValidNameCharacter(c))
-                {
-                    return _input.Substring(startIndex, _index - startIndex);
-                }
-                _index++;
-            }
-            throw new Exception("Fell off the edge of the file.");
-        }
-
-        private bool PeekName()
-        {
-            var i = _index;
-
-            // step over whitespace
-            while (i < _input.Length)
-            {
-                if (IsWhitespace(_input[i]))
-                {
-                    i++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            while (i < _input.Length)
-            {
-                var c = _input[i];
-
-                Debug.WriteLine("Peek name on char `{0}`", c);
-
-                if (!IsValidNameCharacter(c))
-                {
-                    var result = i > _index;
-                    Debug.WriteLine(result ? "Found name" : "Name is blank");
-                    return result;
-                }
-
-                i++;
-            }
-
-            Debug.WriteLine("Did not find a name");
-            return false;
         }
 
         private bool PeekChars(string chars)
