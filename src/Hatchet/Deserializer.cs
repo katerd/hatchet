@@ -30,38 +30,19 @@ namespace Hatchet
             // list
             if (Chr == '[')
             {
-                Debug.WriteLine("Open list");
-
-                Expect('[');
-
-                var list = new List<object>();
-
-                object r;
-                while ((r = ReadValue()) != null)
-                {
-                    list.Add(r);
-                }
-
-                Expect(']');
-
+                var list = ReadList();
                 return list;
             }
-            // object
+                // object
             else if (Chr == '{')
             {
-                Debug.WriteLine("Open object");
-
-                Expect('{');
                 var obj = ReadDefinitions();
-                Expect('}');
                 return obj;
             }
             // string
             else if (Chr == '"' || Chr == '\'')
             {
-                Debug.WriteLine("Open quotes");
                 var readString = ReadString();
-                Debug.WriteLine("String = `{0}`", readString); 
                 return readString;
             }
             // multi-line comment
@@ -89,8 +70,36 @@ namespace Hatchet
             throw new Exception("No idea.");
         }
 
+        private List<object> ReadList()
+        {
+            Debug.WriteLine("Open list");
+
+            Expect('[');
+
+            var list = new List<object>();
+
+            while (true)
+            {
+                var r = ReadValue();
+
+                list.Add(r);
+
+                ChompWhitespace();
+
+                if (PeekChars("]"))
+                {
+                    Expect(']');
+                    return list;
+                }
+            }
+        }
+
         private Dictionary<string, object> ReadDefinitions()
         {
+            Debug.WriteLine("Open object");
+
+            Expect('{');
+
             var obj = new Dictionary<string, object>();
 
             while (PeekName())
@@ -105,6 +114,8 @@ namespace Hatchet
             }
 
             Debug.WriteLine("End of object definition");
+
+            Expect('}');
 
             return obj;
         }
@@ -140,7 +151,11 @@ namespace Hatchet
 
             _index++; // Chomp the end quotation char.
 
-            return stringBuilder.ToString();
+            var result = stringBuilder.ToString();
+
+            Debug.WriteLine("String = `{0}`", result); 
+
+            return result;
         }
 
         private bool PeekChars(string chars)

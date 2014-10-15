@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeserializerTests\ListPropertyTests.cs" />
     <Compile Include="DeserializerTests\SingleStringPropertyTests.cs" />
     <Compile Include="HatchetConvertTests\EmptyObjectTests.cs" />
     <Compile Include="HatchetConvertTests\SingleStringPropertyTests.cs" />
