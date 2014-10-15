@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace Hatchet
+﻿namespace Hatchet
 {
     public static class Tokens
     {

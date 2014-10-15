@@ -36,25 +36,21 @@ namespace Hatchet
 
             ChompWhitespace();
 
-            // list
-            if (Chr == Tokens.ListOpen)
+            if (Peek(Tokens.ListOpen))
             {
                 var list = ReadList();
                 return list;
             }
-            // object
-            if (Chr == Tokens.ObjectOpen)
+            if (Peek(Tokens.ObjectOpen))
             {
                 var obj = ReadDefinitions();
                 return obj;
             }
-            // string
-            if (Chr == Tokens.SingleQuote || Chr == Tokens.DoubleQuote)
+            if (Peek(Tokens.SingleQuote) || Peek(Tokens.DoubleQuote))
             {
                 var readString = ReadString();
                 return readString;
             }
-            // multi-line comment
             if (Peek(Tokens.BlockCommentOpen))
             {
                 Debug.WriteLine("Open block comment");
@@ -69,7 +65,6 @@ namespace Hatchet
 
                 return ReadValue();
             }
-            // single line comment
             if (Peek(Tokens.LineComment))
             {
                 Debug.WriteLine("Open line comment");
@@ -84,20 +79,13 @@ namespace Hatchet
 
                 return ReadValue();
             }
-            // text block
             if (Peek(Tokens.TextBlockOpen))
             {
                 Debug.WriteLine("Open text block");
                 return ReadTextBlock();
             }
-            // parse as a string?
-            else
-            {
-                Debug.WriteLine("I guess this is a string");
-                return ReadNakedValue();
-            }
 
-            return null;
+            return ReadNakedValue();
         }
 
         private string ReadTextBlock()
