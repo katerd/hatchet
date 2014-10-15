@@ -8,7 +8,7 @@ namespace Hatchet.Tests.ParserTests
     public class ListPropertyTests
     {
         [Test]
-        public void Deserialize_WithAListOfStringValues_TheValuesAreLoadedIntoAList()
+        public void Parse_WithAListOfStringValues_TheValuesAreLoadedIntoAList()
         {
             // Arrange
             var input = "{ items [hello world] }";
@@ -28,7 +28,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAListOfEmptyLists_TheEmptyListsAreInstantiated()
+        public void Parse_WithAListOfEmptyLists_TheEmptyListsAreInstantiated()
         {
             // Arrange
             var input = "[[][]]";
@@ -48,7 +48,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAnEmptyList_TheEmptyListIsInstantiated()
+        public void Parse_WithAnEmptyList_TheEmptyListIsInstantiated()
         {
             // Arrange
             var input = " [ ] ";
@@ -65,7 +65,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAListOfListsWithIntegers_TheChildListsAreLoadedWithTheirValues()
+        public void Parse_WithAListOfListsWithIntegers_TheChildListsAreLoadedWithTheirValues()
         {
             // Arrange
             var input = "[[1 2 3][-4 -5 -6]]";
@@ -90,7 +90,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithASprawlingListOfListsWithIntegers_TheChildListsAreLoadedWithTheirValues()
+        public void Parse_WithASprawlingListOfListsWithIntegers_TheChildListsAreLoadedWithTheirValues()
         {
             // Arrange
             var input = "[\n\n[1\t2\n\n3]\n[-4\t-5\t-6]\n]";
@@ -115,7 +115,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithNakedListOfStringValues_TheValuesAreLoadedIntoAList()
+        public void Parse_WithNakedListOfStringValues_TheValuesAreLoadedIntoAList()
         {
             // Arrange
             var input = "[hello world]";
@@ -134,7 +134,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithNakedListOfIntegerValues_TheValuesAreLoadedIntoAList()
+        public void Parse_WithNakedListOfIntegerValues_TheValuesAreLoadedIntoAList()
         {
             // Arrange
             var input = "[1111 2222 -3333]";
@@ -154,7 +154,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithNakedListOfFloatValues_TheValuesAreLoadedIntoAList()
+        public void Parse_WithNakedListOfFloatValues_TheValuesAreLoadedIntoAList()
         {
             // Arrange
             var input = "[8.6968612 -3.477894 -1.987779832 0.0]";
@@ -175,7 +175,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithNakedAListOfObjects_TheObjectsShouldBeLoadedIntoTheList()
+        public void Parse_WithNakedAListOfObjects_TheObjectsShouldBeLoadedIntoTheList()
         {
             // Arrange
             var input = "[ { name ONE} { name TWO } ]";

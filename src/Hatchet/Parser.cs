@@ -49,6 +49,16 @@ namespace Hatchet
             if (PeekChars("/*"))
             {
                 Debug.WriteLine("Open block comment");
+                ReadBlockComment();
+
+                /* a second attempt at reading a value is needed 
+                 * when the comment exists at the top of the input text. */
+
+                ChompWhitespace();
+                if (_index == _input.Length)
+                    return null;
+
+                return ReadValue();
             }
             // single line comment
             else if (PeekChars("//"))
@@ -68,6 +78,23 @@ namespace Hatchet
             }
 
             return null;
+        }
+
+        private void ReadBlockComment()
+        {
+            Expect("/*");
+
+            // read until we hit an asterisk with a forward slash.
+            while (_index < _input.Length)
+            {
+                if (_input[_index] == '*' && _input[_index + 1] == '/')
+                {
+                    _index += 2;
+                    return;
+                }
+                _index++;
+            }
+
         }
 
         private List<object> ReadList()
@@ -257,9 +284,17 @@ namespace Hatchet
             throw new Exception(string.Format("Expected any of `{0}` but didn't find any", string.Join(",", anyOfThese)));
         }
 
+        private void Expect(string thisString)
+        {
+            foreach (var c in thisString)
+            {
+                Expect(c);
+            }
+        }
+
         private void ChompWhitespace()
         {
-            while (IsWhitespaceOrLineBreak(Chr))
+            while (_index < _input.Length && IsWhitespaceOrLineBreak(_input[_index]))
             {
                 _index++;
             }

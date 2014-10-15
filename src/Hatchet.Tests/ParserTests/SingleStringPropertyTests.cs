@@ -8,7 +8,7 @@ namespace Hatchet.Tests.ParserTests
     public class SingleStringPropertyTests
     {
         [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertySingleWord_ThePropertyShouldBePopulated()
+        public void Parse_WithAnObjectWithOneStringPropertySingleWord_ThePropertyShouldBePopulated()
         {
             // Arrange
             var input = "{ stringProperty Hello }";
@@ -23,7 +23,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertyLongString_ThePropertyShouldBePopulated()
+        public void Parse_WithAnObjectWithOneStringPropertyLongString_ThePropertyShouldBePopulated()
         {
             // Arrange
             var input = "{ stringProperty \"Hello World.\" }";
@@ -39,7 +39,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithLotsOfExtraSpaces_ThePropertyShouldBePopulated()
+        public void Parse_WithLotsOfExtraSpaces_ThePropertyShouldBePopulated()
         {
             // Arrange
             var input = "    { \n stringProperty  \n \"Hello World.\" \n\n      }";
@@ -55,7 +55,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertyEmptyString_ThePropertyShouldBePopulated()
+        public void Parse_WithAnObjectWithOneStringPropertyEmptyString_ThePropertyShouldBePopulated()
         {
             // Arrange
             var input = "{ stringProperty \"\" }";
@@ -71,7 +71,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertyContainingParenthesesString_ThePropertyShouldBePopulated()
+        public void Parse_WithAnObjectWithOneStringPropertyContainingParenthesesString_ThePropertyShouldBePopulated()
         {
             // Arrange
             var input = "{ stringProperty \"{ Nasty String { Very Nasty String } }\" }";
@@ -87,7 +87,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertyContainingQuotes_ThePropertyShouldBePopulated()
+        public void Parse_WithAnObjectWithOneStringPropertyContainingQuotes_ThePropertyShouldBePopulated()
         {
             // Arrange
             var input = "{ stringProperty \"Hello 'Person'\" }";
@@ -103,7 +103,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertyContainingEscapedQuotes_ThePropertyShouldBePopulated()
+        public void Parse_WithAnObjectWithOneStringPropertyContainingEscapedQuotes_ThePropertyShouldBePopulated()
         {
             // Arrange
             var input = "{ stringProperty \"Hello \\\"Person\\\"\" }";

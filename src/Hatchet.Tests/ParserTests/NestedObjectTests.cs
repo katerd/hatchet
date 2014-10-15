@@ -8,7 +8,7 @@ namespace Hatchet.Tests.ParserTests
     public class NestedObjectTests
     {
         [Test]
-        public void Deserialize_NestedObjects_ObjectsAreNestedWithTheirProperties()
+        public void Parse_NestedObjects_ObjectsAreNestedWithTheirProperties()
         {
             // Arrange
             var input = "{ outer { inner { name innerProperty } name outerProperty } } }";
@@ -32,7 +32,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_NestedObjectsCondensedString_ObjectsAreNestedWithTheirProperties()
+        public void Parse_NestedObjectsCondensedString_ObjectsAreNestedWithTheirProperties()
         {
             // Arrange
             var input = "{outer{inner{name'innerProperty'}name'outerProperty'}}}";
