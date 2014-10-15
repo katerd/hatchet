@@ -11,7 +11,13 @@ namespace Hatchet
         private int _index;
         private string _input;
 
-        private char Chr { get { return _input[_index]; } }
+        private char Chr
+        {
+            get
+            {
+                return _input[_index];
+            }
+        }
 
         public object Parse(ref string input)
         {
@@ -25,6 +31,9 @@ namespace Hatchet
 
         private object ReadValue()
         {
+            if (_index >= _input.Length)
+                return null;
+
             ChompWhitespace();
 
             // list
