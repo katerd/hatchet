@@ -28,7 +28,7 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAListOfEmpty_TheEmptyListsAreInstantiated()
+        public void Deserialize_WithAListOfEmptyLists_TheEmptyListsAreInstantiated()
         {
             // Arrange
             var input = "[[][]]";
@@ -48,7 +48,24 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
-        public void Deserialize_WithAListOfLists_TheChildListsAreLoadedWithTheirValues()
+        public void Deserialize_WithAnEmptyList_TheEmptyListIsInstantiated()
+        {
+            // Arrange
+            var input = " [ ] ";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (List<object>)parser.Parse(ref input);
+
+            // Assert
+            result.Should().NotBeNull();
+
+            result.Should().HaveCount(0);
+        }
+
+        [Test]
+        public void Deserialize_WithAListOfListsWithIntegers_TheChildListsAreLoadedWithTheirValues()
         {
             // Arrange
             var input = "[[1 2 3][-4 -5 -6]]";
@@ -67,6 +84,31 @@ namespace Hatchet.Tests.ParserTests
             list1[2].Should().Be("3");
 
             var list2 = (List<object>) result[1];
+            list2[0].Should().Be("-4");
+            list2[1].Should().Be("-5");
+            list2[2].Should().Be("-6");
+        }
+
+        [Test]
+        public void Deserialize_WithASprawlingListOfListsWithIntegers_TheChildListsAreLoadedWithTheirValues()
+        {
+            // Arrange
+            var input = "[\n\n[1\t2\n\n3]\n[-4\t-5\t-6]\n]";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (List<object>)parser.Parse(ref input);
+
+            // Assert
+            result.Should().NotBeNull();
+
+            var list1 = (List<object>)result[0];
+            list1[0].Should().Be("1");
+            list1[1].Should().Be("2");
+            list1[2].Should().Be("3");
+
+            var list2 = (List<object>)result[1];
             list2[0].Should().Be("-4");
             list2[1].Should().Be("-5");
             list2[2].Should().Be("-6");
