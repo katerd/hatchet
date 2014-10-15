@@ -58,6 +58,7 @@
     <Compile Include="HatchetConvertTests\EmptyObjectTests.cs" />
     <Compile Include="HatchetConvertTests\SingleStringPropertyTests.cs" />
     <Compile Include="ParserTests\SingleValueTests.cs" />
+    <Compile Include="ParserTests\TextBlockTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>

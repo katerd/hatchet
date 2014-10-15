@@ -37,25 +37,25 @@ namespace Hatchet
             ChompWhitespace();
 
             // list
-            if (Chr == '[')
+            if (Chr == Tokens.ListOpen)
             {
                 var list = ReadList();
                 return list;
             }
             // object
-            if (Chr == '{')
+            if (Chr == Tokens.ObjectOpen)
             {
                 var obj = ReadDefinitions();
                 return obj;
             }
             // string
-            if (Chr == '"' || Chr == '\'')
+            if (Chr == Tokens.SingleQuote || Chr == Tokens.DoubleQuote)
             {
                 var readString = ReadString();
                 return readString;
             }
             // multi-line comment
-            if (PeekChars("/*"))
+            if (Peek(Tokens.BlockCommentOpen))
             {
                 Debug.WriteLine("Open block comment");
 
@@ -70,7 +70,7 @@ namespace Hatchet
                 return ReadValue();
             }
             // single line comment
-            if (PeekChars("//"))
+            if (Peek(Tokens.LineComment))
             {
                 Debug.WriteLine("Open line comment");
 
@@ -85,9 +85,10 @@ namespace Hatchet
                 return ReadValue();
             }
             // text block
-            if (PeekChars("!["))
+            if (Peek(Tokens.TextBlockOpen))
             {
                 Debug.WriteLine("Open text block");
+                return ReadTextBlock();
             }
             // parse as a string?
             else
@@ -99,25 +100,47 @@ namespace Hatchet
             return null;
         }
 
+        private string ReadTextBlock()
+        {
+            Expect(Tokens.TextBlockOpen);
+
+            var sb = new StringBuilder();
+
+            // read until we hit an asterisk with a forward slash.
+            while (_index < _input.Length)
+            {
+                if (Peek(Tokens.TextBlockClose))
+                {
+                    Expect(Tokens.TextBlockClose);
+                    return sb.ToString();
+                }
+                sb.Append(_input[_index]);
+                _index++;
+            }
+
+            // todo: nicer exception
+            throw new Exception("Unterminated text block.");
+        }
+
         private void ReadLineComment()
         {
-            Expect("//");
+            Expect(Tokens.LineComment);
 
             while (_index < _input.Length)
             {
                 Debug.WriteLine("Reading comment char `{0}` {1}", (byte)_input[_index], _input[_index]);
 
-                if (_input[_index] == '\n')
+                if (_input[_index] == Tokens.Lf)
                 {
                     _index += 1;
                     return;
                 }
-                if (_input[_index] == '\r' && _index < _input.Length - 2 && _input[_index+1] == '\n')
+                if (_input[_index] == Tokens.Cr && _index < _input.Length - 2 && _input[_index+1] == Tokens.Lf)
                 {
                     _index += 2;
                     return;
                 }
-                if (_input[_index] == '\r')
+                if (_input[_index] == Tokens.Cr)
                 {
                     _index += 1;
                     return;
@@ -129,18 +152,21 @@ namespace Hatchet
 
         private void ReadBlockComment()
         {
-            Expect("/*");
+            Expect(Tokens.BlockCommentOpen);
 
             // read until we hit an asterisk with a forward slash.
             while (_index < _input.Length)
             {
-                if (_input[_index] == '*' && _input[_index + 1] == '/')
+                if (Peek(Tokens.BlockCommentClose))
                 {
-                    _index += 2;
+                    Expect(Tokens.BlockCommentClose);
                     return;
                 }
                 _index++;
             }
+
+            // todo: nicer exception
+            throw new Exception("Unterminated block comment");
 
         }
 
@@ -148,7 +174,7 @@ namespace Hatchet
         {
             Debug.WriteLine("Open list");
 
-            Expect('[');
+            Expect(Tokens.ListOpen);
 
             var list = new List<object>();
 
@@ -163,9 +189,9 @@ namespace Hatchet
 
                 ChompWhitespace();
 
-                if (PeekChars("]"))
+                if (Peek(Tokens.ListClose))
                 {
-                    Expect(']');
+                    Expect(Tokens.ListClose);
                     return list;
                 }
             }
@@ -175,7 +201,7 @@ namespace Hatchet
         {
             Debug.WriteLine("Open object");
 
-            Expect('{');
+            Expect(Tokens.ObjectOpen);
 
             var obj = new Dictionary<string, object>();
 
@@ -185,7 +211,7 @@ namespace Hatchet
 
                 if (name == null)
                 {
-                    Expect("}");
+                    Expect(Tokens.ObjectClose);
                     return obj;
                 }
 
@@ -200,7 +226,7 @@ namespace Hatchet
 
         private object ReadString()
         {
-            Expect('\"', '\'');
+            Expect(Tokens.SingleQuote, Tokens.DoubleQuote);
 
             var quoteChar = _input[_index - 1];
 
@@ -213,7 +239,7 @@ namespace Hatchet
                 Debug.WriteLine("Reading string char `{0}`", _input[_index]);
 
                 // Handle escaped characters.
-                if (PeekChars("\\"))
+                if (Peek(Tokens.Escape))
                 {
                     Debug.WriteLine("Skipping character");
                     _index++;
@@ -256,7 +282,7 @@ namespace Hatchet
             return _input.Substring(startIndex, _index - startIndex);
         }
 
-        private bool PeekChars(string chars)
+        private bool Peek(string chars)
         {
             for (var i = 0; i < chars.Length; i++)
             {
@@ -264,6 +290,11 @@ namespace Hatchet
                     return false;
             }
             return true;
+        }
+
+        private bool Peek(char c)
+        {
+            return _input[_index] == c;
         }
 
         private void Expect(params char[] anyOfThese)
@@ -296,17 +327,6 @@ namespace Hatchet
         private static bool IsWhitespaceOrLineBreak(char c)
         {
             return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
-        }
-
-        private static bool IsWhitespace(char c)
-        {
-            return (c == ' ' || c == '\t');
-        }
-
-        private static bool IsValidNameCharacter(char c)
-        {
-            const string definitionChars = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM_";
-            return definitionChars.IndexOf(c) >= 0;
         }
 
         private static bool IsValidValueCharacters(char c)
