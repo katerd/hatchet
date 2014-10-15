@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Hatchet
 {
-    public class Deserializer
+    public class Parser
     {
         private int _index;
         private string _input;
@@ -33,7 +33,7 @@ namespace Hatchet
                 var list = ReadList();
                 return list;
             }
-                // object
+            // object
             else if (Chr == '{')
             {
                 var obj = ReadDefinitions();

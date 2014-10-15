@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.DeserializerTests
+namespace Hatchet.Tests.ParserTests
 {
     [TestFixture]
     public class SingleStringPropertyTests
@@ -13,10 +13,10 @@ namespace Hatchet.Tests.DeserializerTests
             // Arrange
             var input = "{ stringProperty Hello }";
 
-            var deserializer = new Deserializer();
+            var parser = new Parser();
 
             // Act
-            var result = (Dictionary<string, object>)deserializer.Parse(ref input);
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
 
             // Assert
             ((string)result["stringProperty"]).Should().Be("Hello");
@@ -28,10 +28,10 @@ namespace Hatchet.Tests.DeserializerTests
             // Arrange
             var input = "{ stringProperty \"Hello World.\" }";
 
-            var deserializer = new Deserializer();
+            var parser = new Parser();
 
             // Act
-            var result = (Dictionary<string, object>)deserializer.Parse(ref input);
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
 
             // Assert
             result.Should().NotBeNull();
@@ -44,10 +44,10 @@ namespace Hatchet.Tests.DeserializerTests
             // Arrange
             var input = "    { \n stringProperty  \n \"Hello World.\" \n\n      }";
 
-            var deserializer = new Deserializer();
+            var parser = new Parser();
 
             // Act
-            var result = (Dictionary<string, object>)deserializer.Parse(ref input);
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
 
             // Assert
             result.Should().NotBeNull();
@@ -60,10 +60,10 @@ namespace Hatchet.Tests.DeserializerTests
             // Arrange
             var input = "{ stringProperty \"\" }";
 
-            var deserializer = new Deserializer();
+            var parser = new Parser();
 
             // Act
-            var result = (Dictionary<string, object>)deserializer.Parse(ref input);
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
 
             // Assert
             result.Should().NotBeNull();
@@ -76,10 +76,10 @@ namespace Hatchet.Tests.DeserializerTests
             // Arrange
             var input = "{ stringProperty \"{ Nasty String { Very Nasty String } }\" }";
 
-            var deserializer = new Deserializer();
+            var parser = new Parser();
 
             // Act
-            var result = (Dictionary<string, object>)deserializer.Parse(ref input);
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
 
             // Assert
             result.Should().NotBeNull();
@@ -92,10 +92,10 @@ namespace Hatchet.Tests.DeserializerTests
             // Arrange
             var input = "{ stringProperty \"Hello 'Person'\" }";
 
-            var deserializer = new Deserializer();
+            var parser = new Parser();
 
             // Act
-            var result = (Dictionary<string, object>)deserializer.Parse(ref input);
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
 
             // Assert
             result.Should().NotBeNull();
@@ -108,10 +108,10 @@ namespace Hatchet.Tests.DeserializerTests
             // Arrange
             var input = "{ stringProperty \"Hello \\\"Person\\\"\" }";
 
-            var deserializer = new Deserializer();
+            var parser = new Parser();
 
             // Act
-            var result = (Dictionary<string, object>)deserializer.Parse(ref input);
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
 
             // Assert
             result.Should().NotBeNull();

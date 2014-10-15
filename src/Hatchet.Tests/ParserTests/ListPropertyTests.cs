@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.DeserializerTests
+namespace Hatchet.Tests.ParserTests
 {
     [TestFixture]
     public class ListPropertyTests
@@ -13,10 +13,10 @@ namespace Hatchet.Tests.DeserializerTests
             // Arrange
             var input = "{ items [hello world] }";
 
-            var deserializer = new Deserializer();
+            var parser = new Parser();
 
             // Act
-            var result = (Dictionary<string, object>)deserializer.Parse(ref input);
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
 
             // Assert
             result.Should().NotBeNull();

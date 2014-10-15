@@ -49,9 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeserializerTests\ListPropertyTests.cs" />
-    <Compile Include="DeserializerTests\NestedObjectTests.cs" />
-    <Compile Include="DeserializerTests\SingleStringPropertyTests.cs" />
+    <Compile Include="ParserTests\ListPropertyTests.cs" />
+    <Compile Include="ParserTests\NestedObjectTests.cs" />
+    <Compile Include="ParserTests\SingleStringPropertyTests.cs" />
     <Compile Include="HatchetConvertTests\EmptyObjectTests.cs" />
     <Compile Include="HatchetConvertTests\SingleStringPropertyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
