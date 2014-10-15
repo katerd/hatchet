@@ -34,19 +34,19 @@ namespace Hatchet
                 return list;
             }
             // object
-            else if (Chr == '{')
+            if (Chr == '{')
             {
                 var obj = ReadDefinitions();
                 return obj;
             }
             // string
-            else if (Chr == '"' || Chr == '\'')
+            if (Chr == '"' || Chr == '\'')
             {
                 var readString = ReadString();
                 return readString;
             }
             // multi-line comment
-            else if (PeekChars("/*"))
+            if (PeekChars("/*"))
             {
                 Debug.WriteLine("Open block comment");
             }
@@ -64,10 +64,10 @@ namespace Hatchet
             else
             {
                 Debug.WriteLine("I guess this is a string");
-                return ReadName();
+                return ReadNakedValue();
             }
 
-            throw new Exception("No idea.");
+            return null;
         }
 
         private List<object> ReadList()
@@ -109,7 +109,7 @@ namespace Hatchet
                 var value = ReadValue();
                 obj[name] = value;
 
-                Debug.WriteLine(string.Format("** `{0}` = `{1}`", name, value));
+                Debug.WriteLine("`{0}` = `{1}`", name, value);
 
             }
 
@@ -132,7 +132,7 @@ namespace Hatchet
 
             while (Chr != (quoteChar))
             {
-                Debug.WriteLine(string.Format("Reading string char `{0}`", _input[_index]));
+                Debug.WriteLine("Reading string char `{0}`", _input[_index]);
 
                 // Handle escaped characters.
                 if (PeekChars("\\"))
@@ -141,12 +141,9 @@ namespace Hatchet
                     _index++;
                 }
 
-
-                Debug.WriteLine(string.Format("Writing string char `{0}`", Chr));
+                Debug.WriteLine("Writing string char `{0}`", Chr);
                 stringBuilder.Append(Chr);
                 _index++;
-
-                
             }
 
             _index++; // Chomp the end quotation char.
@@ -185,6 +182,30 @@ namespace Hatchet
             {
                 _index++;
             }
+        }
+
+        private string ReadNakedValue()
+        {
+            ChompWhitespace();
+
+            var startIndex = _index;
+
+            while (_index < _input.Length)
+            {
+                var c = _input[_index];
+
+                if (!IsValidValueCharacters(c))
+                {
+                    return _input.Substring(startIndex, _index - startIndex);
+                }
+                _index++;
+            }
+            throw new Exception("Fell off the edge of the file.");
+        }
+
+        private static bool IsValidValueCharacters(char c)
+        {
+            return "1234567890-.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
         }
 
         private string ReadName()
