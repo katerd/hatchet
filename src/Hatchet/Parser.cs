@@ -179,6 +179,8 @@ namespace Hatchet
                     Expect("}");
                     return obj;
                 }
+
+                // todo: verify that the name contains no unacceptable characters.
                 
                 var value = ReadValue();
                 obj[name] = value;
@@ -241,7 +243,8 @@ namespace Hatchet
                 }
                 _index++;
             }
-            throw new Exception("Fell off the edge of the file.");
+
+            return _input.Substring(startIndex, _index - startIndex);
         }
 
         private bool PeekChars(string chars)

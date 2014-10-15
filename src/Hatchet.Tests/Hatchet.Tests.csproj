@@ -53,9 +53,10 @@
     <Compile Include="ParserTests\LineCommentTests.cs" />
     <Compile Include="ParserTests\ListPropertyTests.cs" />
     <Compile Include="ParserTests\NestedObjectTests.cs" />
-    <Compile Include="ParserTests\SingleStringPropertyTests.cs" />
+    <Compile Include="ParserTests\ObjectTests.cs" />
     <Compile Include="HatchetConvertTests\EmptyObjectTests.cs" />
     <Compile Include="HatchetConvertTests\SingleStringPropertyTests.cs" />
+    <Compile Include="ParserTests\SingleValueTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>

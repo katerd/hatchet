@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Hatchet.Tests.ParserTests
 {
     [TestFixture]
-    public class SingleStringPropertyTests
+    public class ObjectTests
     {
         [Test]
         public void Parse_WithAnObjectWithOneStringPropertySingleWord_ThePropertyShouldBePopulated()
