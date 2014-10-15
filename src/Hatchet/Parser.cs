@@ -80,9 +80,12 @@ namespace Hatchet
 
             while (true)
             {
-                var r = ReadValue();
+                var value = ReadValue();
 
-                list.Add(r);
+                if (value != null)
+                {
+                    list.Add(value);
+                }
 
                 ChompWhitespace();
 
@@ -155,35 +158,6 @@ namespace Hatchet
             return result;
         }
 
-        private bool PeekChars(string chars)
-        {
-            for (var i = 0; i < chars.Length; i++)
-            {
-                if (_input[_index + i] != chars[i])
-                    return false;
-            }
-            return true;
-        }
-
-        private void Expect(params char[] anyOfThese)
-        {
-            ChompWhitespace();
-            if (anyOfThese.Any(c => Chr == c))
-            {
-                _index++;
-                return;
-            }
-            throw new Exception(string.Format("Expected any of `{0}` but didn't find any", string.Join(",", anyOfThese)));
-        }
-
-        private void ChompWhitespace()
-        {
-            while (IsWhitespaceOrLineBreak(Chr))
-            {
-                _index++;
-            }
-        }
-
         private string ReadNakedValue()
         {
             ChompWhitespace();
@@ -196,16 +170,14 @@ namespace Hatchet
 
                 if (!IsValidValueCharacters(c))
                 {
+                    if (_index == startIndex)
+                        return null;
+
                     return _input.Substring(startIndex, _index - startIndex);
                 }
                 _index++;
             }
             throw new Exception("Fell off the edge of the file.");
-        }
-
-        private static bool IsValidValueCharacters(char c)
-        {
-            return "1234567890-.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
         }
 
         private string ReadName()
@@ -225,22 +197,6 @@ namespace Hatchet
                 _index++;
             }
             throw new Exception("Fell off the edge of the file.");
-        }
-
-        private static bool IsWhitespaceOrLineBreak(char c)
-        {
-            return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
-        }
-
-        private static bool IsWhitespace(char c)
-        {
-            return (c == ' ' || c == '\t');
-        }
-
-        private static bool IsValidNameCharacter(char c)
-        {
-            const string definitionChars = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM_";
-            return definitionChars.IndexOf(c) >= 0;
         }
 
         private bool PeekName()
@@ -278,6 +234,56 @@ namespace Hatchet
 
             Debug.WriteLine("Did not find a name");
             return false;
+        }
+
+        private bool PeekChars(string chars)
+        {
+            for (var i = 0; i < chars.Length; i++)
+            {
+                if (_input[_index + i] != chars[i])
+                    return false;
+            }
+            return true;
+        }
+
+        private void Expect(params char[] anyOfThese)
+        {
+            ChompWhitespace();
+            if (anyOfThese.Any(c => Chr == c))
+            {
+                _index++;
+                return;
+            }
+            throw new Exception(string.Format("Expected any of `{0}` but didn't find any", string.Join(",", anyOfThese)));
+        }
+
+        private void ChompWhitespace()
+        {
+            while (IsWhitespaceOrLineBreak(Chr))
+            {
+                _index++;
+            }
+        }
+
+        private static bool IsWhitespaceOrLineBreak(char c)
+        {
+            return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
+        }
+
+        private static bool IsWhitespace(char c)
+        {
+            return (c == ' ' || c == '\t');
+        }
+
+        private static bool IsValidNameCharacter(char c)
+        {
+            const string definitionChars = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM_";
+            return definitionChars.IndexOf(c) >= 0;
+        }
+
+        private static bool IsValidValueCharacters(char c)
+        {
+            return "1234567890-.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
         }
     }
 }

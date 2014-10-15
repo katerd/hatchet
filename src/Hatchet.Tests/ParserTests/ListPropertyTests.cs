@@ -28,6 +28,26 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
+        public void Deserialize_WithAListOfEmpty_TheEmptyListsAreInstantiated()
+        {
+            // Arrange
+            var input = "[[][]]";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (List<object>)parser.Parse(ref input);
+
+            // Assert
+            result.Should().NotBeNull();
+
+            var list1 = (List<object>)result[0];
+            list1.Should().HaveCount(0);
+            var list2 = (List<object>)result[1];
+            list2.Should().HaveCount(0);
+        }
+
+        [Test]
         public void Deserialize_WithAListOfLists_TheChildListsAreLoadedWithTheirValues()
         {
             // Arrange
