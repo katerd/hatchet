@@ -28,6 +28,31 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
+        public void Deserialize_WithAListOfLists_TheChildListsAreLoadedWithTheirValues()
+        {
+            // Arrange
+            var input = "[[1 2 3][-4 -5 -6]]";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (List<object>)parser.Parse(ref input);
+
+            // Assert
+            result.Should().NotBeNull();
+
+            var list1 = (List<object>) result[0];
+            list1[0].Should().Be("1");
+            list1[1].Should().Be("2");
+            list1[2].Should().Be("3");
+
+            var list2 = (List<object>) result[1];
+            list2[0].Should().Be("-4");
+            list2[1].Should().Be("-5");
+            list2[2].Should().Be("-6");
+        }
+
+        [Test]
         public void Deserialize_WithNakedListOfStringValues_TheValuesAreLoadedIntoAList()
         {
             // Arrange
@@ -64,6 +89,27 @@ namespace Hatchet.Tests.ParserTests
             ((string)result[0]).Should().Be("1111");
             ((string)result[1]).Should().Be("2222");
             ((string)result[2]).Should().Be("-3333");
+        }
+
+        [Test]
+        public void Deserialize_WithNakedListOfFloatValues_TheValuesAreLoadedIntoAList()
+        {
+            // Arrange
+            var input = "[8.6968612 -3.477894 -1.987779832 0.0]";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (List<object>)parser.Parse(ref input);
+
+            // Assert
+            result.Should().NotBeNull();
+
+            result.Should().HaveCount(4);
+            ((string)result[0]).Should().Be("8.6968612");
+            ((string)result[1]).Should().Be("-3.477894");
+            ((string)result[2]).Should().Be("-1.987779832");
+            ((string)result[3]).Should().Be("0.0");
         }
 
         [Test]
