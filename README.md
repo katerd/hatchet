@@ -25,7 +25,7 @@ Hatchet
 
 ```
 
-Hatchet is a text-based data format with features borrowed or ignored from JSON, YAML and XML. The format is intended more as a method of storage application data and configuration as opposed to data interchange.
+Hatchet is a text-based data format with features borrowed or ignored from JSON, YAML and XML. The format is intended more as a method of storing configuration and textual assets as opposed to data interchange.
 
 ##Features
 
