@@ -56,7 +56,7 @@ Hatchet is a text-based data format with features borrowed or ignored from JSON,
      var input = "{ welcomeMessage 'Hello, welcome to Hatchet!' }";
      var parser = new Hatchet.Parser();
      result = (string)parser.Parse(ref input);
-     Console.WriteLine(result);
+     Console.WriteLine(result["welcomeMessage"]);
   }
 ```
 
