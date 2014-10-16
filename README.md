@@ -1,8 +1,6 @@
 Hatchet
 =======
 
-**Because your data format is bad and you should feel bad.**
-
 ```
 {
   /* 2014-10-15 Current definition of hatchet */
