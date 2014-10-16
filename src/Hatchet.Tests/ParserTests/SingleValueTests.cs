@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace Hatchet.Tests.ParserTests
@@ -94,6 +94,21 @@ namespace Hatchet.Tests.ParserTests
 
             // Assert
             result.Should().Be("Hello world");
+        }        
+        
+        [Test]            
+        public void Parse_QuotedNonAsciiString_ReturnsString()
+        {
+            // Arrange
+            var input = "'Ĥēĺĺō world'";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (string) parser.Parse(ref input);
+
+            // Assert
+            result.Should().Be("Ĥēĺĺō world");
         }
     }
 }
