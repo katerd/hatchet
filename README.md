@@ -1,6 +1,8 @@
 Hatchet
 =======
 
+**Data serialization for people.**
+
 ```
 {
   /* 2014-10-15 Current definition of hatchet */
