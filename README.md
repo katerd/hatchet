@@ -11,10 +11,9 @@ Hatchet
   cost 0
   durability 9001 // todo: nerf durability?
   description ![
-     For when XML isnt cool enough, JSON isnt smart enough, you've given up
-     trying to explain why YAML doesnt like tabs, and you find the lack of
-     features disturbing. This is a text block by the way,
-     and single quotes break the syntax highlighting.
+     For when XML isn't cool enough, JSON isnt smart enough, you've given up
+     trying to explain why YAML doesn't like tabs, and you find the lack of
+     features disturbing. This is a text block by the way.
      !]
   versions [0.1 0.2 0.3 0.4]
   tagcloud ['json' xml "data-storage"]
