@@ -11,14 +11,6 @@ namespace Hatchet
         private int _index;
         private string _input;
 
-        private char Chr
-        {
-            get
-            {
-                return _input[_index];
-            }
-        }
-
         public object Parse(ref string input)
         {
             Debug.WriteLine(string.Format("Input '{0}'", input));
@@ -53,8 +45,6 @@ namespace Hatchet
             }
             if (Peek(Tokens.BlockCommentOpen))
             {
-                Debug.WriteLine("Open block comment");
-
                 ReadBlockComment();
 
                 /* a second attempt at reading a value is needed 
@@ -67,8 +57,6 @@ namespace Hatchet
             }
             if (Peek(Tokens.LineComment))
             {
-                Debug.WriteLine("Open line comment");
-
                 ReadLineComment();
 
                 /* a second attempt at reading a value is needed 
@@ -112,6 +100,8 @@ namespace Hatchet
 
         private void ReadLineComment()
         {
+            Debug.WriteLine("Open line comment");
+
             Expect(Tokens.LineComment);
 
             while (_index < _input.Length)
@@ -140,6 +130,8 @@ namespace Hatchet
 
         private void ReadBlockComment()
         {
+            Debug.WriteLine("Open block comment");
+
             Expect(Tokens.BlockCommentOpen);
 
             // read until we hit an asterisk with a forward slash.
@@ -164,6 +156,8 @@ namespace Hatchet
 
             Expect(Tokens.ListOpen);
 
+            var listStartIndex = _index;
+
             var list = new List<object>();
 
             while (true)
@@ -182,6 +176,11 @@ namespace Hatchet
                     Expect(Tokens.ListClose);
                     return list;
                 }
+
+                if (_index == _input.Length)
+                {
+                    throw new HatchetException(string.Format("List opened at byte {0} is not closed", listStartIndex));
+                }
             }
         }
 
@@ -195,8 +194,9 @@ namespace Hatchet
 
             while (true)
             {
-                var name = ReadValue() as string;
+                var nameIndex = _index;
 
+                var name = ReadValue() as string;
                 if (name == null)
                 {
                     Expect(Tokens.ObjectClose);
@@ -204,8 +204,15 @@ namespace Hatchet
                 }
 
                 // todo: verify that the name contains no unacceptable characters.
+
                 
                 var value = ReadValue();
+
+                if (value == null)
+                {
+                    throw new HatchetException(string.Format("Property `{0}` defined at byte {1} is missing a value", name, nameIndex + 2));
+                }
+
                 obj[name] = value;
 
                 Debug.WriteLine("Object property `{0}` = `{1}`", name, value);
@@ -214,6 +221,8 @@ namespace Hatchet
 
         private object ReadString()
         {
+            var stringStartIndex = _index;
+
             Expect(Tokens.SingleQuote, Tokens.DoubleQuote);
 
             var quoteChar = _input[_index - 1];
@@ -222,7 +231,7 @@ namespace Hatchet
 
             var stringBuilder = new StringBuilder();
 
-            while (Chr != (quoteChar))
+            while (_input[_index] != (quoteChar))
             {
                 Debug.WriteLine("Reading string char `{0}`", _input[_index]);
 
@@ -233,9 +242,14 @@ namespace Hatchet
                     _index++;
                 }
 
-                Debug.WriteLine("Writing string char `{0}`", Chr);
-                stringBuilder.Append(Chr);
+                Debug.WriteLine("Writing string char `{0}`", _input[_index]);
+                stringBuilder.Append(_input[_index]);
                 _index++;
+
+                if (_index >= _input.Length)
+                {
+                    throw new HatchetException(string.Format("String starting at byte {0} is not terminated", stringStartIndex + 1));
+                }
             }
 
             _index++; // Chomp the end quotation char.
@@ -282,18 +296,36 @@ namespace Hatchet
 
         private bool Peek(char c)
         {
+            if (_index >= _input.Length)
+                return false;
+
             return _input[_index] == c;
         }
 
         private void Expect(params char[] anyOfThese)
         {
             ChompWhitespace();
-            if (anyOfThese.Any(c => Chr == c))
+
+            var expectIndex = _index + 1;
+
+            if (_index >= _input.Length)
+            {
+                if (anyOfThese.Length == 1)
+                {
+                    throw new HatchetException(string.Format("Expected `{0}` at byte {1}", anyOfThese[0], expectIndex));
+                }
+                throw new HatchetException(string.Format("Expected any of `{0}` at byte {1}",
+                    string.Join(",", anyOfThese), expectIndex));
+            }
+
+            if (anyOfThese.Any(c => _input[_index] == c))
             {
                 _index++;
                 return;
             }
-            throw new Exception(string.Format("Expected any of `{0}` but didn't find any", string.Join(",", anyOfThese)));
+
+            throw new HatchetException(string.Format("Expected any of `{0}` at byte {1}",
+                string.Join(",", anyOfThese), expectIndex));
         }
 
         private void Expect(string thisString)
@@ -319,7 +351,8 @@ namespace Hatchet
 
         private static bool IsValidValueCharacters(char c)
         {
-            return "1234567890-.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
+            // todo: improve this.
+            return "1234567890-+.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
         }
     }
 }

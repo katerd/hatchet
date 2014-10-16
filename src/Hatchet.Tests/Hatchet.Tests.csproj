@@ -51,11 +51,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ParserTests\BadStructureTests.cs" />
     <Compile Include="ParserTests\BlockCommentTests.cs" />
     <Compile Include="ParserTests\EmptyFileTests.cs" />
     <Compile Include="ParserTests\LineCommentTests.cs" />
     <Compile Include="ParserTests\ListPropertyTests.cs" />
-    <Compile Include="ParserTests\MalformedInputTests.cs" />
+    <Compile Include="ParserTests\NonTerminatedTests.cs" />
     <Compile Include="ParserTests\NestedObjectTests.cs" />
     <Compile Include="ParserTests\ObjectTests.cs" />
     <Compile Include="HatchetConvertTests\EmptyObjectTests.cs" />
