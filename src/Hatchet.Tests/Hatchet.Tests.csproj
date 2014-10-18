@@ -51,6 +51,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HatchetConvertTests\EmptyListTests.cs" />
+    <Compile Include="HatchetConvertTests\FloatListTests.cs" />
+    <Compile Include="HatchetConvertTests\IntegerListTests.cs" />
+    <Compile Include="HatchetConvertTests\ObjectListTests.cs" />
+    <Compile Include="HatchetConvertTests\ObjectWithSingleFieldTests.cs" />
+    <Compile Include="HatchetConvertTests\SingleValueTests.cs" />
+    <Compile Include="HatchetConvertTests\StringListTests.cs" />
     <Compile Include="ParserTests\BadStructureTests.cs" />
     <Compile Include="ParserTests\BlockCommentTests.cs" />
     <Compile Include="ParserTests\EmptyFileTests.cs" />
@@ -60,7 +67,7 @@
     <Compile Include="ParserTests\NestedObjectTests.cs" />
     <Compile Include="ParserTests\ObjectTests.cs" />
     <Compile Include="HatchetConvertTests\EmptyObjectTests.cs" />
-    <Compile Include="HatchetConvertTests\SingleStringPropertyTests.cs" />
+    <Compile Include="HatchetConvertTests\ObjectWithSinglePropertyTests.cs" />
     <Compile Include="ParserTests\SingleValueTests.cs" />
     <Compile Include="ParserTests\TextBlockTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

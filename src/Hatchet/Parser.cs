@@ -190,7 +190,7 @@ namespace Hatchet
 
             Expect(Tokens.ObjectOpen);
 
-            var obj = new Dictionary<string, object>();
+            var obj = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
             while (true)
             {

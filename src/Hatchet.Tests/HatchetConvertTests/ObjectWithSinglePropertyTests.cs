@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Hatchet.Tests.HatchetConvertTests
 {
     [TestFixture]
-    public class SingleStringPropertyTests
+    public class ObjectWithSinglePropertyTests
     {
         private class TestClass
         {
@@ -64,7 +64,7 @@ namespace Hatchet.Tests.HatchetConvertTests
 
             // Assert
             result.Should().NotBeNull();
-            result.StringProperty.Should().Be(string.Empty);
+            result.StringProperty.Should().Be("{ Nasty String { Very Nasty String } }");
         } 
     }
 }
