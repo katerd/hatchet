@@ -54,6 +54,7 @@
     <Compile Include="HatchetConvertTests\EmptyListTests.cs" />
     <Compile Include="HatchetConvertTests\FloatListTests.cs" />
     <Compile Include="HatchetConvertTests\IntegerListTests.cs" />
+    <Compile Include="HatchetConvertTests\NestedObjectTests.cs" />
     <Compile Include="HatchetConvertTests\ObjectListTests.cs" />
     <Compile Include="HatchetConvertTests\ObjectWithSingleFieldTests.cs" />
     <Compile Include="HatchetConvertTests\SingleValueTests.cs" />
