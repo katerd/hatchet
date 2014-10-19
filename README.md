@@ -58,12 +58,28 @@ PM> Install-Package Hatchet
   *(For examples see Hatchet.Tests.csproj)*
   
 ```
-  public void Wow()
+  public void UsingTheParser()
   {
      var input = "{ welcomeMessage 'Hello, welcome to Hatchet!' }";
      var parser = new Hatchet.Parser();
      result = (Dictionary<string, object>)parser.Parse(ref input);
      Console.WriteLine(result["welcomeMessage"]);
+  }
+```
+
+```
+  public void UsingTheConverter()
+  {
+    var input = "{ exampleString 'This is an example' exampleInt 1234 }";
+    var result = HatchetConvert.Deserialize<Test>(ref input);
+    Console.WriteLine(string.Format("string = {0}", result.ExampleString));
+    Console.WriteLine(string.Format("int    = {0}", result.ExampleInt));
+  }
+  
+  public class Test
+  {
+    public string ExampleString { get; set; }
+    public int ExampleInt { get; set; }
   }
 ```
 
