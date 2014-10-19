@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HatchetConvertTests\EmptyListTests.cs" />
+    <Compile Include="HatchetConvertTests\EnumTests.cs" />
     <Compile Include="HatchetConvertTests\FloatListTests.cs" />
     <Compile Include="HatchetConvertTests\IntegerListTests.cs" />
     <Compile Include="HatchetConvertTests\NestedObjectTests.cs" />
@@ -72,10 +73,14 @@
     <Compile Include="ParserTests\SingleValueTests.cs" />
     <Compile Include="ParserTests\TextBlockTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UsageTests\VortexShaderTests\DeserializationTests.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="vortex-engine-test.shader">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hatchet\Hatchet.csproj">
