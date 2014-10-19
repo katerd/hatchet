@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Hatchet.Tests.HatchetConvertTests
@@ -6,6 +7,34 @@ namespace Hatchet.Tests.HatchetConvertTests
     [TestFixture]
     public class SingleValueTests
     {
+        [Test]
+        public void Deserialize_ANonQuotedDateTime_ShouldReturnADateTime()
+        {
+            // Arrange
+            var date = DateTime.Parse("2013-01-02");
+            var input = date.ToString("yyyy-MM-dd");
+
+            // Act
+            var result = HatchetConvert.Deserialize<DateTime>(ref input);
+
+            // Assert
+            result.Should().Be(date);
+        }
+
+        [Test]
+        public void Deserialize_AQuotedDateTime_ShouldReturnADateTime()
+        {
+            // Arrange
+            var date = DateTime.Parse("2014-10-01 07:20:00");
+            var input = "'" + date.ToString("O") + "'";
+
+            // Act
+            var result = HatchetConvert.Deserialize<DateTime>(ref input);
+
+            // Assert
+            result.Should().Be(date);
+        }
+
         [Test]
         public void Deserialize_AByte_ShouldReturnAByte()
         {

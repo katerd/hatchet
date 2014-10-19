@@ -81,6 +81,36 @@ namespace Hatchet.Tests.ParserTests
             result.Should().Be("-3.141");
         }
 
+        [Test]
+        public void Parse_FilePathWindows_ReturnsString()
+        {
+            // Arrange
+            var input = @"c:\windows\system32\drivers\etc\hosts";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (string)parser.Parse(ref input);
+
+            // Assert
+            result.Should().Be(input);
+        }
+
+        [Test]
+        public void Parse_FilePathUnix_ReturnsString()
+        {
+            // Arrange
+            var input = @"/dev/sda1";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (string)parser.Parse(ref input);
+
+            // Assert
+            result.Should().Be(input);
+        } 
+
         [Test]            
         public void Parse_QuotedString_ReturnsString()
         {

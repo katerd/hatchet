@@ -115,6 +115,31 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
+        public void Parse_WithASprawlingListOfListsWithIntegersWithComments_TheChildListsAreLoadedWithTheirValues()
+        {
+            // Arrange
+            var input = "[\n\n[1\t2/*This is a block comment*/\n\n3]\n[-4\t-5//This is a line comment\n-6]\n]";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (List<object>)parser.Parse(ref input);
+
+            // Assert
+            result.Should().NotBeNull();
+
+            var list1 = (List<object>)result[0];
+            list1[0].Should().Be("1");
+            list1[1].Should().Be("2");
+            list1[2].Should().Be("3");
+
+            var list2 = (List<object>)result[1];
+            list2[0].Should().Be("-4");
+            list2[1].Should().Be("-5");
+            list2[2].Should().Be("-6");
+        }
+
+        [Test]
         public void Parse_WithNakedListOfStringValues_TheValuesAreLoadedIntoAList()
         {
             // Arrange

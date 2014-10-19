@@ -271,7 +271,13 @@ namespace Hatchet
             {
                 var c = _input[_index];
 
-                if (!IsValidValueCharacters(c))
+                // forward slash without a (preceding asterisk or additional
+                // preceding forward slash) is valid as part of a value string.
+                // for instances where a comment directly precedes a value, eg:
+                // 9001//This is over 9000
+                // we look-ahead to determine inclusion of the forward slash in
+                // the value.
+                if (!IsValidValueCharacter(c) || Peek("//") || Peek( "/*"))
                 {
                     if (_index == startIndex)
                         return null;
@@ -349,10 +355,9 @@ namespace Hatchet
             return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
         }
 
-        private static bool IsValidValueCharacters(char c)
+        private static bool IsValidValueCharacter(char c)
         {
-            // todo: improve this.
-            return "1234567890-+.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
+            return "1234567890:\\/-+.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
         }
     }
 }

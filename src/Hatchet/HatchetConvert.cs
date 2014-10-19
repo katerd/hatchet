@@ -17,7 +17,10 @@ namespace Hatchet
 
         private static object DeserializeObject(object result, Type type)
         {
-            // this is a list.
+            if (type == typeof(string))
+            {
+                return result;
+            }
             if (typeof(ICollection).IsAssignableFrom(type))
             {
                 if (!(result is ICollection))
@@ -38,10 +41,6 @@ namespace Hatchet
                 }
 
                 return outputList;
-            }
-            if (type == typeof(string))
-            {
-                return result;
             }
             if (type.IsClass)
             {
