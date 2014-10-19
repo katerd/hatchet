@@ -42,9 +42,16 @@ Hatchet is a text-based data format with features borrowed or ignored from JSON,
 
 ## Installation
 
+via the sauce:
+
   1. Obtain the source.
   2. Copy the Hatchet.csproj into your solution.
-  3. *nuget package coming soon (tm).*
+  
+or via nuget:
+
+```
+PM> Install-Package Hatchet
+```
 
 ## Usage
 
