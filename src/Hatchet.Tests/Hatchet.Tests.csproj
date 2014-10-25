@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HatchetConvertTests\ArrayTests.cs" />
     <Compile Include="HatchetConvertTests\EmptyListTests.cs" />
     <Compile Include="HatchetConvertTests\EnumTests.cs" />
     <Compile Include="HatchetConvertTests\FloatListTests.cs" />

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Hatchet
 {
@@ -20,6 +19,18 @@ namespace Hatchet
             if (type == typeof(string))
             {
                 return result;
+            }
+            if (type.IsArray)
+            {
+                var arrayType = type.GetElementType();
+                var inputList = (List<object>) result;
+                var outputArray = Array.CreateInstance(arrayType, inputList.Count);
+
+                for (var i = 0; i < inputList.Count; i++)
+                {
+                    outputArray.SetValue(DeserializeObject(inputList[i], arrayType), i);
+                }
+                return outputArray;
             }
             if (typeof(ICollection).IsAssignableFrom(type))
             {

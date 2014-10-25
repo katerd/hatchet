@@ -45,11 +45,7 @@ namespace Hatchet.Tests.HatchetConvertTests
             var result = HatchetConvert.Deserialize<List<TestEnum>>(ref input);
 
             // Assert
-            result.Should().HaveCount(4);
-            result[0].Should().Be(TestEnum.Alpha);
-            result[1].Should().Be(TestEnum.Bravo);
-            result[2].Should().Be(TestEnum.Charlie);
-            result[3].Should().Be(TestEnum.Delta);
+            result.Should().ContainInOrder(TestEnum.Alpha, TestEnum.Bravo, TestEnum.Charlie, TestEnum.Delta);
         }
 
         [Test]
