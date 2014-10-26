@@ -14,6 +14,11 @@ namespace Hatchet
             return (T)DeserializeObject(result, type);
         }
 
+        public static string Serialize(object input)
+        {
+            throw new NotImplementedException();
+        }
+
         private static object DeserializeObject(object result, Type type)
         {
             if (type == typeof(string))
@@ -91,6 +96,8 @@ namespace Hatchet
 
             return Convert.ChangeType(result, type);
         }
+
+        
 
     }
 }

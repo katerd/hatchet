@@ -51,16 +51,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HatchetConvertTests\ArrayTests.cs" />
-    <Compile Include="HatchetConvertTests\EmptyListTests.cs" />
-    <Compile Include="HatchetConvertTests\EnumTests.cs" />
-    <Compile Include="HatchetConvertTests\FloatListTests.cs" />
-    <Compile Include="HatchetConvertTests\IntegerListTests.cs" />
-    <Compile Include="HatchetConvertTests\NestedObjectTests.cs" />
-    <Compile Include="HatchetConvertTests\ObjectListTests.cs" />
-    <Compile Include="HatchetConvertTests\ObjectWithSingleFieldTests.cs" />
-    <Compile Include="HatchetConvertTests\SingleValueTests.cs" />
-    <Compile Include="HatchetConvertTests\StringListTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\ArrayTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\EmptyListTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\EnumTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\FloatListTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\IntegerListTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\NestedObjectTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\ObjectListTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\ObjectWithSingleFieldTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\SingleValueTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\StringListTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\ArrayTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\DictionaryTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\ListTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\ObjectTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\SingleValueTests.cs" />
     <Compile Include="ParserTests\BadStructureTests.cs" />
     <Compile Include="ParserTests\BlockCommentTests.cs" />
     <Compile Include="ParserTests\EmptyFileTests.cs" />
@@ -69,8 +74,8 @@
     <Compile Include="ParserTests\NonTerminatedTests.cs" />
     <Compile Include="ParserTests\NestedObjectTests.cs" />
     <Compile Include="ParserTests\ObjectTests.cs" />
-    <Compile Include="HatchetConvertTests\EmptyObjectTests.cs" />
-    <Compile Include="HatchetConvertTests\ObjectWithSinglePropertyTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\EmptyObjectTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\ObjectWithSinglePropertyTests.cs" />
     <Compile Include="ParserTests\SingleValueTests.cs" />
     <Compile Include="ParserTests\TextBlockTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

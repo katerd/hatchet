@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.HatchetConvertTests
+namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
 {
     [TestFixture]
     public class ArrayTests
@@ -20,7 +20,7 @@ namespace Hatchet.Tests.HatchetConvertTests
         }
 
         [Test]
-        public void Deserializet_ArrayOfStrings_ReturnsArrayOfStrings()
+        public void Deserialize_ArrayOfStrings_ReturnsArrayOfStrings()
         {
             // Arrange
             var input = "[This is a test]";

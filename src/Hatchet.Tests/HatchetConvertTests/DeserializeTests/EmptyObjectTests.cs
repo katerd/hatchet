@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.HatchetConvertTests
+namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
 {
     [TestFixture]
     public class EmptyObjectTests
