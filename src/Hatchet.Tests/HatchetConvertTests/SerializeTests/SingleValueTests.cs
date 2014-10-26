@@ -11,13 +11,13 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
         public void Serialize_AGuid_ReturnsValueAsAString()
         {
             // Arrange
-            var value = new Guid("FA1831FE-78EC-4B83-AAC7-289D1D0C60DB");
+            var value = new Guid("fa1831fe-78ec-4b83-aac7-289d1d0c60db");
 
             // Act
             var result = HatchetConvert.Serialize(value);
 
             // Assert
-            result.Should().Be("FA1831FE-78EC-4B83-AAC7-289D1D0C60DB");
+            result.Should().Be("fa1831fe-78ec-4b83-aac7-289d1d0c60db");
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             var result = HatchetConvert.Serialize(value);
 
             // Assert
-            result.Should().Be("true");
+            result.Should().Be("True");
         }
 
         [Test]
@@ -161,7 +161,7 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             var result = HatchetConvert.Serialize(value);
 
             // Assert
-            result.Should().Be("\"goodMorning\"");
+            result.Should().Be("goodMorning");
         }
 
         [Test]
@@ -188,6 +188,19 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
 
             // Assert
             result.Should().Be("\"\"");
+        }
+
+        [Test]
+        public void Serialize_AWhollySingleQuotedString_ReturnsQuotedString()
+        {
+            // Arrange
+            const string value = "'Hello'";
+
+            // Act
+            var result = HatchetConvert.Serialize(value);
+
+            // Assert
+            result.Should().Be("\"'Hello'\"");
         }
 
         [Test]
@@ -230,6 +243,19 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
         }
 
         [Test]
+        public void Serialize_AStringWithNewLinesWindows_ReturnsStringBlock()
+        {
+            // Arrange
+            const string value = "This value\r\ngoes over\r\nthree lines";
+
+            // Act
+            var result = HatchetConvert.Serialize(value);
+
+            // Assert
+            result.Should().Be("![This value\r\ngoes over\r\nthree lines]!");
+        }
+
+        [Test]
         public void Serialize_AStringWithNewLinesUnix_ReturnsStringBlock()
         {
             // Arrange
@@ -240,6 +266,19 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
 
             // Assert
             result.Should().Be("![This value\ngoes over\nthree lines]!");
+        }
+
+        [Test]
+        public void Serialize_AStringWithNewLinesMac_ReturnsStringBlock()
+        {
+            // Arrange
+            const string value = "This value\rgoes over\rthree lines";
+
+            // Act
+            var result = HatchetConvert.Serialize(value);
+
+            // Assert
+            result.Should().Be("![This value\rgoes over\rthree lines]!");
         }
     }
 }

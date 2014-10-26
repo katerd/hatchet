@@ -10,13 +10,6 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
         public class TestPropertyClass
         {
             public string StringProperty { get; set; }
-            public string StringField;
-            public int IntProperty { get; set; }
-            public int IntField;
-            public int[] IntList;
-            public string[] StringList;
-            public List<int> IntArray;
-            public List<string> StringArray;
         }
 
         [Test]
@@ -25,13 +18,6 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             // Arrange
             var testClass = new TestPropertyClass
             {
-                IntArray = new List<int> {1, 2, 3, 4},
-                IntField = 1000,
-                IntList = new[] {2, 4, 6, 8},
-                IntProperty = 2000,
-                StringArray = new List<string> {"Hello", "World"},
-                StringField = "This is a test",
-                StringList = new[] {"Such", "String"},
                 StringProperty = "Wow"
             };
 
@@ -42,13 +28,30 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             result.Should().Be(
                 "{\n"+
                 "  StringProperty Wow\n" +
-                "  StringField \"This is a test\"\n" +
-                "  IntProperty 2000\n" +
-                "  IntField 1000\n" +
-                "  IntList [2 4 6 8]\n" +
-                "  StringList [Such String]\n" +
-                "  IntArray [1 2 3 4]\n" +
-                "  StringArray [Hello World]\n" +
+                "}");
+        }
+
+        public class TestFieldClass
+        {
+            public string StringField;
+        }
+
+        [Test]
+        public void Serialize_ATestFieldClass_ReturnsValueAsAString()
+        {
+            // Arrange
+            var testClass = new TestFieldClass
+            {
+                StringField = "Wow"
+            };
+
+            // Act
+            var result = HatchetConvert.Serialize(testClass);
+
+            // Assert
+            result.Should().Be(
+                "{\n" +
+                "  StringField Wow\n" +
                 "}");
         }
 
@@ -85,10 +88,33 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
                 "  NestedClass {\n" +
                 "    TestValue FirstChild\n" +
                 "    NestedClass {\n" +
-                "      TestValue SecondChild {\n" +
+                "      TestValue SecondChild\n" +
                 "    }\n" +
                 "  }\n" +
                 "}");
+        }
+
+        public class TestClassNullString
+        {
+            public string NullProperty { get; set; }
+            public string NullField;
+        }
+
+        [Test]
+        public void Serialize_TestClassNullString_ReturnsValueAsAString()
+        {
+            // Arrange
+            var input = new TestClassNullString
+            {
+                NullField = null,
+                NullProperty = null
+            };
+
+            // Act
+            var result = HatchetConvert.Serialize(input);
+
+            // Assert
+            result.Should().Be("{}");
         }
     }
 }

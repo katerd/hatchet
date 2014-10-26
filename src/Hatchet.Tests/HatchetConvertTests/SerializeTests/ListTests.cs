@@ -30,7 +30,7 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             var result = HatchetConvert.Serialize(list);
 
             // Assert
-            result.Should().Be("[This is 'a test']");
+            result.Should().Be("[This is \"'a test'\"]");
         }
 
         [Test]
