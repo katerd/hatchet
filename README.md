@@ -91,5 +91,5 @@ MIT
 
   * ~~Deserialization to types ``` var myObject = hatchetSerializer.Deserialize(input) ```~~ **Done!**  
   * Improved exception handling of malformed Hatchet (.axe) input.
-  * Serialization to Hatchet.
+  * ~~Serialization to Hatchet.~~
   * Stream support.
