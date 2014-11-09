@@ -230,6 +230,10 @@ namespace Hatchet
             {
                 return Enum.Parse(type, (string)result, true);
             }
+            if (type == typeof (object))
+            {
+                return result;
+            }
             if (type.IsClass)
             {
                 var inputValues = (Dictionary<string, object>)result;
