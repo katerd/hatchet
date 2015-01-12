@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>hatchet</id>
+    <id>Hatchet</id>
     <version>$version$</version>
     <title>Hatchet</title>
     <authors>Dale Reidy</authors>
