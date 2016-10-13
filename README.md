@@ -3,13 +3,13 @@ Hatchet
 
 **A data interchange format.**
 
-```
+```python
 {
   /* 2014-10-15 Current definition of hatchet */
   name "Hatchet"
   isAwesome true
   cost 0
-  durability 9001 // todo: nerf durability?
+  durability 9001 // todo: nerf durability
   description ![
      For when XML isn't cool enough, JSON isnt smart enough, you've given up
      trying to explain why YAML doesn't like tabs, and you find the lack of
@@ -57,7 +57,7 @@ PM> Install-Package Hatchet
 
   *(For examples see Hatchet.Tests.csproj)*
   
-```
+```csharp
   public void UsingTheParser()
   {
      var input = "{ welcomeMessage 'Hello, welcome to Hatchet!' }";
@@ -67,7 +67,7 @@ PM> Install-Package Hatchet
   }
 ```
 
-```
+```csharp
   public void UsingTheConverter()
   {
     var input = "{ exampleString 'This is an example' exampleInt 1234 }";
