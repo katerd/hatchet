@@ -1,7 +1,7 @@
 Hatchet
 =======
 
-**A data interchange format.**
+**It's another text file format.**
 
 ```python
 {
