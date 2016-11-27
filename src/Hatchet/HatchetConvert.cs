@@ -11,11 +11,20 @@ namespace Hatchet
         private const string LineEnding = "\n";
         private const int IndentCount = 2;
 
+        [Obsolete]
         public static T Deserialize<T>(ref string input)
         {
             var parser = new Parser();
             var result = parser.Parse(ref input);
             var type = typeof (T);
+            return (T)DeserializeObject(result, type);
+        }
+
+        public static T Deserialize<T>(string input)
+        {
+            var parser = new Parser();
+            var result = parser.Parse(ref input);
+            var type = typeof(T);
             return (T)DeserializeObject(result, type);
         }
 
@@ -268,8 +277,5 @@ namespace Hatchet
 
             return Convert.ChangeType(result, type);
         }
-
-        
-
     }
 }

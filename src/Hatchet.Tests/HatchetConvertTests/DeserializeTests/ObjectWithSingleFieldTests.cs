@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+#pragma warning disable 649
 
 namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
 {
@@ -18,7 +19,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ stringField Hello }";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestClass>(ref input);
+            var result = HatchetConvert.Deserialize<TestClass>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -32,7 +33,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ stringField \"Hello World.\" }";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestClass>(ref input);
+            var result = HatchetConvert.Deserialize<TestClass>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -46,7 +47,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ stringField \"\" }";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestClass>(ref input);
+            var result = HatchetConvert.Deserialize<TestClass>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -60,7 +61,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ stringField \"{ Nasty String { Very Nasty String } }\" }";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestClass>(ref input);
+            var result = HatchetConvert.Deserialize<TestClass>(input);
 
             // Assert
             result.Should().NotBeNull();

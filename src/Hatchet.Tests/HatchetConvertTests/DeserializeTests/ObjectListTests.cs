@@ -20,7 +20,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[{ Value Value1 I 100} {Value Value2 I 200}]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<TestListObject>>(ref input);
+            var result = HatchetConvert.Deserialize<List<TestListObject>>(input);
 
             // Assert
             result.Should().HaveCount(2);

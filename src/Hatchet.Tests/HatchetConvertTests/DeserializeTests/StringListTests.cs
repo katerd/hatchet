@@ -15,7 +15,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[this is a string list]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<string>>(ref input);
+            var result = HatchetConvert.Deserialize<List<string>>(input);
 
             // Assert
             result.Should().HaveCount(5);
@@ -37,7 +37,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             // Act Assert
             try
             {
-                HatchetConvert.Deserialize<List<string>>(ref input);
+                HatchetConvert.Deserialize<List<string>>(input);
             }
             catch (HatchetException exception)
             {

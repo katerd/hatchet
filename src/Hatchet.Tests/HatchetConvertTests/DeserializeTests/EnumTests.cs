@@ -29,7 +29,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "Alpha";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestEnum>(ref input);
+            var result = HatchetConvert.Deserialize<TestEnum>(input);
 
             // Assert
             result.Should().Be(TestEnum.Alpha);
@@ -42,7 +42,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[Alpha Bravo charlie DELTA]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<TestEnum>>(ref input);
+            var result = HatchetConvert.Deserialize<List<TestEnum>>(input);
 
             // Assert
             result.Should().ContainInOrder(TestEnum.Alpha, TestEnum.Bravo, TestEnum.Charlie, TestEnum.Delta);
@@ -55,7 +55,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ Property Alpha Field Delta }";
 
             // Act
-            var result = HatchetConvert.Deserialize<EnumTestClass>(ref input);
+            var result = HatchetConvert.Deserialize<EnumTestClass>(input);
 
             // Assert
             result.Should().NotBeNull();

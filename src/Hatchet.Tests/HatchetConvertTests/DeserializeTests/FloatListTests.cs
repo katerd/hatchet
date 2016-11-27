@@ -14,7 +14,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[0.1 -0.2 0.3 0.4]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<float>>(ref input);
+            var result = HatchetConvert.Deserialize<List<float>>(input);
 
             // Assert
             result.Should().HaveCount(4);
@@ -35,7 +35,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[0.1 -0.2 0.3 0.4]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<double>>(ref input);
+            var result = HatchetConvert.Deserialize<List<double>>(input);
 
             // Assert
             result.Should().HaveCount(4);

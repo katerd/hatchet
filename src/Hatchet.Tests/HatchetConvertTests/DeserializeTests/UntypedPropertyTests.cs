@@ -19,7 +19,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ Prop { A 100 B 200 }}";
 
             // Act
-            var result = HatchetConvert.Deserialize<ClassWithObject>(ref input);
+            var result = HatchetConvert.Deserialize<ClassWithObject>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -38,7 +38,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ Prop [ 100 200 300 ] } ";
 
             // Act
-            var result = HatchetConvert.Deserialize<ClassWithObject>(ref input);
+            var result = HatchetConvert.Deserialize<ClassWithObject>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -58,7 +58,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ Prop \"This is a prop\" }";
 
             // Act
-            var result = HatchetConvert.Deserialize<ClassWithObject>(ref input);
+            var result = HatchetConvert.Deserialize<ClassWithObject>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -73,7 +73,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ Prop 100 }";
 
             // Act
-            var result = HatchetConvert.Deserialize<ClassWithObject>(ref input);
+            var result = HatchetConvert.Deserialize<ClassWithObject>(input);
 
             // Assert
             result.Should().NotBeNull();

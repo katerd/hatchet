@@ -13,7 +13,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[1 2 -3 4 5]";
 
             // Act
-            var result = HatchetConvert.Deserialize<int[]>(ref input);
+            var result = HatchetConvert.Deserialize<int[]>(input);
 
             // Assert
             result.Should().ContainInOrder(1, 2, -3, 4, 5);
@@ -26,7 +26,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[This is a test]";
 
             // Act
-            var result = HatchetConvert.Deserialize<string[]>(ref input);
+            var result = HatchetConvert.Deserialize<string[]>(input);
 
             // Assert
             result.Should().ContainInOrder("This", "is", "a", "test");
@@ -39,7 +39,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[]";
 
             // Act
-            var result = HatchetConvert.Deserialize<string[]>(ref input);
+            var result = HatchetConvert.Deserialize<string[]>(input);
 
             // Assert
             result.Should().HaveCount(0);

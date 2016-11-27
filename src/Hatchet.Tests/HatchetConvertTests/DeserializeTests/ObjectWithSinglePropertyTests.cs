@@ -18,7 +18,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ stringProperty Hello }";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestClass>(ref input);
+            var result = HatchetConvert.Deserialize<TestClass>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -32,7 +32,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ stringProperty \"Hello World.\" }";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestClass>(ref input);
+            var result = HatchetConvert.Deserialize<TestClass>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -46,7 +46,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ stringProperty \"\" }";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestClass>(ref input);
+            var result = HatchetConvert.Deserialize<TestClass>(input);
 
             // Assert
             result.Should().NotBeNull();
@@ -60,7 +60,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ stringProperty \"{ Nasty String { Very Nasty String } }\" }";
 
             // Act
-            var result = HatchetConvert.Deserialize<TestClass>(ref input);
+            var result = HatchetConvert.Deserialize<TestClass>(input);
 
             // Assert
             result.Should().NotBeNull();

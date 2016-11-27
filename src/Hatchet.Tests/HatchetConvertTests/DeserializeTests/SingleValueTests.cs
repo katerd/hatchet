@@ -15,7 +15,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = date.ToString("yyyy-MM-dd");
 
             // Act
-            var result = HatchetConvert.Deserialize<DateTime>(ref input);
+            var result = HatchetConvert.Deserialize<DateTime>(input);
 
             // Assert
             result.Should().Be(date);
@@ -29,7 +29,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "'" + date.ToString("O") + "'";
 
             // Act
-            var result = HatchetConvert.Deserialize<DateTime>(ref input);
+            var result = HatchetConvert.Deserialize<DateTime>(input);
 
             // Assert
             result.Should().Be(date);
@@ -42,7 +42,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "14";
 
             // Act
-            var result = HatchetConvert.Deserialize<byte>(ref input);
+            var result = HatchetConvert.Deserialize<byte>(input);
 
             // Assert
             result.Should().Be(14);
@@ -55,7 +55,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "a";
 
             // Act
-            var result = HatchetConvert.Deserialize<char>(ref input);
+            var result = HatchetConvert.Deserialize<char>(input);
 
             // Assert
             result.Should().Be('a');
@@ -68,7 +68,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "-8";
 
             // Act
-            var result = HatchetConvert.Deserialize<sbyte>(ref input);
+            var result = HatchetConvert.Deserialize<sbyte>(input);
 
             // Assert
             result.Should().Be(-8);
@@ -81,7 +81,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "-372";
 
             // Act
-            var result = HatchetConvert.Deserialize<short>(ref input);
+            var result = HatchetConvert.Deserialize<short>(input);
 
             // Assert
             result.Should().Be(-372);
@@ -94,7 +94,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "8192";
 
             // Act
-            var result = HatchetConvert.Deserialize<ushort>(ref input);
+            var result = HatchetConvert.Deserialize<ushort>(input);
 
             // Assert
             result.Should().Be(8192);
@@ -107,7 +107,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "4377.89";
 
             // Act
-            var result = HatchetConvert.Deserialize<decimal>(ref input);
+            var result = HatchetConvert.Deserialize<decimal>(input);
 
             // Assert
             result.Should().Be(4377.89m);
@@ -120,7 +120,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "487182";
 
             // Act
-            var result = HatchetConvert.Deserialize<uint>(ref input);
+            var result = HatchetConvert.Deserialize<uint>(input);
 
             // Assert
             result.Should().Be(487182);
@@ -133,7 +133,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "1818118181";
 
             // Act
-            var result = HatchetConvert.Deserialize<ulong>(ref input);
+            var result = HatchetConvert.Deserialize<ulong>(input);
 
             // Assert
             result.Should().Be(1818118181L);
@@ -146,7 +146,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "123105051";
 
             // Act
-            var result = HatchetConvert.Deserialize<long>(ref input);
+            var result = HatchetConvert.Deserialize<long>(input);
 
             // Assert
             result.Should().Be(123105051L);
@@ -159,7 +159,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "'Hello World'";
 
             // Act
-            var result = HatchetConvert.Deserialize<string>(ref input);
+            var result = HatchetConvert.Deserialize<string>(input);
 
             // Assert
             result.Should().Be("Hello World");
@@ -172,7 +172,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "1234";
 
             // Act
-            var result = HatchetConvert.Deserialize<int>(ref input);
+            var result = HatchetConvert.Deserialize<int>(input);
 
             // Assert
             result.Should().Be(1234);
@@ -185,7 +185,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "12.34";
 
             // Act
-            var result = HatchetConvert.Deserialize<float>(ref input);
+            var result = HatchetConvert.Deserialize<float>(input);
 
             // Assert
             result.Should().BeApproximately(12.34f, 0.0001f);
@@ -198,7 +198,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "true";
 
             // Act
-            var result = HatchetConvert.Deserialize<bool>(ref input);
+            var result = HatchetConvert.Deserialize<bool>(input);
 
             // Assert
             result.Should().Be(true);

@@ -2,6 +2,7 @@
 using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
+#pragma warning disable 649
 
 namespace Hatchet.Tests.UsageTests.VortexShaderTests
 {
@@ -90,7 +91,7 @@ namespace Hatchet.Tests.UsageTests.VortexShaderTests
             var input = File.ReadAllText("vortex-engine-test.shader");
 
             // Act
-            var result = HatchetConvert.Deserialize<SourceDefinition>(ref input);
+            var result = HatchetConvert.Deserialize<SourceDefinition>(input);
 
             // Assert
             result.Should().NotBeNull();

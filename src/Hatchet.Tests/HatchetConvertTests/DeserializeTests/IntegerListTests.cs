@@ -14,7 +14,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[100 200 300 -400]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<int>>(ref input);
+            var result = HatchetConvert.Deserialize<List<int>>(input);
 
             // Assert
             result.Should().HaveCount(4);

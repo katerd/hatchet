@@ -24,7 +24,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "{ inner { strValue Hello intValue 1234} } }";
 
             // Act
-            var result = HatchetConvert.Deserialize<Outer>(ref input);
+            var result = HatchetConvert.Deserialize<Outer>(input);
 
             // Assert
             result.Should().NotBeNull();

@@ -14,7 +14,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<string>>(ref input);
+            var result = HatchetConvert.Deserialize<List<string>>(input);
 
             // Assert
             result.Should().HaveCount(0);
@@ -27,7 +27,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<int>>(ref input);
+            var result = HatchetConvert.Deserialize<List<int>>(input);
 
             // Assert
             result.Should().HaveCount(0);
@@ -40,7 +40,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[]";
 
             // Act
-            var result = HatchetConvert.Deserialize<List<float>>(ref input);
+            var result = HatchetConvert.Deserialize<List<float>>(input);
 
             // Assert
             result.Should().HaveCount(0);

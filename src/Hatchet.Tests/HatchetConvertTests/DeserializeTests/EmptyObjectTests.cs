@@ -15,7 +15,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var source = "{  } ";
 
             // Act
-            var result = HatchetConvert.Deserialize<EmptyObject>(ref source);
+            var result = HatchetConvert.Deserialize<EmptyObject>(source);
 
             // Assert
             result.Should().NotBeNull();
@@ -28,7 +28,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var source = "{}";
 
             // Act
-            var result = HatchetConvert.Deserialize<EmptyObject>(ref source);
+            var result = HatchetConvert.Deserialize<EmptyObject>(source);
 
             // Assert
             result.Should().NotBeNull();
