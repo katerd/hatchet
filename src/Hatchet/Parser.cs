@@ -357,7 +357,7 @@ namespace Hatchet
 
         private static bool IsValidValueCharacter(char c)
         {
-            return "1234567890:\\/-+.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
+            return "1234567890:\\/-+_.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
         }
     }
 }

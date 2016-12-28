@@ -23,6 +23,21 @@ namespace Hatchet.Tests.ParserTests
         }
 
         [Test]
+        public void Parse_WithAnObjectWithOneStringPropertyWithUnderscore_ThePropertyShouldBePopulated()
+        {
+            // Arrange
+            var input = "{ stringProperty Hello_World }";
+
+            var parser = new Parser();
+
+            // Act
+            var result = (Dictionary<string, object>)parser.Parse(ref input);
+
+            // Assert
+            ((string)result["stringProperty"]).Should().Be("Hello_World");
+        }
+
+        [Test]
         public void Parse_WithAnObjectWithOneStringPropertyLongString_ThePropertyShouldBePopulated()
         {
             // Arrange
