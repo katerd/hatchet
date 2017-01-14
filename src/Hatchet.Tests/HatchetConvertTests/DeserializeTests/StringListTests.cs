@@ -46,6 +46,6 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
 
             caughtException.Should().NotBeNull();
 
-        } 
+        }
     }
 }

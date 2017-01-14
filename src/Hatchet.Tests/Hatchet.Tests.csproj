@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HatchetConvertTests\DeserializeTests\ArrayTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\DictionaryTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\EmptyListTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\EnumTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\FloatListTests.cs" />

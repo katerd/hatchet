@@ -214,6 +214,30 @@ namespace Hatchet
                 }
                 return outputArray;
             }
+            if (typeof(IDictionary).IsAssignableFrom(type))
+            {
+                var inputDictionary = (IDictionary) result;
+                var outputDictionary = (IDictionary) Activator.CreateInstance(type);
+
+                var outputGta = outputDictionary.GetType().GetGenericArguments();
+                var outputKeyType = outputGta[0];
+                var outputValueType = outputGta[1];
+
+                // todo: skip this process if the input and output dictionary generic types match
+
+                // go through each input dictionary key and convert to the output key and value.
+                foreach (var key in inputDictionary.Keys)
+                {
+                    var newKeyValue = DeserializeObject(key, outputKeyType);
+
+                    var value = inputDictionary[key];
+                    var newValue = DeserializeObject(value, outputValueType);
+
+                    outputDictionary[newKeyValue] = newValue;
+                }
+
+                return outputDictionary;
+            }
             if (typeof(ICollection).IsAssignableFrom(type))
             {
                 if (!(result is ICollection))
