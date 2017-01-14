@@ -89,9 +89,7 @@ MIT
 
 ## Feature Roadmap
 
-  * ~~Deserialization to types ``` var myObject = hatchetSerializer.Deserialize(input) ```~~ **Done!**  
   * Improved exception handling of malformed Hatchet (.axe) input.
-  * ~~Serialization to Hatchet.~~
   * Stream support.
   * Custom object serialization handlers.
   * Deserialization of objects without parameterless constructors.
