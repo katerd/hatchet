@@ -1,6 +1,10 @@
 Hatchet
 =======
 
+**It's another text file format.**
+
+Hatchet is a text-based data format with features borrowed or ignored from JSON, YAML and XML. The format is intended more as a method of storing configuration and textual assets as opposed to data interchange.
+
 ```python
 {
   /* 2014-10-15 Current definition of hatchet */
@@ -22,10 +26,6 @@ Hatchet
 }
 
 ```
-
-**It's another text file format.**
-
-Hatchet is a text-based data format with features borrowed or ignored from JSON, YAML and XML. The format is intended more as a method of storing configuration and textual assets as opposed to data interchange.
 
 ##Features
 
@@ -93,3 +93,6 @@ MIT
   * Improved exception handling of malformed Hatchet (.axe) input.
   * ~~Serialization to Hatchet.~~
   * Stream support.
+  * Custom object serialization handlers.
+  * Deserialization of objects without parameterless constructors.
+  
