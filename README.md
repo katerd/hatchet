@@ -3,6 +3,8 @@ Hatchet
 
 **It's another text file format.**
 
+Hatchet is a text-based data format with features borrowed or ignored from JSON, YAML and XML. The format is intended more as a method of storing configuration and textual assets as opposed to data interchange.
+
 ```python
 {
   /* 2014-10-15 Current definition of hatchet */
@@ -24,8 +26,6 @@ Hatchet
 }
 
 ```
-
-Hatchet is a text-based data format with features borrowed or ignored from JSON, YAML and XML. The format is intended more as a method of storing configuration and textual assets as opposed to data interchange.
 
 ##Features
 
@@ -58,22 +58,12 @@ PM> Install-Package Hatchet
   *(For examples see Hatchet.Tests.csproj)*
   
 ```csharp
-  public void UsingTheParser()
-  {
-     var input = "{ welcomeMessage 'Hello, welcome to Hatchet!' }";
-     var parser = new Hatchet.Parser();
-     result = (Dictionary<string, object>)parser.Parse(ref input);
-     Console.WriteLine(result["welcomeMessage"]);
-  }
-```
-
-```csharp
   public void UsingTheConverter()
   {
     var input = "{ exampleString 'This is an example' exampleInt 1234 }";
-    var result = HatchetConvert.Deserialize<Test>(ref input);
-    Console.WriteLine(string.Format("string = {0}", result.ExampleString));
-    Console.WriteLine(string.Format("int    = {0}", result.ExampleInt));
+    var result = HatchetConvert.Deserialize<Test>(input);
+    Console.WriteLine($"string = {0}", result.ExampleString);
+    Console.WriteLine($"int    = {0}", result.ExampleInt);
   }
   
   public class Test
@@ -83,13 +73,24 @@ PM> Install-Package Hatchet
   }
 ```
 
+```csharp
+  public void UsingTheParser()
+  {
+     var input = "{ welcomeMessage 'Hello, welcome to Hatchet!' }";
+     var parser = new Hatchet.Parser();
+     result = (Dictionary<string, object>)parser.Parse(input);
+     Console.WriteLine(result["welcomeMessage"]);
+  }
+```
+
 ## License
 
 MIT
 
 ## Feature Roadmap
 
-  * ~~Deserialization to types ``` var myObject = hatchetSerializer.Deserialize(input) ```~~ **Done!**  
   * Improved exception handling of malformed Hatchet (.axe) input.
-  * ~~Serialization to Hatchet.~~
   * Stream support.
+  * Custom object serialization handlers.
+  * Deserialization of objects without parameterless constructors.
+  
