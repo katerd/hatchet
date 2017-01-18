@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Hatchet.Extensions;
 
@@ -146,6 +147,9 @@ namespace Hatchet
 
                 foreach (var field in inputType.GetFields())
                 {
+                    if (field.HasAttribute<HatchetIgnoreAttribute>())
+                        continue;
+
                     var keyStr = field.Name;
                     var value = field.GetValue(input);
 
@@ -164,6 +168,9 @@ namespace Hatchet
 
                 foreach (var property in inputType.GetProperties())
                 {
+                    if (property.HasAttribute<HatchetIgnoreAttribute>())
+                        continue;
+
                     var keyStr = property.Name;
                     var value = property.GetValue(input);
 
@@ -278,6 +285,9 @@ namespace Hatchet
 
                 foreach (var field in fields)
                 {
+                    if (field.HasAttribute<HatchetIgnoreAttribute>())
+                        continue;
+
                     var fieldName = field.Name;
                     if (!inputValues.ContainsKey(fieldName))
                         continue;
@@ -287,6 +297,9 @@ namespace Hatchet
                 }
                 foreach (var prop in props)
                 {
+                    if (prop.HasAttribute<HatchetIgnoreAttribute>())
+                        continue;
+
                     var propName = prop.Name;
 
                     if (!inputValues.ContainsKey(propName))

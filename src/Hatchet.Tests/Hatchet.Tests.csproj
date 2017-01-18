@@ -64,6 +64,7 @@
     <Compile Include="HatchetConvertTests\DeserializeTests\ObjectWithSingleFieldTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\SingleValueTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\StringListTests.cs" />
+    <Compile Include="HatchetConvertTests\HatchetIgnoreTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ArrayTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\DictionaryTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ListTests.cs" />
