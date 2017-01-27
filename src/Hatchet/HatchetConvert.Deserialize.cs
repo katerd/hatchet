@@ -8,6 +8,8 @@ namespace Hatchet
 {
     public static partial class HatchetConvert
     {
+        private const string ClassNameKey = "Class";
+
         public static T Deserialize<T>(string input)
         {
             var parser = new Parser();
@@ -126,50 +128,59 @@ namespace Hatchet
 
             if (type.IsClass || type.IsValueType)
             {
-                if (result is string)
-                {
-                    throw new HatchetException($"Can't convert {type} to {result}");
-                }
-
-                var inputValues = (Dictionary<string, object>)result;
-
-                var output = Activator.CreateInstance(type);
-
-                var fields = type.GetFields();
-                var props = type.GetProperties();
-
-                foreach (var field in fields)
-                {
-                    if (field.HasAttribute<HatchetIgnoreAttribute>())
-                        continue;
-
-                    var fieldName = field.Name;
-                    if (!inputValues.ContainsKey(fieldName))
-                        continue;
-
-                    var value = inputValues[fieldName];
-                    field.SetValue(output, DeserializeObject(value, field.FieldType));
-                }
-                foreach (var prop in props)
-                {
-                    if (prop.HasAttribute<HatchetIgnoreAttribute>())
-                        continue;
-
-                    var propName = prop.Name;
-
-                    if (!inputValues.ContainsKey(propName))
-                        continue;
-
-                    var value = inputValues[propName];
-                    prop.SetValue(output, DeserializeObject(value, prop.PropertyType));
-                }
-
-                return output;
+                return CreateComplexType(result, type);
             }
-
             
             throw new HatchetException($"Unable to convert {result} - unknown type {type}");
+        }
 
+        private static object CreateComplexType(object result, Type type)
+        {
+            if (result is string)
+            {
+                throw new HatchetException($"Can't convert {type} to {result}");
+            }
+
+            var inputValues = (Dictionary<string, object>) result;
+
+            if (inputValues.ContainsKey(ClassNameKey))
+            {
+                type = HatchetTypeRegistry.GetType(inputValues[ClassNameKey].ToString());
+            }
+
+            var output = Activator.CreateInstance(type);
+
+            var fields = type.GetFields();
+            var props = type.GetProperties();
+
+            foreach (var field in fields)
+            {
+                if (field.HasAttribute<HatchetIgnoreAttribute>())
+                    continue;
+
+                var fieldName = field.Name;
+                if (!inputValues.ContainsKey(fieldName))
+                    continue;
+
+                var value = inputValues[fieldName];
+                field.SetValue(output, DeserializeObject(value, field.FieldType));
+            }
+
+            foreach (var prop in props)
+            {
+                if (prop.HasAttribute<HatchetIgnoreAttribute>())
+                    continue;
+
+                var propName = prop.Name;
+
+                if (!inputValues.ContainsKey(propName))
+                    continue;
+
+                var value = inputValues[propName];
+                prop.SetValue(output, DeserializeObject(value, prop.PropertyType));
+            }
+
+            return output;
         }
     }
 

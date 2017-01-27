@@ -18,7 +18,11 @@ namespace Hatchet
             return stringBuilder.ToString();
         }
 
-        private static void Serialize(object input, StringBuilder stringBuilder, int indentLevel)
+        private static void Serialize(
+            object input, 
+            StringBuilder stringBuilder,
+            int indentLevel,
+            bool forceClassName = false)
         {
             var inputAsString = input as string;
             if (inputAsString != null)
@@ -158,71 +162,92 @@ namespace Hatchet
 
             if (inputType.IsClass || inputType.IsValueType)
             {
-                stringBuilder.Append("{");
-                var startLength = stringBuilder.Length;
-                stringBuilder.Append(LineEnding);
-
-                var insertedValue = false;
-
-                foreach (var field in inputType.GetFields())
-                {
-                    if (field.HasAttribute<HatchetIgnoreAttribute>())
-                        continue;
-
-                    var keyStr = field.Name;
-                    var value = field.GetValue(input);
-
-                    if (value == null)
-                        continue;
-
-                    insertedValue = true;
-
-                    stringBuilder.Append(' ', indentLevel * IndentCount);
-                    stringBuilder.Append(' ', IndentCount);
-                    stringBuilder.Append(keyStr);
-                    stringBuilder.Append(' ');
-                    Serialize(value, stringBuilder, indentLevel + 1);
-                    stringBuilder.Append(LineEnding);
-                }
-
-                foreach (var property in inputType.GetProperties())
-                {
-                    if (property.HasAttribute<HatchetIgnoreAttribute>())
-                        continue;
-
-                    if (property.SetMethod == null)
-                        continue;
-
-                    var keyStr = property.Name;
-                    var value = property.GetValue(input);
-
-                    if (value == null)
-                        continue;
-
-                    insertedValue = true;
-
-                    stringBuilder.Append(' ', indentLevel * IndentCount);
-                    stringBuilder.Append(' ', IndentCount);
-                    stringBuilder.Append(keyStr);
-                    stringBuilder.Append(' ');
-                    Serialize(value, stringBuilder, indentLevel + 1);
-                    stringBuilder.Append(LineEnding);
-                }
-
-                if (!insertedValue)
-                {
-                    stringBuilder.Remove(startLength, stringBuilder.Length - startLength);
-                    stringBuilder.Append("}");
-                    return;
-                }
-
-                stringBuilder.Append(' ', indentLevel * IndentCount);
-                stringBuilder.Append("}");
-
+                SerializeClassOrStruct(input, stringBuilder, indentLevel, inputType, forceClassName);
                 return;
             }
 
             throw new HatchetException($"Could not serialize {input} of type {inputType}");
+        }
+
+        private static void SerializeClassOrStruct(
+            object input, 
+            StringBuilder stringBuilder, 
+            int indentLevel, 
+            Type inputType, 
+            bool forceClassName)
+        {
+            stringBuilder.Append("{");
+            var startLength = stringBuilder.Length;
+            stringBuilder.Append(LineEnding);
+
+            var insertedValue = false;
+
+            if (forceClassName)
+            {
+                stringBuilder.Append(' ', indentLevel * IndentCount);
+                stringBuilder.Append(' ', IndentCount);
+                stringBuilder.AppendFormat("Class {0}", inputType.Name);
+                stringBuilder.Append(LineEnding);
+            }
+
+            foreach (var field in inputType.GetFields())
+            {
+                if (field.HasAttribute<HatchetIgnoreAttribute>())
+                    continue;
+
+                var keyStr = field.Name;
+                var value = field.GetValue(input);
+
+                if (value == null)
+                    continue;
+
+                insertedValue = true;
+
+                var fcn = field.FieldType.IsAbstract;
+
+                stringBuilder.Append(' ', indentLevel * IndentCount);
+                stringBuilder.Append(' ', IndentCount);
+                stringBuilder.Append(keyStr);
+                stringBuilder.Append(' ');
+                Serialize(value, stringBuilder, indentLevel + 1, fcn);
+                stringBuilder.Append(LineEnding);
+            }
+
+            foreach (var property in inputType.GetProperties())
+            {
+                if (property.HasAttribute<HatchetIgnoreAttribute>())
+                    continue;
+
+                if (property.SetMethod == null)
+                    continue;
+
+                var keyStr = property.Name;
+                var value = property.GetValue(input);
+
+                if (value == null)
+                    continue;
+
+                insertedValue = true;
+
+                var fcn = property.PropertyType.IsAbstract;
+
+                stringBuilder.Append(' ', indentLevel * IndentCount);
+                stringBuilder.Append(' ', IndentCount);
+                stringBuilder.Append(keyStr);
+                stringBuilder.Append(' ');
+                Serialize(value, stringBuilder, indentLevel + 1, fcn);
+                stringBuilder.Append(LineEnding);
+            }
+
+            if (!insertedValue)
+            {
+                stringBuilder.Remove(startLength, stringBuilder.Length - startLength);
+                stringBuilder.Append("}");
+                return;
+            }
+
+            stringBuilder.Append(' ', indentLevel * IndentCount);
+            stringBuilder.Append("}");
         }
     }
 }

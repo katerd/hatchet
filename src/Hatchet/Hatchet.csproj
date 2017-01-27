@@ -46,6 +46,7 @@
     <Compile Include="HatchetException.cs" />
     <Compile Include="HatchetIgnoreAttribute.cs" />
     <Compile Include="HatchetConvert.Deserialize.cs" />
+    <Compile Include="HatchetTypeRegistry.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HatchetConvert.Serialize.cs" />
