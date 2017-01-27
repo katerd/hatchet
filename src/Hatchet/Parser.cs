@@ -13,7 +13,7 @@ namespace Hatchet
 
         public object Parse(ref string input)
         {
-            Debug.WriteLine(string.Format("Input '{0}'", input));
+            Debug.WriteLine($"Parser Input '{input}'");
 
             _input = input;
             _index = 0;

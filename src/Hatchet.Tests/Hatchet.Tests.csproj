@@ -39,9 +39,9 @@
     <Reference Include="FluentAssertions.Core">
       <HintPath>..\Hatchet\packages\FluentAssertions.3.2.1\lib\net45\FluentAssertions.Core.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Hatchet\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\Hatchet\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,6 +57,7 @@
     <Compile Include="HatchetConvertTests\DeserializeTests\EmptyListTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\EnumTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\FloatListTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\HashSetTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\IntegerListTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\NestedObjectTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\ObjectListTests.cs" />
@@ -67,9 +68,12 @@
     <Compile Include="HatchetConvertTests\HatchetIgnoreTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ArrayTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\DictionaryTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\EnumTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\HashSetTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ListTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ObjectTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\SingleValueTests.cs" />
+    <Compile Include="HatchetConvertTests\StructTests.cs" />
     <Compile Include="ParserTests\BadStructureTests.cs" />
     <Compile Include="ParserTests\BlockCommentTests.cs" />
     <Compile Include="ParserTests\EmptyFileTests.cs" />

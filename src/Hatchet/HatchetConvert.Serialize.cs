@@ -1,33 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Hatchet.Extensions;
 
 namespace Hatchet
 {
-    public static class HatchetConvert
+    public static partial class HatchetConvert
     {
         private const string LineEnding = "\n";
         private const int IndentCount = 2;
-
-        [Obsolete]
-        public static T Deserialize<T>(ref string input)
-        {
-            var parser = new Parser();
-            var result = parser.Parse(ref input);
-            var type = typeof (T);
-            return (T)DeserializeObject(result, type);
-        }
-
-        public static T Deserialize<T>(string input)
-        {
-            var parser = new Parser();
-            var result = parser.Parse(ref input);
-            var type = typeof(T);
-            return (T)DeserializeObject(result, type);
-        }
 
         public static string Serialize(object input)
         {
@@ -110,7 +92,8 @@ namespace Hatchet
                     var keyStr = key.ToString();
                     if (keyStr.Contains(" "))
                     {
-                        throw new HatchetException(string.Format("`{0}` is an invalid dictionary key. Key cannot contain spaces.", keyStr));
+                        throw new HatchetException(
+                            $"`{keyStr}` is an invalid dictionary key. Key cannot contain spaces.");
                     }
 
                     var value = inputDictionary[keyStr];
@@ -130,6 +113,32 @@ namespace Hatchet
                 return;
             }
 
+            if (inputType.GenericTypeArguments.Length == 1)
+            {
+                var enumerableType = typeof(IEnumerable<>).MakeGenericType(inputType.GenericTypeArguments[0]);
+
+                stringBuilder.Append("[");
+
+                if (enumerableType.IsAssignableFrom(inputType))
+                {
+                    var enr = ((IEnumerable) input).GetEnumerator();
+
+                    var addSpace = false;
+                    while (enr.MoveNext())
+                    {
+                        if (addSpace)
+                            stringBuilder.AppendFormat(" ");
+                        addSpace = true;
+
+                        var o = enr.Current;
+                        stringBuilder.Append(Serialize(o));
+                    }
+                }
+
+                stringBuilder.Append("]");
+                return;
+            }
+
             if (typeof (ICollection).IsAssignableFrom(inputType))
             {
                 var inputList = (ICollection) input;
@@ -137,7 +146,17 @@ namespace Hatchet
                 return;
             }
 
-            if (inputType.IsClass)
+            if (inputType.IsPrimitive 
+                || inputType.IsEnum
+                || inputType == typeof(decimal) 
+                || inputType == typeof(DateTime)
+                || inputType == typeof(Guid))
+            {
+                stringBuilder.Append(input);
+                return;
+            }
+
+            if (inputType.IsClass || inputType.IsValueType)
             {
                 stringBuilder.Append("{");
                 var startLength = stringBuilder.Length;
@@ -200,119 +219,7 @@ namespace Hatchet
                 return;
             }
 
-            stringBuilder.Append(input);
-        }
-
-        private static object DeserializeObject(object result, Type type)
-        {
-            if (type == typeof(string))
-            {
-                return result;
-            }
-            if (type.IsArray)
-            {
-                var arrayType = type.GetElementType();
-                var inputList = (List<object>) result;
-                var outputArray = Array.CreateInstance(arrayType, inputList.Count);
-
-                for (var i = 0; i < inputList.Count; i++)
-                {
-                    outputArray.SetValue(DeserializeObject(inputList[i], arrayType), i);
-                }
-                return outputArray;
-            }
-            if (typeof(IDictionary).IsAssignableFrom(type))
-            {
-                var inputDictionary = (IDictionary) result;
-                var outputDictionary = (IDictionary) Activator.CreateInstance(type);
-
-                var outputGta = outputDictionary.GetType().GetGenericArguments();
-                var outputKeyType = outputGta[0];
-                var outputValueType = outputGta[1];
-
-                // todo: skip this process if the input and output dictionary generic types match
-
-                // go through each input dictionary key and convert to the output key and value.
-                foreach (var key in inputDictionary.Keys)
-                {
-                    var newKeyValue = DeserializeObject(key, outputKeyType);
-
-                    var value = inputDictionary[key];
-                    var newValue = DeserializeObject(value, outputValueType);
-
-                    outputDictionary[newKeyValue] = newValue;
-                }
-
-                return outputDictionary;
-            }
-            if (typeof(ICollection).IsAssignableFrom(type))
-            {
-                if (!(result is ICollection))
-                {
-                    throw new HatchetException(string.Format("Expected a list but got a {0}", result.GetType().Name));
-                }
-
-                var inputList = (List<object>)result;
-
-                var listType = type.GenericTypeArguments[0];
-
-                var genericListType = typeof(List<>).MakeGenericType(listType);
-                var outputList = (IList)Activator.CreateInstance(genericListType);
-
-                foreach (var inputItem in inputList)
-                {
-                    outputList.Add(DeserializeObject(inputItem, listType));
-                }
-
-                return outputList;
-            }
-            if (type.IsEnum)
-            {
-                return Enum.Parse(type, (string)result, true);
-            }
-            if (type == typeof (object))
-            {
-                return result;
-            }
-            if (type.IsClass)
-            {
-                var inputValues = (Dictionary<string, object>)result;
-
-                var output = Activator.CreateInstance(type);
-
-                var fields = type.GetFields();
-                var props = type.GetProperties();
-
-                foreach (var field in fields)
-                {
-                    if (field.HasAttribute<HatchetIgnoreAttribute>())
-                        continue;
-
-                    var fieldName = field.Name;
-                    if (!inputValues.ContainsKey(fieldName))
-                        continue;
-
-                    var value = inputValues[fieldName];
-                    field.SetValue(output, DeserializeObject(value, field.FieldType));
-                }
-                foreach (var prop in props)
-                {
-                    if (prop.HasAttribute<HatchetIgnoreAttribute>())
-                        continue;
-
-                    var propName = prop.Name;
-
-                    if (!inputValues.ContainsKey(propName))
-                        continue;
-
-                    var value = inputValues[propName];
-                    prop.SetValue(output, DeserializeObject(value, prop.PropertyType));
-                }
-
-                return output;
-            }
-
-            return Convert.ChangeType(result, type);
+            throw new HatchetException($"Could not serialize {input} of type {inputType}");
         }
     }
 }

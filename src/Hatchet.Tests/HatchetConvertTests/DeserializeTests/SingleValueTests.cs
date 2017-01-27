@@ -62,6 +62,19 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
         }
 
         [Test]
+        public void Deserialize_AGuid_ShouldReturnAGuid()
+        {
+            // Arrange
+            var input = new Guid("{879FC5CF-74EE-4525-A457-C1CD2F5C451E}");
+
+            // Act
+            var result = HatchetConvert.Deserialize<Guid>(input.ToString());
+
+            // Assert
+            result.Should().Be(input);
+        }
+
+        [Test]
         public void Deserialize_AnSbyte_ShouldReturnAnSbyte()
         {
             // Arrange
