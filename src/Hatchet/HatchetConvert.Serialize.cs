@@ -190,6 +190,9 @@ namespace Hatchet
                     if (property.HasAttribute<HatchetIgnoreAttribute>())
                         continue;
 
+                    if (property.SetMethod == null)
+                        continue;
+
                     var keyStr = property.Name;
                     var value = property.GetValue(input);
 

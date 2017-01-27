@@ -68,10 +68,12 @@
     <Compile Include="HatchetConvertTests\HatchetIgnoreTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ArrayTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\DictionaryTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\EnumerableTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\EnumTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\HashSetTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ListTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ObjectTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\ReadOnlyPropertyTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\SingleValueTests.cs" />
     <Compile Include="HatchetConvertTests\StructTests.cs" />
     <Compile Include="ParserTests\BadStructureTests.cs" />
