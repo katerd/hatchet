@@ -92,9 +92,9 @@ namespace Hatchet
                         return outputList;
                     }
 
-                    var listG = typeof(IList<>).MakeGenericType(elementType);
+                    var listG = typeof(List<>).MakeGenericType(elementType);
 
-                    if (listG.IsAssignableFrom(type))
+                    if (type.IsAssignableFrom(listG))
                     {
                         var genericListType = typeof(List<>).MakeGenericType(elementType);
                         var outputList = (IList)Activator.CreateInstance(genericListType);

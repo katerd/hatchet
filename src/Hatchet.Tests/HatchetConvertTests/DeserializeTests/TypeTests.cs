@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -48,10 +49,12 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             var input = "[ { Class One Value COne } { Class Two Value CTwo } ]";
 
             // Act
-            var result = HatchetConvert.Deserialize<IEnumerable<Base>>(input);
+            var result = HatchetConvert.Deserialize<IEnumerable<Base>>(input).ToList();
 
             // Assert
             result.Should().HaveCount(2);
+            ((One) result[0]).Value.Should().Be("COne");
+            ((Two) result[1]).Value.Should().Be("CTwo");
         }
 
         abstract class Base
