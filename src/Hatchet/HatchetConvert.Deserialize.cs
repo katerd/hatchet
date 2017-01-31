@@ -148,7 +148,17 @@ namespace Hatchet
                 type = HatchetTypeRegistry.GetType(inputValues[ClassNameKey].ToString());
             }
 
-            var output = Activator.CreateInstance(type);
+            object output;
+
+            try
+            {
+                output = Activator.CreateInstance(type);
+            }
+            catch (MissingMethodException missingMethodException)
+            {
+                throw new HatchetException($"Failed to create {type} - no constructor available",
+                    missingMethodException);
+            }
 
             var fields = type.GetFields();
             var props = type.GetProperties();
