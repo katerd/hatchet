@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using Hatchet.Extensions;
 
@@ -197,7 +198,9 @@ namespace Hatchet
                 stringBuilder.Append(LineEnding);
             }
 
-            foreach (var field in inputType.GetFields())
+            var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+
+            foreach (var field in inputType.GetFields(bindingFlags))
             {
                 if (field.HasAttribute<HatchetIgnoreAttribute>())
                     continue;
@@ -218,7 +221,7 @@ namespace Hatchet
                 stringBuilder.Append(LineEnding);
             }
 
-            foreach (var property in inputType.GetProperties())
+            foreach (var property in inputType.GetProperties(bindingFlags))
             {
                 if (property.HasAttribute<HatchetIgnoreAttribute>())
                     continue;
