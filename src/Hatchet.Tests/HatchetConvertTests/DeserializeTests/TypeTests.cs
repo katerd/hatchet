@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
@@ -38,6 +39,19 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
 
             // Assert
             result.Should().BeOfType<Two>();
+        }
+
+        [Test]
+        public void Deserialize_CollectionOfAbstractTypes_CollectionIsReturned()
+        {
+            // Arrange
+            var input = "[ { Class One Value COne } { Class Two Value CTwo } ]";
+
+            // Act
+            var result = HatchetConvert.Deserialize<IEnumerable<Base>>(input);
+
+            // Assert
+            result.Should().HaveCount(2);
         }
 
         abstract class Base
