@@ -114,7 +114,7 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             var result = HatchetConvert.Serialize(input);
 
             // Assert
-            result.Should().Be("{}");
+            result.Should().Be("{\n}");
         }
     }
 }

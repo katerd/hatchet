@@ -28,7 +28,7 @@ namespace Hatchet.Tests.HatchetConvertTests
             var result = HatchetConvert.Serialize(input);
 
             // Assert
-            result.Should().Be(@"{}");
+            result.Should().Be("{\n}");
         }
 
         [Test]

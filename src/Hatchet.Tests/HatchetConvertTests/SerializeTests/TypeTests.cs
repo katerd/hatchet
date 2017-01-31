@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
@@ -14,6 +17,11 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
         class One : Base
         {
             public string Hello;
+        }
+
+        class Two : Base
+        {
+            
         }
 
         class Container
@@ -43,6 +51,20 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
 
             // Assert
             ((One) result.Base).Hello.Should().Be("World");
+        }
+
+        [Test]
+        public void Serialize_CollectionOfAbstractClass_EachElementHasNameAttributeWritten()
+        {
+            // Arrange
+            var collection = new List<Base> {new One(), new Two()};
+
+            // Act
+            var result = HatchetConvert.Serialize(collection);
+
+            // Assert
+            result.Should().Contain("Class One");
+            result.Should().Contain("Class Two");
         }
     }
 }

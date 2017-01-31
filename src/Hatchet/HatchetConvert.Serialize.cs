@@ -119,7 +119,12 @@ namespace Hatchet
 
             if (inputType.GenericTypeArguments.Length == 1)
             {
-                var enumerableType = typeof(IEnumerable<>).MakeGenericType(inputType.GenericTypeArguments[0]);
+                var elementType = inputType.GenericTypeArguments[0];
+
+                if (elementType.IsAbstract)
+                    forceClassName = true;
+
+                var enumerableType = typeof(IEnumerable<>).MakeGenericType(elementType);
 
                 stringBuilder.Append("[");
 
@@ -135,7 +140,7 @@ namespace Hatchet
                         addSpace = true;
 
                         var o = enr.Current;
-                        stringBuilder.Append(Serialize(o));
+                        Serialize(o, stringBuilder, indentLevel + 1, forceClassName);
                     }
                 }
 
@@ -146,7 +151,12 @@ namespace Hatchet
             if (typeof (ICollection).IsAssignableFrom(inputType))
             {
                 var inputList = (ICollection) input;
-                stringBuilder.AppendFormat("[{0}]", string.Join(" ", inputList.Select(Serialize)));
+
+                foreach (var item in inputList)
+                {
+                    Serialize(item, stringBuilder, indentLevel + 1, forceClassName);
+                }
+
                 return;
             }
 
@@ -177,10 +187,7 @@ namespace Hatchet
             bool forceClassName)
         {
             stringBuilder.Append("{");
-            var startLength = stringBuilder.Length;
             stringBuilder.Append(LineEnding);
-
-            var insertedValue = false;
 
             if (forceClassName)
             {
@@ -200,8 +207,6 @@ namespace Hatchet
 
                 if (value == null)
                     continue;
-
-                insertedValue = true;
 
                 var fcn = field.FieldType.IsAbstract;
 
@@ -227,8 +232,6 @@ namespace Hatchet
                 if (value == null)
                     continue;
 
-                insertedValue = true;
-
                 var fcn = property.PropertyType.IsAbstract;
 
                 stringBuilder.Append(' ', indentLevel * IndentCount);
@@ -237,13 +240,6 @@ namespace Hatchet
                 stringBuilder.Append(' ');
                 Serialize(value, stringBuilder, indentLevel + 1, fcn);
                 stringBuilder.Append(LineEnding);
-            }
-
-            if (!insertedValue)
-            {
-                stringBuilder.Remove(startLength, stringBuilder.Length - startLength);
-                stringBuilder.Append("}");
-                return;
             }
 
             stringBuilder.Append(' ', indentLevel * IndentCount);
