@@ -145,7 +145,13 @@ namespace Hatchet
 
             if (inputValues.ContainsKey(ClassNameKey))
             {
-                type = HatchetTypeRegistry.GetType(inputValues[ClassNameKey].ToString());
+                var name = inputValues[ClassNameKey].ToString();
+                type = HatchetTypeRegistry.GetType(name);
+
+                if (type == null)
+                {
+                    throw new HatchetException($"Can't create type - Type is not registered `{name}`");
+                }
             }
 
             object output;

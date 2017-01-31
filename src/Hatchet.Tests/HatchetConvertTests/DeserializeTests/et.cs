@@ -15,6 +15,16 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             }
         }
 
+        abstract class Base
+        {
+            
+        }
+
+        class Demo : Base
+        {
+            
+        }
+
         [Test]
         public void DeserializeClass_WithoutConstructor_AnExceptionIsThrown()
         {
@@ -27,6 +37,20 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             // Assert
             action.ShouldThrow<HatchetException>().And.Message.Should()
                 .Contain("NoValidCtor").And.Contain("constructor");
+        }
+
+        [Test]
+        public void DeserializeClass_WithNamedClassThatIsNotInRegistry_AnExceptionIsThrown()
+        {
+            // Arrange
+            var input = "{ Class Demo }";
+
+            // Act
+            Action action = () => HatchetConvert.Deserialize<Demo>(input);
+
+            // Assert
+            action.ShouldThrow<HatchetException>().And.Message.Should()
+                .Contain("Type is not registered").And.Contain("Demo");
         }
     }
 }
