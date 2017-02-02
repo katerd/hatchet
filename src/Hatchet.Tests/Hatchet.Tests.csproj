@@ -46,9 +46,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -56,7 +53,7 @@
     <Compile Include="HatchetConvertTests\DeserializeTests\DictionaryTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\EmptyListTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\EnumTests.cs" />
-    <Compile Include="HatchetConvertTests\DeserializeTests\et.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\ErrorTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\FloatListTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\HashSetTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\IntegerListTests.cs" />

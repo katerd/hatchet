@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Hatchet.Extensions;
 
@@ -128,13 +129,13 @@ namespace Hatchet
 
             if (type.IsClass || type.IsValueType)
             {
-                return CreateComplexType(result, type);
+                return GetComplexType(result, type);
             }
             
             throw new HatchetException($"Unable to convert {result} - unknown type {type}");
         }
 
-        private static object CreateComplexType(object result, Type type)
+        private static object GetComplexType(object result, Type type)
         {
             if (result is string)
             {
@@ -143,6 +144,17 @@ namespace Hatchet
 
             var inputValues = (Dictionary<string, object>) result;
 
+            type = FindComplexType(type, inputValues);
+
+            var instance = CreateComplexType(type, inputValues);
+            SetComplexTypeFields(type, inputValues, instance);
+            SetComplexTypeProperties(type, inputValues, instance);
+
+            return instance;
+        }
+
+        private static Type FindComplexType(Type type, Dictionary<string, object> inputValues)
+        {
             if (inputValues.ContainsKey(ClassNameKey))
             {
                 var name = inputValues[ClassNameKey].ToString();
@@ -153,35 +165,12 @@ namespace Hatchet
                     throw new HatchetException($"Can't create type - Type is not registered `{name}`");
                 }
             }
+            return type;
+        }
 
-            object output;
-
-            try
-            {
-                output = Activator.CreateInstance(type);
-            }
-            catch (MissingMethodException missingMethodException)
-            {
-                throw new HatchetException($"Failed to create {type} - no constructor available",
-                    missingMethodException);
-            }
-
-            var fields = type.GetFields();
+        private static void SetComplexTypeProperties(Type type, Dictionary<string, object> inputValues, object output)
+        {
             var props = type.GetProperties();
-
-            foreach (var field in fields)
-            {
-                if (field.HasAttribute<HatchetIgnoreAttribute>())
-                    continue;
-
-                var fieldName = field.Name;
-                if (!inputValues.ContainsKey(fieldName))
-                    continue;
-
-                var value = inputValues[fieldName];
-                field.SetValue(output, DeserializeObject(value, field.FieldType));
-            }
-
             foreach (var prop in props)
             {
                 if (prop.HasAttribute<HatchetIgnoreAttribute>())
@@ -195,7 +184,72 @@ namespace Hatchet
                 var value = inputValues[propName];
                 prop.SetValue(output, DeserializeObject(value, prop.PropertyType));
             }
+        }
 
+        private static void SetComplexTypeFields(Type type, Dictionary<string, object> inputValues, object output)
+        {
+            var fields = type.GetFields();
+            foreach (var field in fields)
+            {
+                if (field.HasAttribute<HatchetIgnoreAttribute>())
+                    continue;
+
+                var fieldName = field.Name;
+
+                if (!inputValues.ContainsKey(fieldName))
+                    continue;
+
+                var value = inputValues[fieldName];
+                field.SetValue(output, DeserializeObject(value, field.FieldType));
+            }
+        }
+
+        private static object CreateComplexType(Type type, Dictionary<string, object> inputValues)
+        {
+            object output;
+
+            var ctors = type.GetConstructors();
+
+            var withAttrs = ctors.Where(x => x.HasAttribute<HatchetConstructorAttribute>())
+                .ToList();
+
+            if (withAttrs.Count > 0)
+            {
+                if (withAttrs.Count > 1)
+                    throw new HatchetException("Only one constructor can be tagged with [HatchetConstructor]");
+
+                var ctor = withAttrs.First();
+                var ctorParams = ctor.GetParameters();
+
+                var args = new List<object>();
+
+                foreach (var parameterInfo in ctorParams)
+                {
+                    var argValue = inputValues[parameterInfo.Name];
+                    args.Add(argValue);
+                }
+
+                output = ctor.Invoke(args.ToArray());
+            }
+            else
+            {
+                // find default constructor
+                var singleCtor = ctors.SingleOrDefault(x => x.GetParameters().Length == 0);
+
+                if (!type.IsClass && singleCtor == null)
+                {
+                    // structs have no default constructor
+                    output = Activator.CreateInstance(type);
+                }
+                else if (singleCtor != null)
+                {
+                    output = singleCtor.Invoke(null);
+                }
+                else
+                {
+                    throw new HatchetException($"Failed to create {type} - no constructor available");
+                }
+            }
             return output;
         }
     }

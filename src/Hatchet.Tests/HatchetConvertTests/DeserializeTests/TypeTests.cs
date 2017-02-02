@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -55,6 +56,75 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             result.Should().HaveCount(2);
             ((One) result[0]).Value.Should().Be("COne");
             ((Two) result[1]).Value.Should().Be("CTwo");
+        }
+
+        [Test]
+        public void Deserialize_ClassWithSingleTaggedConstructor_InstanceIsReturned()
+        {
+            // Arrange
+            var input = "{ arg Hello }";
+
+            // Act
+            var result = HatchetConvert.Deserialize<TaggedConstructor>(input);
+
+            // Assert
+            result.Arg.Should().Be("Hello");
+        }
+
+        [Test]
+        public void Deserialize_ClassWithSingleTaggedConstructorWithDifferentlyCasedName_InstanceIsReturned()
+        {
+            // Arrange
+            var input = "{ ARG Hello }";
+
+            // Act
+            var result = HatchetConvert.Deserialize<TaggedConstructor>(input);
+
+            // Assert
+            result.Arg.Should().Be("Hello");
+        }
+
+        [Test]
+        public void Deserialize_ClassWithTwoTaggedConstructors_MostSpecificConstructorIsUsed()
+        {
+            // Arrange
+            var input = "{ arg1 Hello arg2 World }";
+
+            // Act
+            Action act = () => HatchetConvert.Deserialize<TwoTaggedConstructors>(input);
+
+            // Assert
+            act.ShouldThrow<HatchetException>()
+                .WithMessage("Only one constructor can be tagged with [HatchetConstructor]");
+        }
+
+        // ReSharper disable FieldCanBeMadeReadOnly.Local
+        // ReSharper disable ClassNeverInstantiated.Local
+        // ReSharper disable UnusedMember.Local
+        // ReSharper disable UnusedParameter.Local
+        class TwoTaggedConstructors
+        {
+            [HatchetConstructor]
+            public TwoTaggedConstructors(string arg1)
+            {
+            }
+
+            [HatchetConstructor]
+            public TwoTaggedConstructors(string arg1, string arg2)
+            {
+            }
+        }
+
+        // ReSharper disable once ClassNeverInstantiated.Local
+        class TaggedConstructor
+        {
+            public string Arg { get; set; }
+
+            [HatchetConstructor]
+            public TaggedConstructor(string arg)
+            {
+                Arg = arg;
+            }
         }
 
         abstract class Base

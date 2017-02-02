@@ -43,6 +43,7 @@
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\MemberInfoExtensions.cs" />
+    <Compile Include="HatchetConstructorAttribute.cs" />
     <Compile Include="HatchetException.cs" />
     <Compile Include="HatchetIgnoreAttribute.cs" />
     <Compile Include="HatchetConvert.Deserialize.cs" />
