@@ -16,12 +16,23 @@ namespace Hatchet
         public static void Add<T>() where T : class
         {
             var type = typeof(T);
+            Add(type);
+        }
+
+        public static void Add(Type type)
+        {
             var name = type.Name;
+
+            if (!type.IsClass)
+                throw new ArgumentException($"Type {type} must be a class type", nameof(type));
+
+            if (type.IsAbstract)
+                throw new ArgumentException($"Type {type} cannot be an abstract type", nameof(type));
 
             if (TypeLookup.ContainsKey(name))
                 throw new HatchetException($"Type {type} is already registered with name {name}");
 
-            TypeLookup[name] = type;
+            TypeLookup[type.Name] = type;
         }
 
         /// <summary>

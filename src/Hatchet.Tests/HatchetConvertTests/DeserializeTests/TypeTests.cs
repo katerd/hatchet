@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
 {
     [TestFixture]
-    public class TypeTests
+    public class TypeByGenericTests : TypeTests
     {
         [SetUp]
         public void Setup()
@@ -16,7 +16,22 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             HatchetTypeRegistry.Add<One>();
             HatchetTypeRegistry.Add<Two>();
         }
-        
+    }
+
+    [TestFixture]
+    public class TypeByTypeInfoTests : TypeTests
+    {
+        [SetUp]
+        public void Setup()
+        {
+            HatchetTypeRegistry.Clear();
+            HatchetTypeRegistry.Add(typeof(One));
+            HatchetTypeRegistry.Add(typeof(Two));
+        }
+    }
+
+    public abstract class TypeTests
+    {
         [Test]
         public void Deserialize_ObjectOfTypeOne_CorrectInstanceIsReturned()
         {
@@ -102,7 +117,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
         // ReSharper disable ClassNeverInstantiated.Local
         // ReSharper disable UnusedMember.Local
         // ReSharper disable UnusedParameter.Local
-        class TwoTaggedConstructors
+        public class TwoTaggedConstructors
         {
             [HatchetConstructor]
             public TwoTaggedConstructors(string arg1)
@@ -116,7 +131,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
         }
 
         // ReSharper disable once ClassNeverInstantiated.Local
-        class TaggedConstructor
+        public class TaggedConstructor
         {
             public string Arg { get; set; }
 
@@ -127,17 +142,17 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             }
         }
 
-        abstract class Base
+        public abstract class Base
         {
-            
+
         }
 
-        class One : Base
+        public class One : Base
         {
             public string Value;
         }
 
-        class Two : Base
+        public class Two : Base
         {
             public string Value;
         }
