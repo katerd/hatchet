@@ -178,6 +178,9 @@ namespace Hatchet
 
                 var propName = prop.Name;
 
+                if (!prop.CanWrite)
+                    continue;
+
                 if (!inputValues.ContainsKey(propName))
                     continue;
 

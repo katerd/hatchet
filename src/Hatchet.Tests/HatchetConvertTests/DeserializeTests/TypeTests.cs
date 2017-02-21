@@ -133,7 +133,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
         // ReSharper disable once ClassNeverInstantiated.Local
         public class TaggedConstructor
         {
-            public string Arg { get; set; }
+            public string Arg { get; }
 
             [HatchetConstructor]
             public TaggedConstructor(string arg)
