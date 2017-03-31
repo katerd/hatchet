@@ -112,6 +112,17 @@ namespace Hatchet
 
             if (type.IsEnum)
             {
+                var rItems = result as ICollection;
+                if (rItems != null)
+                {
+                    if (rItems.Count == 0)
+                        return 0;
+
+                    var items = rItems.Select(x => x.ToString());
+                    var enumStr = string.Join(",", items);
+                    return Enum.Parse(type, enumStr, true);
+                }
+
                 return Enum.Parse(type, (string)result, true);
             }
 

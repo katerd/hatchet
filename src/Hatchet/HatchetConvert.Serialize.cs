@@ -162,12 +162,25 @@ namespace Hatchet
             }
 
             if (inputType.IsPrimitive 
-                || inputType.IsEnum
                 || inputType == typeof(decimal) 
                 || inputType == typeof(DateTime)
                 || inputType == typeof(Guid))
             {
                 stringBuilder.Append(input);
+                return;
+            }
+
+            if (inputType.IsEnum)
+            {
+                var strRepr = input.ToString();
+                if (strRepr.IndexOf(',') > 0)
+                {
+                    stringBuilder.AppendFormat("[{0}]", strRepr);
+                }
+                else
+                {
+                    stringBuilder.Append(strRepr);
+                }
                 return;
             }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -7,13 +8,14 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
     [TestFixture]
     public class EnumTests
     {
+        [Flags]
         public enum TestEnum
         {
-            Alpha = 0,
-            Bravo = 1,
-            Charlie = 2,
-            Delta = 3,
-            Echo = 4
+            Alpha = 1,
+            Bravo = 2,
+            Charlie = 4,
+            Delta = 8,
+            Echo = 16
         }
 
         public class EnumTestClass
@@ -61,6 +63,41 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             result.Should().NotBeNull();
             result.Property.Should().Be(TestEnum.Alpha);
             result.Field.Should().Be(TestEnum.Delta);
+        }
+
+        [Test]
+        public void Deserialize_EnumFlags_CorrectFlagsAreSet()
+        {
+            // Arrange
+            var input = "[ALpha Bravo]";
+
+            // Act
+            var result = HatchetConvert.Deserialize<TestEnum>(input);
+
+            // Assert
+            result.HasFlag(TestEnum.Alpha).Should().BeTrue();
+            result.HasFlag(TestEnum.Bravo).Should().BeTrue();
+
+            result.HasFlag(TestEnum.Charlie).Should().BeFalse();
+            result.HasFlag(TestEnum.Delta).Should().BeFalse();
+            result.HasFlag(TestEnum.Echo).Should().BeFalse();
+        }
+
+        [Test]
+        public void Deserialize_EmptyEnumFlags_NoFlagsAreSet()
+        {
+            // Arrange
+            var input = "[]";
+
+            // Act
+            var result = HatchetConvert.Deserialize<TestEnum>(input);
+
+            // Assert
+            result.HasFlag(TestEnum.Alpha).Should().BeFalse();
+            result.HasFlag(TestEnum.Bravo).Should().BeFalse();
+            result.HasFlag(TestEnum.Charlie).Should().BeFalse();
+            result.HasFlag(TestEnum.Delta).Should().BeFalse();
+            result.HasFlag(TestEnum.Echo).Should().BeFalse();
         }
     }
 }
