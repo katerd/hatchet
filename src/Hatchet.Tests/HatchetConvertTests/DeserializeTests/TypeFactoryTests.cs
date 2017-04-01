@@ -21,8 +21,24 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             }
         }
 
+        public class TestClassTwo
+        {
+            public TestValueTwo Value { get; set; }
+        }
+
+        public class TestValueTwo
+        {
+            public string Value { get; set; }
+
+            [HatchetConstructor]
+            public static TestValueTwo Create(string value)
+            {
+                return new TestValueTwo { Value = value };
+            }
+        }
+
         [Test]
-        public void Deserialize_PropertyWithTypeConstructedByFactory_ValueIsObtainedFromTheFactory()
+        public void Deserialize_PropertyWithTypeThatHasAConstructorThatTakesAString_ValueIsObtainedFromTheFactory()
         {
             // Arrange
             var input = "{ Value 1234 }";
@@ -33,5 +49,20 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             // Assert
             result.Value.Value.Should().Be("1234");
         }
+
+        [Test]
+        public void Deserialize_PropertyWithTypeThatHasAStaticConstructorMethod_ValueIsObtainedFromTheFactory()
+        {
+            // Arrange
+            var input = "{ Value 1234 }";
+
+            // Act
+            var result = HatchetConvert.Deserialize<TestClassTwo>(input);
+
+            // Assert
+            result.Value.Value.Should().Be("1234");
+        }
+
+
     }
 }

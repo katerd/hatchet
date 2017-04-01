@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Hatchet.Extensions;
 
@@ -161,10 +162,32 @@ namespace Hatchet
                         return pc[0].ParameterType == typeof(string);
                     });
 
-                if (ctor == null)
-                    throw new HatchetException($"Can't convert {type} to {result}");
+                if (ctor != null)
+                {
+                    return ctor.Invoke(new[] { result });
+                }
 
-                return ctor.Invoke(new[] {result});
+                var scm = type.GetMethods()
+                    .Where(x => x.HasAttribute<HatchetConstructorAttribute>())
+                    .Where(x => x.IsStatic)
+                    .Where(x => type.IsAssignableFrom(x.ReturnType))
+                    .SingleOrDefault(x =>
+                    {
+                        var pc = x.GetParameters();
+                        if (pc.Length != 1)
+                            return false;
+
+                        return pc[0].ParameterType == typeof(string);
+                    });
+
+                if (scm != null)
+                {
+                    return scm.Invoke(null, new[] {result});
+                }
+
+                throw new HatchetException($"Can't convert {result} to {type}");
+
+                
             }
 
             var inputValues = (Dictionary<string, object>) result;
