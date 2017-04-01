@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Hatchet.Extensions;
 
 namespace Hatchet
@@ -150,7 +151,20 @@ namespace Hatchet
         {
             if (result is string)
             {
-                throw new HatchetException($"Can't convert {type} to {result}");
+                var ctor = type.GetConstructors()
+                    .SingleOrDefault(x =>
+                    {
+                        var pc = x.GetParameters();
+                        if (pc.Length != 1)
+                            return false;
+
+                        return pc[0].ParameterType == typeof(string);
+                    });
+
+                if (ctor == null)
+                    throw new HatchetException($"Can't convert {type} to {result}");
+
+                return ctor.Invoke(new[] {result});
             }
 
             var inputValues = (Dictionary<string, object>) result;
