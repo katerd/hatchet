@@ -30,11 +30,11 @@ Hatchet is a text-based data format with features borrowed or ignored from JSON,
 ## Features
 
   - Block and in-line comments.
-  - Text blocks **![Like this]!**
+  - Text blocks ```![Like this]!```
   - Object definitions with key-value pairs.
-  - Lists **[1.0 2.0 3.0 -4.0]**
+  - Lists ```[1.0 2.0 3.0 -4.0]```
   - Prevention of tooth decay by removing syntactic sugar.
-  - Implicit string parsing **[this will be parsed as a list of strings]**
+  - Implicit string parsing ```[this will be parsed as a list of strings]```
 
 ## Requirements
 
