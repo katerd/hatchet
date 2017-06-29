@@ -27,7 +27,7 @@ Hatchet is a text-based data format with features borrowed or ignored from JSON,
 
 ```
 
-##Features
+## Features
 
   - Block and in-line comments.
   - Text blocks **![Like this]!**
@@ -38,7 +38,7 @@ Hatchet is a text-based data format with features borrowed or ignored from JSON,
 
 ## Requirements
 
-  - .net framework 4.5
+  - .NET Framework 4.5
 
 ## Installation
 
