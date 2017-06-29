@@ -205,7 +205,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
         } 
 
         [Test]
-        public void Deserialize_ABoolean_ShouldReturnAFloat()
+        public void Deserialize_ABoolean_ShouldReturnABoolean()
         {
             // Arrange
             var input = "true";
@@ -215,6 +215,29 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
 
             // Assert
             result.Should().Be(true);
-        } 
+        }
+
+        [TestCase("true", true)]
+        [TestCase("false", false)]
+        [TestCase("null", null)]
+        public void Deserialize_ANullableBoolean_ShouldReturnABoolean(string input, bool? expected)
+        {
+            // Act
+            var result = HatchetConvert.Deserialize<bool?>(input);
+
+            // Assert
+            result.Should().Be(expected);
+        }
+
+        [TestCase("1", 1)]
+        [TestCase("null", null)]
+        public void Deserialize_ANullableInt_ShouldReturnAnInt(string input, int? expected)
+        {
+            // Act
+            var result = HatchetConvert.Deserialize<int?>(input);
+
+            // Assert
+            result.Should().Be(expected);
+        }
     }
 }

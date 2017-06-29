@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Hatchet.Extensions;
@@ -133,6 +134,15 @@ namespace Hatchet
                 || type == typeof(DateTime))
             {
                 return Convert.ChangeType(result, type);
+            }
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                if (result.ToString().Equals("null", StringComparison.OrdinalIgnoreCase))
+                    return null;
+                var actualValue = Convert.ChangeType(result, type.GenericTypeArguments[0]);
+                var nullableValue = Activator.CreateInstance(type, actualValue);
+                return nullableValue;
             }
 
             if (type == typeof(Guid))
