@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -31,9 +29,11 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
 
         class HasStaticFields
         {
+#pragma warning disable 169, 414
             public static string One = "One";
             internal static string Two = "Two";
             private static string Three = "Three";
+#pragma warning restore 169, 414
         }
 
         class HasStaticProperties
