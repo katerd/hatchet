@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using Hatchet.Extensions;
 
 namespace Hatchet
@@ -150,7 +147,7 @@ namespace Hatchet
                 return new Guid(result.ToString());
             }
 
-            if (type.IsClass || type.IsValueType)
+            if (type.IsClass || type.IsValueType || type.IsInterface)
             {
                 return GetComplexType(result, type);
             }

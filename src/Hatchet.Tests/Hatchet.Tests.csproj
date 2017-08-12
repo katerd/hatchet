@@ -56,6 +56,7 @@
     <Compile Include="HatchetConvertTests\DeserializeTests\FloatListTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\HashSetTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\IntegerListTests.cs" />
+    <Compile Include="HatchetConvertTests\DeserializeTests\InterfaceTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\NestedObjectTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\ObjectListTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\TypeFactoryTests.cs" />

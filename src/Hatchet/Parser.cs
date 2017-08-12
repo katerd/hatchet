@@ -179,7 +179,7 @@ namespace Hatchet
 
                 if (_index == _input.Length)
                 {
-                    throw new HatchetException(string.Format("List opened at byte {0} is not closed", listStartIndex));
+                    throw new HatchetException($"List opened at byte {listStartIndex} is not closed");
                 }
             }
         }
@@ -204,16 +204,10 @@ namespace Hatchet
                 }
 
                 // todo: verify that the name contains no unacceptable characters.
-
                 
                 var value = ReadValue();
 
-                if (value == null)
-                {
-                    throw new HatchetException(string.Format("Property `{0}` defined at byte {1} is missing a value", name, nameIndex + 2));
-                }
-
-                obj[name] = value;
+                obj[name] = value ?? throw new HatchetException($"Property `{name}` defined at byte {nameIndex + 2} is missing a value");
 
                 Debug.WriteLine("Object property `{0}` = `{1}`", name, value);
             }
@@ -248,7 +242,7 @@ namespace Hatchet
 
                 if (_index >= _input.Length)
                 {
-                    throw new HatchetException(string.Format("String starting at byte {0} is not terminated", stringStartIndex + 1));
+                    throw new HatchetException($"String starting at byte {stringStartIndex + 1} is not terminated");
                 }
             }
 
@@ -256,7 +250,7 @@ namespace Hatchet
 
             var result = stringBuilder.ToString();
 
-            Debug.WriteLine(string.Format("String = `{0}`", result)); 
+            Debug.WriteLine($"String = `{result}`"); 
 
             return result;
         }
@@ -318,10 +312,9 @@ namespace Hatchet
             {
                 if (anyOfThese.Length == 1)
                 {
-                    throw new HatchetException(string.Format("Expected `{0}` at byte {1}", anyOfThese[0], expectIndex));
+                    throw new HatchetException($"Expected `{anyOfThese[0]}` at byte {expectIndex}");
                 }
-                throw new HatchetException(string.Format("Expected any of `{0}` at byte {1}",
-                    string.Join(",", anyOfThese), expectIndex));
+                throw new HatchetException($"Expected any of `{string.Join(",", anyOfThese)}` at byte {expectIndex}");
             }
 
             if (anyOfThese.Any(c => _input[_index] == c))
@@ -330,8 +323,7 @@ namespace Hatchet
                 return;
             }
 
-            throw new HatchetException(string.Format("Expected any of `{0}` at byte {1}",
-                string.Join(",", anyOfThese), expectIndex));
+            throw new HatchetException($"Expected any of `{string.Join(",", anyOfThese)}` at byte {expectIndex}");
         }
 
         private void Expect(string thisString)

@@ -67,7 +67,7 @@ namespace Hatchet
             if (input is DateTime)
             {
                 var inputAsDateTime = (DateTime)input;
-                stringBuilder.AppendFormat("\"{0}\"", inputAsDateTime.ToString("O"));
+                stringBuilder.AppendFormat("\"{0:O}\"", inputAsDateTime);
                 return;
             }
 
