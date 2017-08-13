@@ -29,7 +29,9 @@ namespace Hatchet
             {
                 if (conversionFunction.Item1(input))
                 {
-                    conversionFunction.Item2(input, prettyPrinter, forceClassName);
+                    var context = new SerializationContext(input, prettyPrinter, forceClassName);
+                    
+                    conversionFunction.Item2(context);
                     return;
                 }
             }
@@ -50,8 +52,12 @@ namespace Hatchet
             stringBuilder.AppendFormat("[{0}]", string.Join(" ", inputArray.Select(Serialize)));
         }
 
-        private static void SerializeCollection(object input, PrettyPrinter prettyPrinter, bool forceClassName)
+        private static void SerializeCollection(SerializationContext context)
         {
+            var input = context.Input;
+            var prettyPrinter = context.Printer;
+            var forceClassName = context.ForceClassName;
+            
             var inputList = (ICollection) input;
 
             foreach (var item in inputList)
@@ -60,8 +66,12 @@ namespace Hatchet
             }
         }
 
-        private static void SerializeGenericEnumerable(object input, PrettyPrinter prettyPrinter, bool forceClassName)
+        private static void SerializeGenericEnumerable(SerializationContext context)
         {
+            var input = context.Input;
+            var prettyPrinter = context.Printer;
+            var forceClassName = context.ForceClassName;
+            
             var inputType = input.GetType();
             
             var elementType = inputType.GenericTypeArguments[0];
@@ -109,13 +119,16 @@ namespace Hatchet
             }
         }
 
-        private static void SerializeClassOrStruct(object input, PrettyPrinter prettyPrinter, bool forceClassName)
+        private static void SerializeClassOrStruct(SerializationContext context)
         {
+            var input = context.Input;
+            var prettyPrinter = context.Printer;
+
             var inputType = input.GetType();
 
             using (prettyPrinter.StartParenBlock())
             {
-                if (forceClassName)
+                if (context.ForceClassName)
                 {
                     WriteClassName(prettyPrinter, inputType);
                 }

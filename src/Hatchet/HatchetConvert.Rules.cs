@@ -8,20 +8,20 @@ namespace Hatchet
     {
         private static List<Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>>> DeserializationRules { get; }
         
-        private static List<Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>> SerializationRules { get; }
+        private static List<Tuple<Func<object, bool>, Action<SerializationContext>>> SerializationRules { get; }
         
         static HatchetConvert()
         {
-            SerializationRules = new List<Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>>
+            SerializationRules = new List<Tuple<Func<object, bool>, Action<SerializationContext>>>
             {
-                MakeSerialiser(o => o is string, (o, pp, b) => pp.AppendString(o as string)),
-                MakeSerialiser(o => o is DateTime, (o, pp, b) => pp.AppendDateTime((DateTime)o)),
-                MakeSerialiser(o => o.GetType().IsArray, (o, pp, b) => SerializeArray(o, pp)),
-                MakeSerialiser(o => o is IDictionary, (o, pp, b) => SerializeDictionary(pp, (IDictionary)o)),
+                MakeSerialiser(o => o is string, c => c.Printer.AppendString(c.Input as string)),
+                MakeSerialiser(o => o is DateTime, c => c.Printer.AppendDateTime((DateTime)c.Input)),
+                MakeSerialiser(o => o.GetType().IsArray, c => SerializeArray(c.Input, c.Printer)),
+                MakeSerialiser(o => o is IDictionary, c => SerializeDictionary(c.Printer, (IDictionary)c.Input)),
                 MakeSerialiser(o => o.GetType().GenericTypeArguments.Length == 1, SerializeGenericEnumerable),
                 MakeSerialiser(o => typeof (ICollection).IsAssignableFrom(o.GetType()), SerializeCollection),
-                MakeSerialiser(o => IsSimpleValue(o.GetType()), (o, pp, b) => pp.Append(o)),
-                MakeSerialiser(o => o.GetType().IsEnum, (o, pp, b) => pp.AppendEnum(o)),
+                MakeSerialiser(o => IsSimpleValue(o.GetType()), c => c.Printer.Append(c.Input)),
+                MakeSerialiser(o => o.GetType().IsEnum, c => c.Printer.AppendEnum(c.Input)),
                 MakeSerialiser(o => o.GetType().IsClass || o.GetType().IsValueType, SerializeClassOrStruct)
             };
             
@@ -47,10 +47,10 @@ namespace Hatchet
         }
         
         private static Tuple<Func<object, bool>, 
-            Action<object, PrettyPrinter, bool>> MakeSerialiser(Func<object, bool> test, 
-            Action<object, PrettyPrinter, bool> action)
+            Action<SerializationContext>> MakeSerialiser(Func<object, bool> test, 
+            Action<SerializationContext> action)
         {
-            return new Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>(test, action);
+            return new Tuple<Func<object, bool>, Action<SerializationContext>>(test, action);
         }
     }
 }
