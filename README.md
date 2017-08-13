@@ -92,5 +92,5 @@ MIT
   * Improved exception handling of malformed Hatchet (.axe) input.
   * Stream support.
   * Custom object serialization handlers.
-  ~~* Deserialization of objects without parameterless constructors.~~
+  * ~~Deserialization of objects without parameterless constructors.~~
   * Support .net core.
