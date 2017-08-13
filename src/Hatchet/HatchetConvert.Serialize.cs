@@ -6,11 +6,29 @@ using System.Text;
 using Hatchet.Extensions;
 
 namespace Hatchet
-{
+{    
     public static partial class HatchetConvert
     {
         private const string LineEnding = "\n";
         private const int IndentCount = 2;
+
+        private static List<Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>> SerializationRules { get; set; }
+        
+        static HatchetConvert()
+        {
+            SerializationRules = new List<Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>>
+            {
+                MakeSerialiser(o => o is string, (o, pp, b) => pp.AppendString(o as string)),
+                MakeSerialiser(o => o is DateTime, (o, pp, b) => pp.AppendDateTime((DateTime)o)),
+                MakeSerialiser(o => o.GetType().IsArray, (o, pp, b) => SerializeArray(o, pp)),
+                MakeSerialiser(o => o is IDictionary, (o, pp, b) => SerializeDictionary(pp, (IDictionary)o)),
+                MakeSerialiser(o => o.GetType().GenericTypeArguments.Length == 1, SerializeGenericEnumerable),
+                MakeSerialiser(o => typeof (ICollection).IsAssignableFrom(o.GetType()), SerializeCollection),
+                MakeSerialiser(o => IsSimpleValue(o.GetType()), (o, pp, b) => pp.Append(o)),
+                MakeSerialiser(o => o.GetType().IsEnum, (o, pp, b) => pp.AppendEnum(o)),
+                MakeSerialiser(o => o.GetType().IsClass || o.GetType().IsValueType, SerializeClassOrStruct)
+            };
+        }
 
         public static string Serialize(object input)
         {
@@ -19,67 +37,21 @@ namespace Hatchet
             Serialize(input, prettyPrinter);
             return stringBuilder.ToString();
         }
-
+        
         private static void Serialize(
             object input, 
             PrettyPrinter prettyPrinter,
             bool forceClassName = false)
         {
-            var inputAsString = input as string;
-            if (inputAsString != null)
+            foreach (var conversionFunction in SerializationRules)
             {
-                prettyPrinter.AppendString(inputAsString);
-                return;
+                if (conversionFunction.Item1(input))
+                {
+                    conversionFunction.Item2(input, prettyPrinter, forceClassName);
+                    return;
+                }
             }
-            
-            if (input is DateTime)
-            {
-                prettyPrinter.AppendDateTime(input);
-                return;
-            }
-
-            var inputType = input.GetType();
-            if (inputType.IsArray)
-            {
-                SerializeArray(input, prettyPrinter);
-                return;
-            }
-
-            var inputDictionary = input as IDictionary;
-            if (inputDictionary != null)
-            {
-                SerializeDictionary(prettyPrinter, inputDictionary);
-                return;
-            }
-
-            if (inputType.GenericTypeArguments.Length == 1)
-            {
-                SerializeGenericEnumerable(input, prettyPrinter, forceClassName, inputType);
-                return;
-            }
-
-            if (typeof (ICollection).IsAssignableFrom(inputType))
-            {
-                SerializeCollection(input, prettyPrinter, forceClassName);
-                return;
-            }
-
-            if (IsSimpleValue(inputType))
-            {
-                prettyPrinter.Append(input);
-            }
-            else if (inputType.IsEnum)
-            {
-                prettyPrinter.AppendEnum(input);
-            }
-            else if (inputType.IsClass || inputType.IsValueType)
-            {
-                SerializeClassOrStruct(input, prettyPrinter, inputType, forceClassName);
-            }
-            else
-            {
-                throw new HatchetException($"Could not serialize {input} of type {inputType}");
-            }
+            throw new HatchetException($"Could not serialize {input} of type {input.GetType()}");
         }
 
         private static bool IsSimpleValue(Type inputType)
@@ -108,9 +80,10 @@ namespace Hatchet
             }
         }
 
-        private static void SerializeGenericEnumerable(object input, PrettyPrinter prettyPrinter, bool forceClassName,
-            Type inputType)
+        private static void SerializeGenericEnumerable(object input, PrettyPrinter prettyPrinter, bool forceClassName)
         {
+            var inputType = input.GetType();
+            
             var elementType = inputType.GenericTypeArguments[0];
 
             if (elementType.IsAbstract)
@@ -173,9 +146,10 @@ namespace Hatchet
         private static void SerializeClassOrStruct(
             object input, 
             PrettyPrinter prettyPrinter, 
-            Type inputType, 
             bool forceClassName)
         {
+            var inputType = input.GetType();
+            
             prettyPrinter.Append("{");
             prettyPrinter.Append(LineEnding);
 
@@ -248,6 +222,13 @@ namespace Hatchet
             Serialize(value, prettyPrinter, forceClassName);
             prettyPrinter.Deindent();
             prettyPrinter.Append(LineEnding);
+        }
+        
+        private static Tuple<Func<object, bool>, 
+            Action<object, PrettyPrinter, bool>> MakeSerialiser(Func<object, bool> test, 
+            Action<object, PrettyPrinter, bool> action)
+        {
+            return new Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>(test, action);
         }
     }
 }
