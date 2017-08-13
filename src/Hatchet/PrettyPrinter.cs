@@ -7,6 +7,8 @@ namespace Hatchet
     {
         private StringBuilder StringBuilder { get; }
 
+        public int IndentLevel;
+
         public PrettyPrinter(StringBuilder stringBuilder)
         {
             StringBuilder = stringBuilder;
@@ -15,6 +17,16 @@ namespace Hatchet
         public void AppendFormat(string str, params object[] args)
         {
             StringBuilder.AppendFormat(str, args);
+        }
+
+        public void Indent()
+        {
+            IndentLevel++;
+        }
+
+        public void Deindent()
+        {
+            IndentLevel--;
         }
 
         public void Append(string str)
