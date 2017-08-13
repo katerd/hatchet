@@ -5,6 +5,48 @@ namespace Hatchet
 {
     internal class PrettyPrinter
     {
+        internal class IndentBlock : IDisposable
+        {
+            private readonly PrettyPrinter _printer;
+
+            public IndentBlock(PrettyPrinter printer)
+            {
+                _printer = printer;
+                _printer.Indent();
+            }
+
+            public void Dispose()
+            {
+                _printer.Deindent();
+            }
+        }
+
+        internal class ParenBlock : IDisposable
+        {
+            private readonly PrettyPrinter _printer;
+
+            public ParenBlock(PrettyPrinter printer)
+            {
+                _printer = printer;
+                _printer.AppendOpenBlock();
+            }
+
+            public void Dispose()
+            {
+                _printer.AppendCloseBlock();
+            }
+        }
+
+        public IndentBlock StartIndent()
+        {
+            return new IndentBlock(this);
+        }
+
+        public ParenBlock StartParenBlock()
+        {
+            return new ParenBlock(this);
+        }
+        
         private const string LineEnding = "\n";
         private const int IndentCount = 2;
         

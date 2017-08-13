@@ -56,9 +56,7 @@ namespace Hatchet
 
             foreach (var item in inputList)
             {
-                prettyPrinter.Indent();
-                Serialize(item, prettyPrinter, forceClassName);
-                prettyPrinter.Deindent();
+                IndentAndSerialize(prettyPrinter, item, forceClassName);
             }
         }
 
@@ -87,9 +85,7 @@ namespace Hatchet
                     addSpace = true;
 
                     var element = enumerator.Current;
-                    prettyPrinter.Indent();
-                    Serialize(element, prettyPrinter, forceClassName);
-                    prettyPrinter.Deindent();
+                    IndentAndSerialize(prettyPrinter, element, forceClassName);
                 }
             }
 
@@ -103,40 +99,28 @@ namespace Hatchet
                 prettyPrinter.Append("{}");
                 return;
             }
-            
-            prettyPrinter.AppendOpenBlock();
 
-            foreach (var key in inputDictionary.Keys)
+            using (prettyPrinter.StartParenBlock())
             {
-                var keyStr = key.ToString();
-                if (keyStr.Contains(" "))
+                foreach (var key in inputDictionary.Keys)
                 {
-                    throw new HatchetException(
-                        $"`{keyStr}` is an invalid dictionary key. Key cannot contain spaces.");
+                    SerializeKeyValue(prettyPrinter, key.ToString(), inputDictionary[key]);
                 }
-
-                var value = inputDictionary[keyStr];
-
-                SerializeKeyValue(prettyPrinter, keyStr, value);
             }
-
-            prettyPrinter.AppendCloseBlock();
         }
 
         private static void SerializeClassOrStruct(object input, PrettyPrinter prettyPrinter, bool forceClassName)
         {
             var inputType = input.GetType();
-            
-            prettyPrinter.AppendOpenBlock();
 
-            if (forceClassName)
+            using (prettyPrinter.StartParenBlock())
             {
-                WriteClassName(prettyPrinter, inputType);
+                if (forceClassName)
+                {
+                    WriteClassName(prettyPrinter, inputType);
+                }
+                SerializeFieldsAndProperties(input, prettyPrinter, inputType);
             }
-
-            SerializeFieldsAndProperties(input, prettyPrinter, inputType);
-
-            prettyPrinter.AppendCloseBlock();
         }
 
         private static void SerializeFieldsAndProperties(object input, PrettyPrinter prettyPrinter, Type inputType)
@@ -147,6 +131,11 @@ namespace Hatchet
             {
                 SerializeMember(prettyPrinter, member);
             }
+        }
+
+        private static void SerializeMember(PrettyPrinter prettyPrinter, ISerializableMember member)
+        {
+            SerializeKeyValue(prettyPrinter, member.Name, member.Value, member.IsValueAbstract);
         }
 
         private static IEnumerable<ISerializableMember> GetPropertiesAndFields(object input, Type inputType)
@@ -170,24 +159,31 @@ namespace Hatchet
             prettyPrinter.Append(LineEnding);
         }
 
-        private static void SerializeMember(PrettyPrinter prettyPrinter, ISerializableMember member)
-        {
-            SerializeKeyValue(prettyPrinter, member.Name, member.Value, member.IsValueAbstract);
-        }
-        
         private static void SerializeKeyValue(PrettyPrinter prettyPrinter, string key, object value, bool forceClassName = false)
         {
             if (value == null)
                 return;
             
+            if (key.Contains(" "))
+            {
+                throw new HatchetException(
+                    $"`{key}` is an invalid key. Key cannot contain spaces.");
+            }
+            
             prettyPrinter.Append(' ', prettyPrinter.IndentLevel * IndentCount);
             prettyPrinter.Append(' ', IndentCount);
             prettyPrinter.Append(key);
             prettyPrinter.Append(' ');
-            prettyPrinter.Indent();
-            Serialize(value, prettyPrinter, forceClassName);
-            prettyPrinter.Deindent();
+            IndentAndSerialize(prettyPrinter, value, forceClassName);
             prettyPrinter.Append(LineEnding);
+        }
+
+        private static void IndentAndSerialize(PrettyPrinter prettyPrinter, object value, bool forceClassName)
+        {
+            using (prettyPrinter.StartIndent())
+            {
+                Serialize(value, prettyPrinter, forceClassName);
+            }
         }
     }
 }

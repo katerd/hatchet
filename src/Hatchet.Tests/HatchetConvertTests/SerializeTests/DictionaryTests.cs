@@ -41,7 +41,7 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             // Assert
             caughtException.Should().NotBeNull();
             caughtException.Message.Should()
-                .Contain("`Example Key` is an invalid dictionary key. Key cannot contain spaces.");
+                .Contain("`Example Key` is an invalid key. Key cannot contain spaces.");
         }
 
         [Test]
