@@ -6,7 +6,7 @@ namespace Hatchet
 {
     public static partial class HatchetConvert
     {
-        private static List<Tuple<Func<Context, bool>, Func<Context, object>>> DeserializationRules { get; }
+        private static List<Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>>> DeserializationRules { get; }
         
         private static List<Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>> SerializationRules { get; }
         
@@ -25,7 +25,7 @@ namespace Hatchet
                 MakeSerialiser(o => o.GetType().IsClass || o.GetType().IsValueType, SerializeClassOrStruct)
             };
             
-            DeserializationRules = new List<Tuple<Func<Context, bool>, Func<Context, object>>>
+            DeserializationRules = new List<Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>>>
             {
                 MakeDeserializer(c => c.OutputType == typeof(string), c => c.Input),
                 MakeDeserializer(c => c.OutputType == typeof(object), c => c.Input),
@@ -40,10 +40,17 @@ namespace Hatchet
             };
         }
 
-        private static Tuple<Func<Context, bool>, Func<Context, object>> MakeDeserializer(
-            Func<Context, bool> test, Func<Context, object> action)
+        private static Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>> MakeDeserializer(
+            Func<DeserializationContext, bool> test, Func<DeserializationContext, object> action)
         {
-            return new Tuple<Func<Context, bool>, Func<Context, object>>( test, action);
+            return new Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>>( test, action);
+        }
+        
+        private static Tuple<Func<object, bool>, 
+            Action<object, PrettyPrinter, bool>> MakeSerialiser(Func<object, bool> test, 
+            Action<object, PrettyPrinter, bool> action)
+        {
+            return new Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>(test, action);
         }
     }
 }

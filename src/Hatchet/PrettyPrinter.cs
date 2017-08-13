@@ -5,6 +5,9 @@ namespace Hatchet
 {
     internal class PrettyPrinter
     {
+        private const string LineEnding = "\n";
+        private const int IndentCount = 2;
+        
         private StringBuilder StringBuilder { get; }
 
         public int IndentLevel;
@@ -47,6 +50,18 @@ namespace Hatchet
         public void Append(object obj)
         {
             StringBuilder.Append(obj);
+        }
+
+        public void AppendOpenBlock()
+        {
+            Append("{");
+            Append(LineEnding);
+        }
+
+        public void AppendCloseBlock()
+        {
+            Append(' ', IndentLevel * IndentCount);
+            Append("}");
         }
 
         public void AppendEnum(object input)

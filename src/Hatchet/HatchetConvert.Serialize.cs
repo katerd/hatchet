@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 using Hatchet.Extensions;
+using Hatchet.Reflection;
 
 namespace Hatchet
 {    
@@ -11,8 +11,6 @@ namespace Hatchet
     {
         private const string LineEnding = "\n";
         private const int IndentCount = 2;
-
-
 
         public static string Serialize(object input)
         {
@@ -79,18 +77,18 @@ namespace Hatchet
 
             if (enumerableType.IsAssignableFrom(inputType))
             {
-                var enr = ((IEnumerable) input).GetEnumerator();
+                var enumerator = ((IEnumerable) input).GetEnumerator();
 
                 var addSpace = false;
-                while (enr.MoveNext())
+                while (enumerator.MoveNext())
                 {
                     if (addSpace)
                         prettyPrinter.AppendFormat(" ");
                     addSpace = true;
 
-                    var o = enr.Current;
+                    var element = enumerator.Current;
                     prettyPrinter.Indent();
-                    Serialize(o, prettyPrinter, forceClassName);
+                    Serialize(element, prettyPrinter, forceClassName);
                     prettyPrinter.Deindent();
                 }
             }
@@ -105,9 +103,8 @@ namespace Hatchet
                 prettyPrinter.Append("{}");
                 return;
             }
-
-            prettyPrinter.Append("{");
-            prettyPrinter.Append(LineEnding);
+            
+            prettyPrinter.AppendOpenBlock();
 
             foreach (var key in inputDictionary.Keys)
             {
@@ -123,81 +120,66 @@ namespace Hatchet
                 SerializeKeyValue(prettyPrinter, keyStr, value);
             }
 
-            prettyPrinter.Append(' ', prettyPrinter.IndentLevel * IndentCount);
-            prettyPrinter.Append("}");
+            prettyPrinter.AppendCloseBlock();
         }
 
-        private static void SerializeClassOrStruct(
-            object input, 
-            PrettyPrinter prettyPrinter, 
-            bool forceClassName)
+        private static void SerializeClassOrStruct(object input, PrettyPrinter prettyPrinter, bool forceClassName)
         {
             var inputType = input.GetType();
             
-            prettyPrinter.Append("{");
-            prettyPrinter.Append(LineEnding);
+            prettyPrinter.AppendOpenBlock();
 
             if (forceClassName)
             {
-                prettyPrinter.Append(' ', prettyPrinter.IndentLevel * IndentCount);
-                prettyPrinter.Append(' ', IndentCount);
-                prettyPrinter.AppendFormat("Class {0}", inputType.Name);
-                prettyPrinter.Append(LineEnding);
+                WriteClassName(prettyPrinter, inputType);
             }
 
-            var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+            SerializeFieldsAndProperties(input, prettyPrinter, inputType);
 
-            foreach (var field in inputType.GetFields(bindingFlags))
+            prettyPrinter.AppendCloseBlock();
+        }
+
+        private static void SerializeFieldsAndProperties(object input, PrettyPrinter prettyPrinter, Type inputType)
+        {
+            var propertiesAndFields = GetPropertiesAndFields(input, inputType);
+
+            foreach (var member in propertiesAndFields)
             {
-                SerializeField(input, prettyPrinter, field);
+                SerializeMember(prettyPrinter, member);
             }
+        }
 
-            foreach (var property in inputType.GetProperties(bindingFlags))
+        private static IEnumerable<ISerializableMember> GetPropertiesAndFields(object input, Type inputType)
+        {
+            foreach (var property in inputType.GetPropertiesToSerialize())
             {
-                SerializeProperty(input, prettyPrinter, property);
+                yield return new SerializableProperty(property, input);
             }
+            
+            foreach (var field in inputType.GetFieldsToSerialize())
+            {
+                yield return new SerializableField(field, input);
+            }
+        }
 
+        private static void WriteClassName(PrettyPrinter prettyPrinter, Type inputType)
+        {
             prettyPrinter.Append(' ', prettyPrinter.IndentLevel * IndentCount);
-            prettyPrinter.Append("}");
+            prettyPrinter.Append(' ', IndentCount);
+            prettyPrinter.AppendFormat("Class {0}", inputType.Name);
+            prettyPrinter.Append(LineEnding);
         }
 
-        private static void SerializeProperty(object input, PrettyPrinter prettyPrinter, PropertyInfo property)
+        private static void SerializeMember(PrettyPrinter prettyPrinter, ISerializableMember member)
         {
-            if (property.HasAttribute<HatchetIgnoreAttribute>())
-                return;
-
-            if (property.SetMethod == null)
-                return;
-
-            var keyStr = property.Name;
-            var value = property.GetValue(input);
-
-            if (value == null)
-                return;
-
-            var forceClassName = property.PropertyType.IsAbstract;
-
-            SerializeKeyValue(prettyPrinter, keyStr, value, forceClassName);
-        }
-
-        private static void SerializeField(object input, PrettyPrinter prettyPrinter, FieldInfo field)
-        {
-            if (field.HasAttribute<HatchetIgnoreAttribute>())
-                return;
-
-            var keyStr = field.Name;
-            var value = field.GetValue(input);
-
-            if (value == null)
-                return;
-
-            var forceClassName = field.FieldType.IsAbstract;
-
-            SerializeKeyValue(prettyPrinter, keyStr, value, forceClassName);
+            SerializeKeyValue(prettyPrinter, member.Name, member.Value, member.IsValueAbstract);
         }
         
         private static void SerializeKeyValue(PrettyPrinter prettyPrinter, string key, object value, bool forceClassName = false)
         {
+            if (value == null)
+                return;
+            
             prettyPrinter.Append(' ', prettyPrinter.IndentLevel * IndentCount);
             prettyPrinter.Append(' ', IndentCount);
             prettyPrinter.Append(key);
@@ -206,13 +188,6 @@ namespace Hatchet
             Serialize(value, prettyPrinter, forceClassName);
             prettyPrinter.Deindent();
             prettyPrinter.Append(LineEnding);
-        }
-        
-        private static Tuple<Func<object, bool>, 
-            Action<object, PrettyPrinter, bool>> MakeSerialiser(Func<object, bool> test, 
-            Action<object, PrettyPrinter, bool> action)
-        {
-            return new Tuple<Func<object, bool>, Action<object, PrettyPrinter, bool>>(test, action);
         }
     }
 }

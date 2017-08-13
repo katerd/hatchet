@@ -7,12 +7,12 @@ using Hatchet.Extensions;
 
 namespace Hatchet
 {
-    internal struct Context
+    internal struct DeserializationContext
     {
         public object Input { get; }
         public Type OutputType { get; }
 
-        public Context(object input, Type outputType)
+        public DeserializationContext(object input, Type outputType)
         {
             Input = input;
             OutputType = outputType;
@@ -33,7 +33,7 @@ namespace Hatchet
 
         private static object DeserializeObject(object result, Type type)
         {
-            var context = new Context(result, type);
+            var context = new DeserializationContext(result, type);
             
             foreach (var rule in DeserializationRules)
             {
@@ -61,7 +61,7 @@ namespace Hatchet
             return type.IsClass || type.IsValueType || type.IsInterface;
         }
 
-        private static object DeserializeNullableValueType(Context context)
+        private static object DeserializeNullableValueType(DeserializationContext context)
         {
             var input = context.Input;
             var type = context.OutputType;
@@ -74,7 +74,7 @@ namespace Hatchet
             return nullableValue;
         }
 
-        private static object DeserializeGenericCollection(Context context)
+        private static object DeserializeGenericCollection(DeserializationContext context)
         {
             var type = context.OutputType;
             var input = context.Input;
@@ -133,7 +133,7 @@ namespace Hatchet
                    || type == typeof(DateTime);
         }
 
-        private static object DeserializeEnum(Context context)
+        private static object DeserializeEnum(DeserializationContext context)
         {
             var input = context.Input;
             var type = context.OutputType;
@@ -152,7 +152,7 @@ namespace Hatchet
             return Enum.Parse(type, (string) input, true);
         }
 
-        private static object DeserializeDictionary(Context context)
+        private static object DeserializeDictionary(DeserializationContext context)
         {
             var inputDictionary = (IDictionary) context.Input;
             var outputDictionary = (IDictionary) Activator.CreateInstance(context.OutputType);
@@ -177,7 +177,7 @@ namespace Hatchet
             return outputDictionary;
         }
 
-        private static object DeserializeArray(Context context)
+        private static object DeserializeArray(DeserializationContext context)
         {
             var arrayType = context.OutputType.GetElementType();
             var inputList = (List<object>) context.Input;
@@ -191,7 +191,7 @@ namespace Hatchet
             return outputArray;
         }
 
-        private static object DeserializeComplexType(Context context)
+        private static object DeserializeComplexType(DeserializationContext context)
         {
             var input = context.Input;
             var type = context.OutputType;
@@ -226,12 +226,12 @@ namespace Hatchet
             return instance;
         }
         
-        private static object DeserializeGuid(Context context)
+        private static object DeserializeGuid(DeserializationContext context)
         {
             return new Guid(context.Input.ToString());
         }
 
-        private static object DeserializeSimpleValue(Context context)
+        private static object DeserializeSimpleValue(DeserializationContext context)
         {
             return Convert.ChangeType(context.Input, context.OutputType);
         }
