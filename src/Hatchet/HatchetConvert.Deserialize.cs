@@ -33,102 +33,25 @@ namespace Hatchet
 
             if (type.IsArray)
             {
-                var arrayType = type.GetElementType();
-                var inputList = (List<object>)result;
-                var outputArray = Array.CreateInstance(arrayType, inputList.Count);
-
-                for (var i = 0; i < inputList.Count; i++)
-                {
-                    outputArray.SetValue(DeserializeObject(inputList[i], arrayType), i);
-                }
-                return outputArray;
+                return DeserializeArray(result, type);
             }
 
             if (typeof(IDictionary).IsAssignableFrom(type))
             {
-                var inputDictionary = (IDictionary)result;
-                var outputDictionary = (IDictionary)Activator.CreateInstance(type);
-
-                var outputGta = outputDictionary.GetType().GetGenericArguments();
-                var outputKeyType = outputGta[0];
-                var outputValueType = outputGta[1];
-
-                // todo: skip this process if the input and output dictionary generic types match
-
-                // go through each input dictionary key and convert to the output key and value.
-                foreach (var key in inputDictionary.Keys)
-                {
-                    var newKeyValue = DeserializeObject(key, outputKeyType);
-
-                    var value = inputDictionary[key];
-                    var newValue = DeserializeObject(value, outputValueType);
-
-                    outputDictionary[newKeyValue] = newValue;
-                }
-
-                return outputDictionary;
+                return DeserializeDictionary(result, type);
             }
 
-            if (result is ICollection)
+            if (result is ICollection && type.IsGenericType)
             {
-                if (type.IsGenericType)
-                {
-                    var elementType = type.GenericTypeArguments[0];
-
-                    var setG = typeof(ISet<>).MakeGenericType(elementType);
-
-                    var inputList = (List<object>)result;
-
-                    if (setG.IsAssignableFrom(type))
-                    {
-                        var genericListType = typeof(HashSet<>).MakeGenericType(elementType);
-                        var outputList = Activator.CreateInstance(genericListType);
-
-                        foreach (var inputItem in inputList)
-                        {
-                            genericListType.InvokeMember("Add", BindingFlags.InvokeMethod, null, outputList,
-                                new[] { DeserializeObject(inputItem, elementType) });
-                        }
-
-                        return outputList;
-                    }
-
-                    var listG = typeof(List<>).MakeGenericType(elementType);
-
-                    if (type.IsAssignableFrom(listG))
-                    {
-                        var genericListType = typeof(List<>).MakeGenericType(elementType);
-                        var outputList = (IList)Activator.CreateInstance(genericListType);
-
-                        foreach (var inputItem in inputList)
-                        {
-                            outputList.Add(DeserializeObject(inputItem, elementType));
-                        }
-
-                        return outputList;
-                    }
-                }
+                return DeserializeGenericCollection(result, type);
             }
 
             if (type.IsEnum)
             {
-                var rItems = result as ICollection;
-                if (rItems != null)
-                {
-                    if (rItems.Count == 0)
-                        return 0;
-
-                    var items = rItems.Select(x => x.ToString());
-                    var enumStr = string.Join(",", items);
-                    return Enum.Parse(type, enumStr, true);
-                }
-
-                return Enum.Parse(type, (string)result, true);
+                return DeserializeEnum(result, type);
             }
 
-            if (type.IsPrimitive 
-                || type == typeof(decimal) 
-                || type == typeof(DateTime))
+            if (IsSimpleValueType(type))
             {
                 return Convert.ChangeType(result, type);
             }
@@ -151,50 +74,140 @@ namespace Hatchet
             {
                 return GetComplexType(result, type);
             }
-            
+
             throw new HatchetException($"Unable to convert {result} - unknown type {type}");
+        }
+
+        private static object DeserializeGenericCollection(object result, Type type)
+        {
+            var elementType = type.GenericTypeArguments[0];
+
+            var setG = typeof(ISet<>).MakeGenericType(elementType);
+
+            var inputList = (List<object>) result;
+
+            if (setG.IsAssignableFrom(type))
+            {
+                return DeserializeHashSet(elementType, inputList);
+            }
+
+            var listG = typeof(List<>).MakeGenericType(elementType);
+            if (type.IsAssignableFrom(listG))
+            {
+                return DeserializeList(elementType, inputList);
+            }
+
+            throw new HatchetException($"Unable to deserialize generic collection");
+        }
+
+        private static object DeserializeList(Type elementType, List<object> inputList)
+        {
+            var genericListType = typeof(List<>).MakeGenericType(elementType);
+            var outputList = (IList) Activator.CreateInstance(genericListType);
+
+            foreach (var inputItem in inputList)
+            {
+                outputList.Add(DeserializeObject(inputItem, elementType));
+            }
+
+            return outputList;
+        }
+
+        private static object DeserializeHashSet(Type elementType, List<object> inputList)
+        {
+            var genericListType = typeof(HashSet<>).MakeGenericType(elementType);
+            var outputList = Activator.CreateInstance(genericListType);
+
+            foreach (var inputItem in inputList)
+            {
+                genericListType.InvokeMember("Add", BindingFlags.InvokeMethod, null, outputList,
+                    new[] {DeserializeObject(inputItem, elementType)});
+            }
+
+            return outputList;
+        }
+
+        private static bool IsSimpleValueType(Type type)
+        {
+            return type.IsPrimitive 
+                   || type == typeof(decimal) 
+                   || type == typeof(DateTime);
+        }
+
+        private static object DeserializeEnum(object result, Type type)
+        {
+            var rItems = result as ICollection;
+            if (rItems != null)
+            {
+                if (rItems.Count == 0)
+                    return 0;
+
+                var items = rItems.Select(x => x.ToString());
+                var enumStr = string.Join(",", items);
+                return Enum.Parse(type, enumStr, true);
+            }
+
+            return Enum.Parse(type, (string) result, true);
+        }
+
+        private static object DeserializeDictionary(object result, Type type)
+        {
+            var inputDictionary = (IDictionary) result;
+            var outputDictionary = (IDictionary) Activator.CreateInstance(type);
+
+            var outputGta = outputDictionary.GetType().GetGenericArguments();
+            var outputKeyType = outputGta[0];
+            var outputValueType = outputGta[1];
+
+            // todo: skip this process if the input and output dictionary generic types match
+
+            // go through each input dictionary key and convert to the output key and value.
+            foreach (var key in inputDictionary.Keys)
+            {
+                var newKeyValue = DeserializeObject(key, outputKeyType);
+
+                var value = inputDictionary[key];
+                var newValue = DeserializeObject(value, outputValueType);
+
+                outputDictionary[newKeyValue] = newValue;
+            }
+
+            return outputDictionary;
+        }
+
+        private static object DeserializeArray(object result, Type type)
+        {
+            var arrayType = type.GetElementType();
+            var inputList = (List<object>) result;
+            var outputArray = Array.CreateInstance(arrayType, inputList.Count);
+
+            for (var i = 0; i < inputList.Count; i++)
+            {
+                outputArray.SetValue(DeserializeObject(inputList[i], arrayType), i);
+            }
+
+            return outputArray;
         }
 
         private static object GetComplexType(object result, Type type)
         {
             if (result is string)
             {
-                var ctor = type.GetConstructors()
-                    .SingleOrDefault(x =>
-                    {
-                        var pc = x.GetParameters();
-                        if (pc.Length != 1)
-                            return false;
-
-                        return pc[0].ParameterType == typeof(string);
-                    });
+                var ctor = FindConstructorWithSingleStringParameter(type);
 
                 if (ctor != null)
                 {
                     return ctor.Invoke(new[] { result });
                 }
 
-                var scm = type.GetMethods()
-                    .Where(x => x.HasAttribute<HatchetConstructorAttribute>())
-                    .Where(x => x.IsStatic)
-                    .Where(x => type.IsAssignableFrom(x.ReturnType))
-                    .SingleOrDefault(x =>
-                    {
-                        var pc = x.GetParameters();
-                        if (pc.Length != 1)
-                            return false;
+                var ctorMethod = FindStaticConstructorMethodWithSingleStringParameter(type);
 
-                        return pc[0].ParameterType == typeof(string);
-                    });
-
-                if (scm != null)
+                if (ctorMethod != null)
                 {
-                    return scm.Invoke(null, new[] {result});
+                    return ctorMethod.Invoke(null, new[] {result});
                 }
 
-                throw new HatchetException($"Can't convert {result} to {type}");
-
-                
+                throw new HatchetException($"Can't convert {result} to {type}"); 
             }
 
             var inputValues = (Dictionary<string, object>) result;
@@ -206,6 +219,37 @@ namespace Hatchet
             SetComplexTypeProperties(type, inputValues, instance);
 
             return instance;
+        }
+
+        private static MethodInfo FindStaticConstructorMethodWithSingleStringParameter(Type type)
+        {
+            var scm = type.GetMethods()
+                .Where(x => x.HasAttribute<HatchetConstructorAttribute>())
+                .Where(x => x.IsStatic)
+                .Where(x => type.IsAssignableFrom(x.ReturnType))
+                .SingleOrDefault(x =>
+                {
+                    var pc = x.GetParameters();
+                    if (pc.Length != 1)
+                        return false;
+
+                    return pc[0].ParameterType == typeof(string);
+                });
+            return scm;
+        }
+
+        private static ConstructorInfo FindConstructorWithSingleStringParameter(Type type)
+        {
+            var ctor = type.GetConstructors()
+                .SingleOrDefault(x =>
+                {
+                    var pc = x.GetParameters();
+                    if (pc.Length != 1)
+                        return false;
+
+                    return pc[0].ParameterType == typeof(string);
+                });
+            return ctor;
         }
 
         private static Type FindComplexType(Type type, Dictionary<string, object> inputValues)
