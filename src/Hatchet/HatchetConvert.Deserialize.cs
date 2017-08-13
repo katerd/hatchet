@@ -7,6 +7,18 @@ using Hatchet.Extensions;
 
 namespace Hatchet
 {
+    internal struct Context
+    {
+        public object Input { get; }
+        public Type OutputType { get; }
+
+        public Context(object input, Type outputType)
+        {
+            Input = input;
+            OutputType = outputType;
+        }
+    }
+    
     public static partial class HatchetConvert
     {
         private const string ClassNameKey = "Class";
@@ -21,54 +33,14 @@ namespace Hatchet
 
         private static object DeserializeObject(object result, Type type)
         {
-            if (type == typeof(string))
+            var context = new Context(result, type);
+            
+            foreach (var rule in DeserializationRules)
             {
-                return result;
-            }
-
-            if (type == typeof(object))
-            {
-                return result;
-            }
-
-            if (type.IsArray)
-            {
-                return DeserializeArray(result, type);
-            }
-
-            if (typeof(IDictionary).IsAssignableFrom(type))
-            {
-                return DeserializeDictionary(result, type);
-            }
-
-            if (IsGenericCollection(result, type))
-            {
-                return DeserializeGenericCollection(result, type);
-            }
-
-            if (type.IsEnum)
-            {
-                return DeserializeEnum(result, type);
-            }
-
-            if (IsSimpleValueType(type))
-            {
-                return Convert.ChangeType(result, type);
-            }
-
-            if (IsNullableValueType(type))
-            {
-                return DeserializeNullableValueType(result, type);
-            }
-
-            if (type == typeof(Guid))
-            {
-                return new Guid(result.ToString());
-            }
-
-            if (IsComplexType(type))
-            {
-                return GetComplexType(result, type);
+                if (rule.Item1(context))
+                {
+                    return rule.Item2(context);
+                }
             }
 
             throw new HatchetException($"Unable to convert {result} - unknown type {type}");
