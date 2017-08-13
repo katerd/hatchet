@@ -29,17 +29,17 @@ namespace Hatchet
             {
                 MakeDeserializer(c => c.OutputType == typeof(string), c => c.Input),
                 MakeDeserializer(c => c.OutputType == typeof(object), c => c.Input),
-                MakeDeserializer(c => c.OutputType.IsArray, c => DeserializeArray(c.Input, c.OutputType)),
-                MakeDeserializer(c => typeof(IDictionary).IsAssignableFrom(c.OutputType), c => DeserializeDictionary(c.Input, c.OutputType)),
-                MakeDeserializer(c => IsGenericCollection(c.Input, c.OutputType), c => DeserializeGenericCollection(c.Input, c.OutputType)),
-                MakeDeserializer(c => c.OutputType.IsEnum, c => DeserializeEnum(c.Input, c.OutputType)),
-                MakeDeserializer(c => IsSimpleValueType(c.OutputType), c => Convert.ChangeType(c.Input, c.OutputType)),
-                MakeDeserializer(c => IsNullableValueType(c.OutputType), c=> DeserializeNullableValueType(c.Input, c.OutputType)),
-                MakeDeserializer(c => c.OutputType == typeof(Guid), c => new Guid(c.Input.ToString())),
-                MakeDeserializer(c => IsComplexType(c.OutputType), c => GetComplexType(c.Input, c.OutputType))
+                MakeDeserializer(c => c.OutputType.IsArray, DeserializeArray),
+                MakeDeserializer(c => typeof(IDictionary).IsAssignableFrom(c.OutputType), DeserializeDictionary),
+                MakeDeserializer(c => IsGenericCollection(c.Input, c.OutputType), DeserializeGenericCollection),
+                MakeDeserializer(c => c.OutputType.IsEnum, DeserializeEnum),
+                MakeDeserializer(c => IsSimpleValueType(c.OutputType), DeserializeSimpleValue),
+                MakeDeserializer(c => IsNullableValueType(c.OutputType), DeserializeNullableValueType),
+                MakeDeserializer(c => c.OutputType == typeof(Guid), DeserializeGuid),
+                MakeDeserializer(c => IsComplexType(c.OutputType), DeserializeComplexType)
             };
         }
-        
+
         private static Tuple<Func<Context, bool>, Func<Context, object>> MakeDeserializer(
             Func<Context, bool> test, Func<Context, object> action)
         {

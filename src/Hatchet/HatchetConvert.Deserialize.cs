@@ -61,23 +61,29 @@ namespace Hatchet
             return type.IsClass || type.IsValueType || type.IsInterface;
         }
 
-        private static object DeserializeNullableValueType(object result, Type type)
+        private static object DeserializeNullableValueType(Context context)
         {
-            if (result.ToString().Equals("null", StringComparison.OrdinalIgnoreCase))
+            var input = context.Input;
+            var type = context.OutputType;
+            
+            if (input.ToString().Equals("null", StringComparison.OrdinalIgnoreCase))
                 return null;
 
-            var actualValue = Convert.ChangeType(result, type.GenericTypeArguments[0]);
+            var actualValue = Convert.ChangeType(input, type.GenericTypeArguments[0]);
             var nullableValue = Activator.CreateInstance(type, actualValue);
             return nullableValue;
         }
 
-        private static object DeserializeGenericCollection(object result, Type type)
+        private static object DeserializeGenericCollection(Context context)
         {
+            var type = context.OutputType;
+            var input = context.Input;
+            
             var elementType = type.GenericTypeArguments[0];
 
             var setG = typeof(ISet<>).MakeGenericType(elementType);
 
-            var inputList = (List<object>) result;
+            var inputList = (List<object>) input;
 
             if (setG.IsAssignableFrom(type))
             {
@@ -127,9 +133,12 @@ namespace Hatchet
                    || type == typeof(DateTime);
         }
 
-        private static object DeserializeEnum(object result, Type type)
+        private static object DeserializeEnum(Context context)
         {
-            var rItems = result as ICollection;
+            var input = context.Input;
+            var type = context.OutputType;
+            
+            var rItems = input as ICollection;
             if (rItems != null)
             {
                 if (rItems.Count == 0)
@@ -140,13 +149,13 @@ namespace Hatchet
                 return Enum.Parse(type, enumStr, true);
             }
 
-            return Enum.Parse(type, (string) result, true);
+            return Enum.Parse(type, (string) input, true);
         }
 
-        private static object DeserializeDictionary(object result, Type type)
+        private static object DeserializeDictionary(Context context)
         {
-            var inputDictionary = (IDictionary) result;
-            var outputDictionary = (IDictionary) Activator.CreateInstance(type);
+            var inputDictionary = (IDictionary) context.Input;
+            var outputDictionary = (IDictionary) Activator.CreateInstance(context.OutputType);
 
             var outputGta = outputDictionary.GetType().GetGenericArguments();
             var outputKeyType = outputGta[0];
@@ -168,10 +177,10 @@ namespace Hatchet
             return outputDictionary;
         }
 
-        private static object DeserializeArray(object result, Type type)
+        private static object DeserializeArray(Context context)
         {
-            var arrayType = type.GetElementType();
-            var inputList = (List<object>) result;
+            var arrayType = context.OutputType.GetElementType();
+            var inputList = (List<object>) context.Input;
             var outputArray = Array.CreateInstance(arrayType, inputList.Count);
 
             for (var i = 0; i < inputList.Count; i++)
@@ -182,8 +191,11 @@ namespace Hatchet
             return outputArray;
         }
 
-        private static object GetComplexType(object input, Type type)
+        private static object DeserializeComplexType(Context context)
         {
+            var input = context.Input;
+            var type = context.OutputType;
+            
             if (input is string)
             {
                 var ctor = FindConstructorWithSingleStringParameter(type);
@@ -205,13 +217,23 @@ namespace Hatchet
 
             var inputValues = (Dictionary<string, object>) input;
 
-            type = FindComplexType(type, inputValues);
+            var newtype = FindComplexType(type, inputValues);
 
-            var instance = ObjectFactory.CreateComplexType(type, inputValues);
-            SetComplexTypeFields(type, inputValues, instance);
-            SetComplexTypeProperties(type, inputValues, instance);
+            var instance = ObjectFactory.CreateComplexType(newtype, inputValues);
+            SetComplexTypeFields(newtype, inputValues, instance);
+            SetComplexTypeProperties(newtype, inputValues, instance);
 
             return instance;
+        }
+        
+        private static object DeserializeGuid(Context context)
+        {
+            return new Guid(context.Input.ToString());
+        }
+
+        private static object DeserializeSimpleValue(Context context)
+        {
+            return Convert.ChangeType(context.Input, context.OutputType);
         }
 
         private static MethodInfo FindStaticConstructorMethodWithSingleStringParameter(Type type)
