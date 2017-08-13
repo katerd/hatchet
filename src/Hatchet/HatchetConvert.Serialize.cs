@@ -25,12 +25,12 @@ namespace Hatchet
             PrettyPrinter prettyPrinter,
             bool forceClassName = false)
         {
+            var context = new SerializationContext(input, prettyPrinter, forceClassName);
+            
             foreach (var conversionFunction in SerializationRules)
             {
                 if (conversionFunction.Item1(input))
                 {
-                    var context = new SerializationContext(input, prettyPrinter, forceClassName);
-                    
                     conversionFunction.Item2(context);
                     return;
                 }
@@ -46,10 +46,10 @@ namespace Hatchet
                    || inputType == typeof(Guid);
         }
 
-        private static void SerializeArray(object input, PrettyPrinter stringBuilder)
+        private static void SerializeArray(SerializationContext context)
         {
-            var inputArray = (Array) input;
-            stringBuilder.AppendFormat("[{0}]", string.Join(" ", inputArray.Select(Serialize)));
+            var inputArray = (Array) context.Input;
+            context.Printer.AppendFormat("[{0}]", string.Join(" ", inputArray.Select(Serialize)));
         }
 
         private static void SerializeCollection(SerializationContext context)
@@ -71,10 +71,8 @@ namespace Hatchet
             var input = context.Input;
             var prettyPrinter = context.Printer;
             var forceClassName = context.ForceClassName;
-            
-            var inputType = input.GetType();
-            
-            var elementType = inputType.GenericTypeArguments[0];
+
+            var elementType = input.GetType().GenericTypeArguments[0];
 
             if (elementType.IsAbstract)
                 forceClassName = true;
@@ -83,7 +81,7 @@ namespace Hatchet
 
             prettyPrinter.Append("[");
 
-            if (enumerableType.IsAssignableFrom(inputType))
+            if (enumerableType.IsInstanceOfType(input))
             {
                 var enumerator = ((IEnumerable) input).GetEnumerator();
 
@@ -102,8 +100,11 @@ namespace Hatchet
             prettyPrinter.Append("]");
         }
 
-        private static void SerializeDictionary(PrettyPrinter prettyPrinter, IDictionary inputDictionary)
+        private static void SerializeDictionary(SerializationContext context)
         {
+            var inputDictionary = (IDictionary) context.Input;
+            var prettyPrinter = context.Printer;
+            
             if (inputDictionary.Count == 0)
             {
                 prettyPrinter.Append("{}");
@@ -132,17 +133,17 @@ namespace Hatchet
                 {
                     WriteClassName(prettyPrinter, inputType);
                 }
-                SerializeFieldsAndProperties(input, prettyPrinter, inputType);
+                SerializeFieldsAndProperties(context);
             }
         }
 
-        private static void SerializeFieldsAndProperties(object input, PrettyPrinter prettyPrinter, Type inputType)
+        private static void SerializeFieldsAndProperties(SerializationContext context)
         {
-            var propertiesAndFields = GetPropertiesAndFields(input, inputType);
+            var propertiesAndFields = GetPropertiesAndFields(context.Input);
 
             foreach (var member in propertiesAndFields)
             {
-                SerializeMember(prettyPrinter, member);
+                SerializeMember(context.Printer, member);
             }
         }
 
@@ -151,8 +152,10 @@ namespace Hatchet
             SerializeKeyValue(prettyPrinter, member.Name, member.Value, member.IsValueAbstract);
         }
 
-        private static IEnumerable<ISerializableMember> GetPropertiesAndFields(object input, Type inputType)
+        private static IEnumerable<ISerializableMember> GetPropertiesAndFields(object input)
         {
+            var inputType = input.GetType();
+            
             foreach (var property in inputType.GetPropertiesToSerialize())
             {
                 yield return new SerializableProperty(property, input);

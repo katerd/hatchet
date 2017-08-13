@@ -59,6 +59,7 @@
     <Compile Include="Reflection\ISerializableMember.cs" />
     <Compile Include="Reflection\SerializableField.cs" />
     <Compile Include="Reflection\SerializableProperty.cs" />
+    <Compile Include="SerializationContext.cs" />
     <Compile Include="Tokens.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

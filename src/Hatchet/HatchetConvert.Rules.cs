@@ -14,14 +14,14 @@ namespace Hatchet
         {
             SerializationRules = new List<Tuple<Func<object, bool>, Action<SerializationContext>>>
             {
-                MakeSerialiser(o => o is string, c => c.Printer.AppendString(c.Input as string)),
-                MakeSerialiser(o => o is DateTime, c => c.Printer.AppendDateTime((DateTime)c.Input)),
-                MakeSerialiser(o => o.GetType().IsArray, c => SerializeArray(c.Input, c.Printer)),
-                MakeSerialiser(o => o is IDictionary, c => SerializeDictionary(c.Printer, (IDictionary)c.Input)),
+                MakeSerialiser(o => o is string, SerializeString),
+                MakeSerialiser(o => o is DateTime, SerializeDateTime),
+                MakeSerialiser(o => o.GetType().IsArray, SerializeArray),
+                MakeSerialiser(o => o is IDictionary, SerializeDictionary),
                 MakeSerialiser(o => o.GetType().GenericTypeArguments.Length == 1, SerializeGenericEnumerable),
                 MakeSerialiser(o => typeof (ICollection).IsAssignableFrom(o.GetType()), SerializeCollection),
-                MakeSerialiser(o => IsSimpleValue(o.GetType()), c => c.Printer.Append(c.Input)),
-                MakeSerialiser(o => o.GetType().IsEnum, c => c.Printer.AppendEnum(c.Input)),
+                MakeSerialiser(o => IsSimpleValue(o.GetType()), SerializeSimpleValue),
+                MakeSerialiser(o => o.GetType().IsEnum, SerializeEnum),
                 MakeSerialiser(o => o.GetType().IsClass || o.GetType().IsValueType, SerializeClassOrStruct)
             };
             
@@ -38,6 +38,26 @@ namespace Hatchet
                 MakeDeserializer(c => c.OutputType == typeof(Guid), DeserializeGuid),
                 MakeDeserializer(c => IsComplexType(c.OutputType), DeserializeComplexType)
             };
+        }
+
+        private static void SerializeString(SerializationContext c)
+        {
+            c.Printer.AppendString(c.Input as string);
+        }
+
+        private static void SerializeDateTime(SerializationContext c)
+        {
+            c.Printer.AppendDateTime((DateTime)c.Input);
+        }
+
+        private static void SerializeSimpleValue(SerializationContext c)
+        {
+            c.Printer.Append(c.Input);
+        }
+
+        private static void SerializeEnum(SerializationContext c)
+        {
+            c.Printer.AppendEnum(c.Input);
         }
 
         private static Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>> MakeDeserializer(
