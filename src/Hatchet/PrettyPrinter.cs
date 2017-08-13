@@ -73,39 +73,61 @@ namespace Hatchet
             if (string.Equals(inputAsString, ""))
             {
                 Append("\"\"");
-                return;
             }
-
-            var containsSpaces = inputAsString.Contains(" ");
-            var containsDoubleQuotes = inputAsString.Contains("\"");
-            var containsSingleQuotes = inputAsString.Contains("'");
-            var containsNewLines = inputAsString.Contains("\r") || inputAsString.Contains("\n");
-
-            if (containsNewLines)
+            else if (ContainsNewLines(inputAsString))
             {
                 AppendFormat("![{0}]!", inputAsString);
-                return;
             }
-
-            if (containsDoubleQuotes && !containsSingleQuotes)
+            else if (ShouldWriteWithSingleQuotes(inputAsString))
             {
                 AppendFormat("'{0}'", inputAsString);
-                return;
             }
-
-            if (containsSingleQuotes && !containsDoubleQuotes)
+            else if (ShouldWriteWithDoubleQuotes(inputAsString))
             {
                 AppendFormat("\"{0}\"", inputAsString);
-                return;
             }
-
-            if (containsSpaces)
+            else if (ContainsSpaces(inputAsString))
             {
                 AppendFormat("\"{0}\"", inputAsString.Replace("\"", "\\\""));
-                return;
             }
+            else
+            {
+                Append(inputAsString);
+            }
+        }
 
-            Append(inputAsString);
+        private static bool ShouldWriteWithDoubleQuotes(string inputAsString)
+        {
+            return ContainsSingleQuotes(inputAsString) && !ContainsDoubleQuotes(inputAsString);
+        }
+
+        private static bool ShouldWriteWithSingleQuotes(string inputAsString)
+        {
+            return ContainsDoubleQuotes(inputAsString) && !ContainsSingleQuotes(inputAsString);
+        }
+
+        private static bool ContainsNewLines(string inputAsString)
+        {
+            var containsNewLines = inputAsString.Contains("\r") || inputAsString.Contains("\n");
+            return containsNewLines;
+        }
+
+        private static bool ContainsSingleQuotes(string inputAsString)
+        {
+            var containsSingleQuotes = inputAsString.Contains("'");
+            return containsSingleQuotes;
+        }
+
+        private static bool ContainsDoubleQuotes(string inputAsString)
+        {
+            var containsDoubleQuotes = inputAsString.Contains("\"");
+            return containsDoubleQuotes;
+        }
+
+        private static bool ContainsSpaces(string inputAsString)
+        {
+            var containsSpaces = inputAsString.Contains(" ");
+            return containsSpaces;
         }
     }
 }

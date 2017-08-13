@@ -42,6 +42,6 @@ Task("Create-NuGet-Package")
     });
 
 Task("Default")
-    .IsDependentOn("Run-Unit-Tests");
+    .IsDependentOn("Create-NuGet-Package");
 
 RunTarget(target);
