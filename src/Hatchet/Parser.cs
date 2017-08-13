@@ -23,57 +23,53 @@ namespace Hatchet
 
         private object ReadValue()
         {
-            if (_index >= _input.Length)
-                return null;
-
-            ChompWhitespace();
-
-            if (Peek(Tokens.ListOpen))
+            while (true)
             {
-                var list = ReadList();
-                return list;
-            }
-            if (Peek(Tokens.ObjectOpen))
-            {
-                var obj = ReadDefinitions();
-                return obj;
-            }
-            if (Peek(Tokens.SingleQuote) || Peek(Tokens.DoubleQuote))
-            {
-                var readString = ReadString();
-                return readString;
-            }
-            if (Peek(Tokens.BlockCommentOpen))
-            {
-                ReadBlockComment();
-
-                /* a second attempt at reading a value is needed 
-                 * when the comment exists at the top of the input text. */
-                ChompWhitespace();
-                if (_index == _input.Length)
+                if (_index >= _input.Length)
                     return null;
 
-                return ReadValue();
-            }
-            if (Peek(Tokens.LineComment))
-            {
-                ReadLineComment();
-
-                /* a second attempt at reading a value is needed 
-                 * when the comment exists at the top of the input text. */
                 ChompWhitespace();
-                if (_index == _input.Length)
-                    return null;
 
-                return ReadValue();
-            }
-            if (Peek(Tokens.TextBlockOpen))
-            {
-                Debug.WriteLine("Open text block");
-                return ReadTextBlock();
-            }
+                if (Peek(Tokens.ListOpen))
+                {
+                    return ReadList();
+                }
 
-            return ReadNakedValue();
+                if (Peek(Tokens.ObjectOpen))
+                {
+                    return ReadDefinitions();
+                }
+
+                if (Peek(Tokens.SingleQuote) || Peek(Tokens.DoubleQuote))
+                {
+                    return ReadString();
+                }
+
+                if (Peek(Tokens.BlockCommentOpen))
+                {
+                    ReadBlockComment();
+                    ChompWhitespace();
+                    if (_index == _input.Length)
+                        return null;
+                    continue;
+                }
+
+                if (Peek(Tokens.LineComment))
+                {
+                    ReadLineComment();
+                    ChompWhitespace();
+                    if (_index == _input.Length)
+                        return null;
+                    continue;
+                }
+
+                if (Peek(Tokens.TextBlockOpen))
+                {
+                    return ReadTextBlock();
+                }
+
+                return ReadNakedValue();
+            }
         }
 
         private string ReadTextBlock()
