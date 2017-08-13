@@ -15,66 +15,67 @@ namespace Hatchet
         public static string Serialize(object input)
         {
             var stringBuilder = new StringBuilder();
-            Serialize(input, stringBuilder, 0);
+            var prettyPrinter = new PrettyPrinter(stringBuilder);
+            Serialize(input, prettyPrinter, 0);
             return stringBuilder.ToString();
         }
 
         private static void Serialize(
             object input, 
-            StringBuilder stringBuilder,
+            PrettyPrinter prettyPrinter,
             int indentLevel,
             bool forceClassName = false)
         {
             var inputAsString = input as string;
             if (inputAsString != null)
             {
-                SerializeString(stringBuilder, inputAsString);
+                prettyPrinter.AppendString(inputAsString);
                 return;
             }
             
             if (input is DateTime)
             {
-                SerializeDateTime(input, stringBuilder);
+                prettyPrinter.AppendDateTime(input);
                 return;
             }
 
             var inputType = input.GetType();
             if (inputType.IsArray)
             {
-                SerializeArray(input, stringBuilder);
+                SerializeArray(input, prettyPrinter);
                 return;
             }
 
             var inputDictionary = input as IDictionary;
             if (inputDictionary != null)
             {
-                SerializeDictionary(stringBuilder, indentLevel, inputDictionary);
+                SerializeDictionary(prettyPrinter, indentLevel, inputDictionary);
                 return;
             }
 
             if (inputType.GenericTypeArguments.Length == 1)
             {
-                SerializeGenericEnumerable(input, stringBuilder, indentLevel, forceClassName, inputType);
+                SerializeGenericEnumerable(input, prettyPrinter, indentLevel, forceClassName, inputType);
                 return;
             }
 
             if (typeof (ICollection).IsAssignableFrom(inputType))
             {
-                SerializeCollection(input, stringBuilder, indentLevel, forceClassName);
+                SerializeCollection(input, prettyPrinter, indentLevel, forceClassName);
                 return;
             }
 
             if (IsSimpleValue(inputType))
             {
-                stringBuilder.Append(input);
+                prettyPrinter.Append(input);
             }
             else if (inputType.IsEnum)
             {
-                SerializeEnum(input, stringBuilder);
+                prettyPrinter.AppendEnum(input);
             }
             else if (inputType.IsClass || inputType.IsValueType)
             {
-                SerializeClassOrStruct(input, stringBuilder, indentLevel, inputType, forceClassName);
+                SerializeClassOrStruct(input, prettyPrinter, indentLevel, inputType, forceClassName);
             }
             else
             {
@@ -90,42 +91,23 @@ namespace Hatchet
                    || inputType == typeof(Guid);
         }
 
-        private static void SerializeEnum(object input, StringBuilder stringBuilder)
-        {
-            var strRepr = input.ToString();
-            if (strRepr.IndexOf(',') > 0)
-            {
-                stringBuilder.AppendFormat("[{0}]", strRepr);
-            }
-            else
-            {
-                stringBuilder.Append(strRepr);
-            }
-        }
-
-        private static void SerializeDateTime(object input, StringBuilder stringBuilder)
-        {
-            var inputAsDateTime = (DateTime) input;
-            stringBuilder.AppendFormat("\"{0:O}\"", inputAsDateTime);
-        }
-
-        private static void SerializeArray(object input, StringBuilder stringBuilder)
+        private static void SerializeArray(object input, PrettyPrinter stringBuilder)
         {
             var inputArray = (Array) input;
             stringBuilder.AppendFormat("[{0}]", string.Join(" ", inputArray.Select(Serialize)));
         }
 
-        private static void SerializeCollection(object input, StringBuilder stringBuilder, int indentLevel, bool forceClassName)
+        private static void SerializeCollection(object input, PrettyPrinter prettyPrinter, int indentLevel, bool forceClassName)
         {
             var inputList = (ICollection) input;
 
             foreach (var item in inputList)
             {
-                Serialize(item, stringBuilder, indentLevel + 1, forceClassName);
+                Serialize(item, prettyPrinter, indentLevel + 1, forceClassName);
             }
         }
 
-        private static void SerializeGenericEnumerable(object input, StringBuilder stringBuilder, int indentLevel, bool forceClassName,
+        private static void SerializeGenericEnumerable(object input, PrettyPrinter prettyPrinter, int indentLevel, bool forceClassName,
             Type inputType)
         {
             var elementType = inputType.GenericTypeArguments[0];
@@ -135,7 +117,7 @@ namespace Hatchet
 
             var enumerableType = typeof(IEnumerable<>).MakeGenericType(elementType);
 
-            stringBuilder.Append("[");
+            prettyPrinter.Append("[");
 
             if (enumerableType.IsAssignableFrom(inputType))
             {
@@ -145,67 +127,27 @@ namespace Hatchet
                 while (enr.MoveNext())
                 {
                     if (addSpace)
-                        stringBuilder.AppendFormat(" ");
+                        prettyPrinter.AppendFormat(" ");
                     addSpace = true;
 
                     var o = enr.Current;
-                    Serialize(o, stringBuilder, indentLevel + 1, forceClassName);
+                    Serialize(o, prettyPrinter, indentLevel + 1, forceClassName);
                 }
             }
 
-            stringBuilder.Append("]");
+            prettyPrinter.Append("]");
         }
 
-        private static void SerializeString(StringBuilder stringBuilder, string inputAsString)
-        {
-            if (string.Equals(inputAsString, ""))
-            {
-                stringBuilder.Append("\"\"");
-                return;
-            }
-
-            var containsSpaces = inputAsString.Contains(" ");
-            var containsDoubleQuotes = inputAsString.Contains("\"");
-            var containsSingleQuotes = inputAsString.Contains("'");
-            var containsNewLines = inputAsString.Contains("\r") || inputAsString.Contains("\n");
-
-            if (containsNewLines)
-            {
-                stringBuilder.AppendFormat("![{0}]!", inputAsString);
-                return;
-            }
-
-            if (containsDoubleQuotes && !containsSingleQuotes)
-            {
-                stringBuilder.AppendFormat("'{0}'", inputAsString);
-                return;
-            }
-
-            if (containsSingleQuotes && !containsDoubleQuotes)
-            {
-                stringBuilder.AppendFormat("\"{0}\"", inputAsString);
-                return;
-            }
-
-            if (containsSpaces)
-            {
-                stringBuilder.AppendFormat("\"{0}\"", inputAsString.Replace("\"", "\\\""));
-                return;
-            }
-
-            stringBuilder.Append(inputAsString);
-        }
-
-        private static void SerializeDictionary(StringBuilder stringBuilder, int indentLevel, IDictionary inputDictionary)
+        private static void SerializeDictionary(PrettyPrinter prettyPrinter, int indentLevel, IDictionary inputDictionary)
         {
             if (inputDictionary.Count == 0)
             {
-                stringBuilder.Append("{}");
+                prettyPrinter.Append("{}");
                 return;
             }
 
-            stringBuilder.Append("{");
-            stringBuilder.Append(LineEnding);
+            prettyPrinter.Append("{");
+            prettyPrinter.Append(LineEnding);
 
             foreach (var key in inputDictionary.Keys)
             {
@@ -218,48 +160,48 @@ namespace Hatchet
 
                 var value = inputDictionary[keyStr];
 
-                SerializeKeyValue(stringBuilder, indentLevel, keyStr, value);
+                SerializeKeyValue(prettyPrinter, indentLevel, keyStr, value);
             }
 
-            stringBuilder.Append(' ', indentLevel * IndentCount);
-            stringBuilder.Append("}");
+            prettyPrinter.Append(' ', indentLevel * IndentCount);
+            prettyPrinter.Append("}");
         }
 
         private static void SerializeClassOrStruct(
             object input, 
-            StringBuilder stringBuilder, 
+            PrettyPrinter prettyPrinter, 
             int indentLevel, 
             Type inputType, 
             bool forceClassName)
         {
-            stringBuilder.Append("{");
-            stringBuilder.Append(LineEnding);
+            prettyPrinter.Append("{");
+            prettyPrinter.Append(LineEnding);
 
             if (forceClassName)
             {
-                stringBuilder.Append(' ', indentLevel * IndentCount);
-                stringBuilder.Append(' ', IndentCount);
-                stringBuilder.AppendFormat("Class {0}", inputType.Name);
-                stringBuilder.Append(LineEnding);
+                prettyPrinter.Append(' ', indentLevel * IndentCount);
+                prettyPrinter.Append(' ', IndentCount);
+                prettyPrinter.AppendFormat("Class {0}", inputType.Name);
+                prettyPrinter.Append(LineEnding);
             }
 
             var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
 
             foreach (var field in inputType.GetFields(bindingFlags))
             {
-                SerializeField(input, stringBuilder, indentLevel, field);
+                SerializeField(input, prettyPrinter, indentLevel, field);
             }
 
             foreach (var property in inputType.GetProperties(bindingFlags))
             {
-                SerializeProperty(input, stringBuilder, indentLevel, property);
+                SerializeProperty(input, prettyPrinter, indentLevel, property);
             }
 
-            stringBuilder.Append(' ', indentLevel * IndentCount);
-            stringBuilder.Append("}");
+            prettyPrinter.Append(' ', indentLevel * IndentCount);
+            prettyPrinter.Append("}");
         }
 
-        private static void SerializeProperty(object input, StringBuilder stringBuilder, int indentLevel, PropertyInfo property)
+        private static void SerializeProperty(object input, PrettyPrinter prettyPrinter, int indentLevel, PropertyInfo property)
         {
             if (property.HasAttribute<HatchetIgnoreAttribute>())
                 return;
@@ -275,10 +217,10 @@ namespace Hatchet
 
             var forceClassName = property.PropertyType.IsAbstract;
 
-            SerializeKeyValue(stringBuilder, indentLevel, keyStr, value, forceClassName);
+            SerializeKeyValue(prettyPrinter, indentLevel, keyStr, value, forceClassName);
         }
 
-        private static void SerializeField(object input, StringBuilder stringBuilder, int indentLevel, FieldInfo field)
+        private static void SerializeField(object input, PrettyPrinter prettyPrinter, int indentLevel, FieldInfo field)
         {
             if (field.HasAttribute<HatchetIgnoreAttribute>())
                 return;
@@ -291,17 +233,17 @@ namespace Hatchet
 
             var forceClassName = field.FieldType.IsAbstract;
 
-            SerializeKeyValue(stringBuilder, indentLevel, keyStr, value, forceClassName);
+            SerializeKeyValue(prettyPrinter, indentLevel, keyStr, value, forceClassName);
         }
         
-        private static void SerializeKeyValue(StringBuilder stringBuilder, int indentLevel, string key, object value, bool forceClassName = false)
+        private static void SerializeKeyValue(PrettyPrinter prettyPrinter, int indentLevel, string key, object value, bool forceClassName = false)
         {
-            stringBuilder.Append(' ', indentLevel * IndentCount);
-            stringBuilder.Append(' ', IndentCount);
-            stringBuilder.Append(key);
-            stringBuilder.Append(' ');
-            Serialize(value, stringBuilder, indentLevel + 1, forceClassName);
-            stringBuilder.Append(LineEnding);
+            prettyPrinter.Append(' ', indentLevel * IndentCount);
+            prettyPrinter.Append(' ', IndentCount);
+            prettyPrinter.Append(key);
+            prettyPrinter.Append(' ');
+            Serialize(value, prettyPrinter, indentLevel + 1, forceClassName);
+            prettyPrinter.Append(LineEnding);
         }
     }
 }

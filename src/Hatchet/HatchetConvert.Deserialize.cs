@@ -189,32 +189,32 @@ namespace Hatchet
             return outputArray;
         }
 
-        private static object GetComplexType(object result, Type type)
+        private static object GetComplexType(object input, Type type)
         {
-            if (result is string)
+            if (input is string)
             {
                 var ctor = FindConstructorWithSingleStringParameter(type);
 
                 if (ctor != null)
                 {
-                    return ctor.Invoke(new[] { result });
+                    return ctor.Invoke(new[] { input });
                 }
 
                 var ctorMethod = FindStaticConstructorMethodWithSingleStringParameter(type);
 
                 if (ctorMethod != null)
                 {
-                    return ctorMethod.Invoke(null, new[] {result});
+                    return ctorMethod.Invoke(null, new[] {input});
                 }
 
-                throw new HatchetException($"Can't convert {result} to {type}"); 
+                throw new HatchetException($"Can't convert {input} to {type}"); 
             }
 
-            var inputValues = (Dictionary<string, object>) result;
+            var inputValues = (Dictionary<string, object>) input;
 
             type = FindComplexType(type, inputValues);
 
-            var instance = CreateComplexType(type, inputValues);
+            var instance = ObjectFactory.CreateComplexType(type, inputValues);
             SetComplexTypeFields(type, inputValues, instance);
             SetComplexTypeProperties(type, inputValues, instance);
 
@@ -305,55 +305,5 @@ namespace Hatchet
                 field.SetValue(output, DeserializeObject(value, field.FieldType));
             }
         }
-
-        private static object CreateComplexType(Type type, Dictionary<string, object> inputValues)
-        {
-            object output;
-
-            var ctors = type.GetConstructors();
-
-            var withAttrs = ctors.Where(x => x.HasAttribute<HatchetConstructorAttribute>())
-                .ToList();
-
-            if (withAttrs.Count > 0)
-            {
-                if (withAttrs.Count > 1)
-                    throw new HatchetException("Only one constructor can be tagged with [HatchetConstructor]");
-
-                var ctor = withAttrs.First();
-                var ctorParams = ctor.GetParameters();
-
-                var args = new List<object>();
-
-                foreach (var parameterInfo in ctorParams)
-                {
-                    var argValue = inputValues[parameterInfo.Name];
-                    args.Add(argValue);
-                }
-
-                output = ctor.Invoke(args.ToArray());
-            }
-            else
-            {
-                // find default constructor
-                var singleCtor = ctors.SingleOrDefault(x => x.GetParameters().Length == 0);
-
-                if (!type.IsClass && singleCtor == null)
-                {
-                    // structs have no default constructor
-                    output = Activator.CreateInstance(type);
-                }
-                else if (singleCtor != null)
-                {
-                    output = singleCtor.Invoke(null);
-                }
-                else
-                {
-                    throw new HatchetException($"Failed to create {type} - no constructor available");
-                }
-            }
-            return output;
-        }
     }
-
 }
