@@ -41,7 +41,7 @@ namespace Hatchet
                 return DeserializeDictionary(result, type);
             }
 
-            if (result is ICollection && type.IsGenericType)
+            if (IsGenericCollection(result, type))
             {
                 return DeserializeGenericCollection(result, type);
             }
@@ -56,13 +56,9 @@ namespace Hatchet
                 return Convert.ChangeType(result, type);
             }
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (IsNullableValueType(type))
             {
-                if (result.ToString().Equals("null", StringComparison.OrdinalIgnoreCase))
-                    return null;
-                var actualValue = Convert.ChangeType(result, type.GenericTypeArguments[0]);
-                var nullableValue = Activator.CreateInstance(type, actualValue);
-                return nullableValue;
+                return DeserializeNullableValueType(result, type);
             }
 
             if (type == typeof(Guid))
@@ -70,12 +66,37 @@ namespace Hatchet
                 return new Guid(result.ToString());
             }
 
-            if (type.IsClass || type.IsValueType || type.IsInterface)
+            if (IsComplexType(type))
             {
                 return GetComplexType(result, type);
             }
 
             throw new HatchetException($"Unable to convert {result} - unknown type {type}");
+        }
+
+        private static bool IsGenericCollection(object result, Type type)
+        {
+            return result is ICollection && type.IsGenericType;
+        }
+
+        private static bool IsNullableValueType(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        private static bool IsComplexType(Type type)
+        {
+            return type.IsClass || type.IsValueType || type.IsInterface;
+        }
+
+        private static object DeserializeNullableValueType(object result, Type type)
+        {
+            if (result.ToString().Equals("null", StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            var actualValue = Convert.ChangeType(result, type.GenericTypeArguments[0]);
+            var nullableValue = Activator.CreateInstance(type, actualValue);
+            return nullableValue;
         }
 
         private static object DeserializeGenericCollection(object result, Type type)
