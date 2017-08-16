@@ -35,6 +35,23 @@ namespace Hatchet
             return withAttrs;
         }
 
+        internal static MethodInfo FindStaticConstructorMethodWithSingleStringParameter(Type type)
+        {
+            var scm = type.GetMethods()
+                .Where(x => x.HasAttribute<HatchetConstructorAttribute>())
+                .Where(x => x.IsStatic)
+                .Where(x => type.IsAssignableFrom(x.ReturnType))
+                .SingleOrDefault(x =>
+                {
+                    var pc = x.GetParameters();
+                    if (pc.Length != 1)
+                        return false;
+
+                    return pc[0].ParameterType == typeof(string);
+                });
+            return scm;
+        }
+
         private static object CreateWithDefaultConstructor(Type type)
         {
             var ctor = FindDefaultConstructor(type);

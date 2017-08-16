@@ -186,18 +186,18 @@ namespace Hatchet
             
             if (input is string)
             {
+                var ctorMethod = ObjectFactory.FindStaticConstructorMethodWithSingleStringParameter(type);
+
+                if (ctorMethod != null)
+                {
+                    return ctorMethod.Invoke(null, new[] {input});
+                }
+                
                 var ctor = FindConstructorWithSingleStringParameter(type);
 
                 if (ctor != null)
                 {
                     return ctor.Invoke(new[] { input });
-                }
-
-                var ctorMethod = FindStaticConstructorMethodWithSingleStringParameter(type);
-
-                if (ctorMethod != null)
-                {
-                    return ctorMethod.Invoke(null, new[] {input});
                 }
 
                 throw new HatchetException($"Can't convert {input} to {type}"); 
@@ -222,23 +222,6 @@ namespace Hatchet
         private static object DeserializeSimpleValue(DeserializationContext context)
         {
             return Convert.ChangeType(context.Input, context.OutputType);
-        }
-
-        private static MethodInfo FindStaticConstructorMethodWithSingleStringParameter(Type type)
-        {
-            var scm = type.GetMethods()
-                .Where(x => x.HasAttribute<HatchetConstructorAttribute>())
-                .Where(x => x.IsStatic)
-                .Where(x => type.IsAssignableFrom(x.ReturnType))
-                .SingleOrDefault(x =>
-                {
-                    var pc = x.GetParameters();
-                    if (pc.Length != 1)
-                        return false;
-
-                    return pc[0].ParameterType == typeof(string);
-                });
-            return scm;
         }
 
         private static ConstructorInfo FindConstructorWithSingleStringParameter(Type type)

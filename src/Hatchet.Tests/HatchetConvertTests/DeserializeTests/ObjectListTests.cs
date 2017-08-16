@@ -11,6 +11,21 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
         {
             public string Value { get; set; }
             public int I { get; set; }
+
+            public TestListObject()
+            {
+            }
+
+            public TestListObject(string value)
+            {
+                Value = value;
+            }
+
+            [HatchetConstructor]
+            public static TestListObject Create(string value)
+            {
+                return new TestListObject("StaticConstructor-" + value);
+            }
         }
 
         [Test]
@@ -29,6 +44,20 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
 
             result[1].Value.Should().Be("Value2");
             result[1].I.Should().Be(200);
+        }
+
+        [Test]
+        public void Deserialize_ListOfTestListObjectUsingHatchetConstructor_InstancesAreCreated()
+        {
+            // Arrange
+            var input = "[{Value Value1} {Value Value2} 'TastyBacon']";
+            
+            // Act
+            var result = HatchetConvert.Deserialize<List<TestListObject>>(input);
+
+            // Assert
+            result.Should().HaveCount(3);
+            result[2].Value.Should().Be("StaticConstructor-TastyBacon");
         }
     }
 }
