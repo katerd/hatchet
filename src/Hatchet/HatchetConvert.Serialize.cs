@@ -25,6 +25,8 @@ namespace Hatchet
             PrettyPrinter prettyPrinter,
             bool forceClassName = false)
         {
+            prettyPrinter.MeetObject(input);
+            
             var context = new SerializationContext(input, prettyPrinter, forceClassName);
             
             foreach (var conversionFunction in SerializationRules)
@@ -104,20 +106,19 @@ namespace Hatchet
         {
             var inputDictionary = (IDictionary) context.Input;
             var prettyPrinter = context.Printer;
-            
+
             if (inputDictionary.Count == 0)
             {
                 prettyPrinter.Append("{}");
                 return;
             }
 
-            using (prettyPrinter.StartParenBlock())
+            prettyPrinter.AppendOpenBlock();
+            foreach (var key in inputDictionary.Keys)
             {
-                foreach (var key in inputDictionary.Keys)
-                {
-                    SerializeKeyValue(prettyPrinter, key.ToString(), inputDictionary[key]);
-                }
+                SerializeKeyValue(prettyPrinter, key.ToString(), inputDictionary[key]);
             }
+            prettyPrinter.AppendCloseBlock();
         }
 
         private static void SerializeClassOrStruct(SerializationContext context)
@@ -127,14 +128,13 @@ namespace Hatchet
 
             var inputType = input.GetType();
 
-            using (prettyPrinter.StartParenBlock())
+            prettyPrinter.AppendOpenBlock();
+            if (context.ForceClassName)
             {
-                if (context.ForceClassName)
-                {
-                    WriteClassName(prettyPrinter, inputType);
-                }
-                SerializeFieldsAndProperties(context);
+                WriteClassName(prettyPrinter, inputType);
             }
+            SerializeFieldsAndProperties(context);
+            prettyPrinter.AppendCloseBlock();
         }
 
         private static void SerializeFieldsAndProperties(SerializationContext context)
@@ -196,10 +196,9 @@ namespace Hatchet
 
         private static void IndentAndSerialize(PrettyPrinter prettyPrinter, object value, bool forceClassName)
         {
-            using (prettyPrinter.StartIndent())
-            {
-                Serialize(value, prettyPrinter, forceClassName);
-            }
+            prettyPrinter.Indent();
+            Serialize(value, prettyPrinter, forceClassName);
+            prettyPrinter.Deindent();
         }
     }
 }

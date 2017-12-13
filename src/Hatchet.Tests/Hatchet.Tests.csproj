@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HatchetConvertTests\CircularReferenceErrorTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\ArrayTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\DictionaryTests.cs" />
     <Compile Include="HatchetConvertTests\DeserializeTests\EmptyListTests.cs" />

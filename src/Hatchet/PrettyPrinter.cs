@@ -1,62 +1,32 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Hatchet
 {
     internal class PrettyPrinter
     {
-        internal class IndentBlock : IDisposable
-        {
-            private readonly PrettyPrinter _printer;
-
-            public IndentBlock(PrettyPrinter printer)
-            {
-                _printer = printer;
-                _printer.Indent();
-            }
-
-            public void Dispose()
-            {
-                _printer.Deindent();
-            }
-        }
-
-        internal class ParenBlock : IDisposable
-        {
-            private readonly PrettyPrinter _printer;
-
-            public ParenBlock(PrettyPrinter printer)
-            {
-                _printer = printer;
-                _printer.AppendOpenBlock();
-            }
-
-            public void Dispose()
-            {
-                _printer.AppendCloseBlock();
-            }
-        }
-
-        public IndentBlock StartIndent()
-        {
-            return new IndentBlock(this);
-        }
-
-        public ParenBlock StartParenBlock()
-        {
-            return new ParenBlock(this);
-        }
-        
         private const string LineEnding = "\n";
         private const int IndentCount = 2;
         
         private StringBuilder StringBuilder { get; }
 
+        private readonly List<object> _metObjects;
+        
         public int IndentLevel;
+
 
         public PrettyPrinter(StringBuilder stringBuilder)
         {
             StringBuilder = stringBuilder;
+            _metObjects = new List<object>();
+        }
+
+        public void MeetObject(object obj)
+        {
+            if (_metObjects.Contains(obj))
+                throw new CircularReferenceException(obj);
+            _metObjects.Add(obj);
         }
 
         public void AppendFormat(string str, params object[] args)

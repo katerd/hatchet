@@ -1,6 +1,4 @@
-﻿using System;
-using System.CodeDom;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace Hatchet.Tests.HatchetConvertTests
