@@ -91,11 +91,10 @@
     <Compile Include="ParserTests\TextBlockTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UsageTests\VortexShaderTests\DeserializationTests.cs" />
-    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="vortex-engine-test.shader">
+    <Content Include="vortex-engine-test.shader.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -88,7 +88,7 @@ namespace Hatchet.Tests.UsageTests.VortexShaderTests
         public void Deserialize_ShaderFile_ObjectShouldBeDeserialized()
         {
             // Arrange
-            var input = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "/vortex-engine-test.shader");
+            var input = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "/vortex-engine-test.shader.txt");
 
             // Act
             var result = HatchetConvert.Deserialize<SourceDefinition>(input);
