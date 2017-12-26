@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Common;
 using NUnit.Framework;
 
 namespace Hatchet.Tests.HatchetConvertTests
@@ -13,13 +10,15 @@ namespace Hatchet.Tests.HatchetConvertTests
         public class ClassA
         {
             public ClassB PropertyB { get; set; }
+            public int Value { get; set; }
         }
 
         public class ClassB
         {
             public ClassA PropertyA { get; set; }
+            public int Value { get; set; }
         }
-
+        
         [Test]
         public void Serialize_ObjectGraphWithCircularReference_ExceptionIsThrown()
         {
@@ -35,6 +34,23 @@ namespace Hatchet.Tests.HatchetConvertTests
             
             // Assert
             t.ShouldThrow<CircularReferenceException>();
+        }
+
+        [Test]
+        public void Serialize_ObjectGraphWithNoCircularReference_NoExceptionIsThrown()
+        {
+            // Arrange
+            var input = new ClassA
+            {
+                Value = 10,
+                PropertyB = new ClassB
+                {
+                    Value = 10
+                }
+            };
+            
+            // Act & Assert
+            HatchetConvert.Serialize(input);
         }
     }
 }

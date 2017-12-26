@@ -24,6 +24,14 @@ namespace Hatchet
 
         public void MeetObject(object obj)
         {
+            var type = obj.GetType();
+
+            if (obj is string)
+                return;
+            
+            if (type.IsValueType)
+                return;
+            
             if (_metObjects.Contains(obj))
                 throw new CircularReferenceException(obj);
             _metObjects.Add(obj);
