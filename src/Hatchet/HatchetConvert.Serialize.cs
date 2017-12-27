@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Hatchet.Extensions;
 using Hatchet.Reflection;
@@ -123,12 +124,23 @@ namespace Hatchet
         }
 
         private static void SerializeClassOrStruct(SerializationContext context)
-        {
+        {   
             var input = context.Input;
             var prettyPrinter = context.Printer;
 
             var inputType = input.GetType();
 
+            var customOutputValue = inputType
+                .GetNonIgnoredProperties()
+                .SingleOrDefault(x => x.HasAttribute<HatchetValueAttribute>());
+
+            if (customOutputValue != null)
+            {
+                var value = customOutputValue.GetValue(input);
+                prettyPrinter.Append(value);
+                return;
+            }
+            
             prettyPrinter.AppendOpenBlock();
             if (context.ForceClassName)
             {

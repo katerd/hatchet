@@ -52,6 +52,7 @@
     <Compile Include="HatchetConvert.Deserialize.cs" />
     <Compile Include="HatchetTypeRegistry.cs" />
     <Compile Include="HatchetConvert.Rules.cs" />
+    <Compile Include="HatchetValueAttribute.cs" />
     <Compile Include="ObjectFactory.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="PrettyPrinter.cs" />

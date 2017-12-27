@@ -9,9 +9,14 @@ namespace Hatchet.Extensions
     {
         public static IEnumerable<PropertyInfo> GetPropertiesToSerialize(this Type inputType)
         {
-            return inputType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(x => !x.HasAttribute<HatchetIgnoreAttribute>())
+            return GetNonIgnoredProperties(inputType)
                 .Where(x => x.SetMethod != null);
+        }
+
+        public static IEnumerable<PropertyInfo> GetNonIgnoredProperties(this Type inputType)
+        {
+            return inputType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(x => !x.HasAttribute<HatchetIgnoreAttribute>());
         }
 
         public static IEnumerable<FieldInfo> GetFieldsToSerialize(this Type inputType)
