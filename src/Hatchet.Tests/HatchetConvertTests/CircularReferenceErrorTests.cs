@@ -18,6 +18,17 @@ namespace Hatchet.Tests.HatchetConvertTests
             public ClassA PropertyA { get; set; }
             public int Value { get; set; }
         }
+
+        public class ClassC
+        {
+            public ClassA PropertyA1 { get; set; }
+            public ClassA PropertyA2 { get; set; }
+        }
+
+        public class ClassD
+        {
+            public ClassA[] PropertyA { get; set; }
+        }
         
         [Test]
         public void Serialize_ObjectGraphWithCircularReference_ExceptionIsThrown()
@@ -49,6 +60,39 @@ namespace Hatchet.Tests.HatchetConvertTests
                 }
             };
             
+            // Act & Assert
+            HatchetConvert.Serialize(input);
+        }
+
+        [Test]
+        public void Serialize_ObjectSerializedTwice_NoExceptionIsThrown()
+        {
+            // Arrange
+            var prop = new ClassA();
+            var input = new ClassC
+            {
+                PropertyA1 = prop,
+                PropertyA2 = prop
+            };
+
+            // Act & Assert
+            HatchetConvert.Serialize(input);
+        }
+
+        [Test]
+        public void Serialize_ObjectSerializedTwiceInList_NoExceptionIsThrown()
+        {
+            // Arrrange
+            var prop = new ClassA();
+            
+            var input = new ClassD
+            {
+                PropertyA = new[]
+                {
+                    prop, prop
+                }
+            };
+
             // Act & Assert
             HatchetConvert.Serialize(input);
         }

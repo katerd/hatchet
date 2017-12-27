@@ -25,7 +25,7 @@ namespace Hatchet
             PrettyPrinter prettyPrinter,
             bool forceClassName = false)
         {
-            prettyPrinter.MeetObject(input);
+            prettyPrinter.PushObjectRef(input);
             
             var context = new SerializationContext(input, prettyPrinter, forceClassName);
             
@@ -34,6 +34,7 @@ namespace Hatchet
                 if (conversionFunction.Item1(input))
                 {
                     conversionFunction.Item2(context);
+                    prettyPrinter.PopObjectRef(input);
                     return;
                 }
             }

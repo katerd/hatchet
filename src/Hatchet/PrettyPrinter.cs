@@ -22,7 +22,7 @@ namespace Hatchet
             _metObjects = new List<object>();
         }
 
-        public void MeetObject(object obj)
+        public void PushObjectRef(object obj)
         {
             var type = obj.GetType();
 
@@ -35,6 +35,11 @@ namespace Hatchet
             if (_metObjects.Contains(obj))
                 throw new CircularReferenceException(obj);
             _metObjects.Add(obj);
+        }
+
+        public void PopObjectRef(object obj)
+        {
+            _metObjects.Remove(obj);
         }
 
         public void AppendFormat(string str, params object[] args)
