@@ -199,6 +199,15 @@ namespace Hatchet
                     $"`{key}` is an invalid key. Key cannot contain spaces.");
             }
             
+            var type = value.GetType();
+            
+            if (type.IsValueType)
+            {
+                var comparable = Activator.CreateInstance(type);
+                if (value.Equals(comparable))
+                    return;
+            }
+            
             prettyPrinter.Append(' ', prettyPrinter.IndentLevel * IndentCount);
             prettyPrinter.Append(' ', IndentCount);
             prettyPrinter.Append(key);

@@ -22,7 +22,7 @@ namespace Hatchet
                 MakeSerialiser(o => o is ICollection, SerializeCollection),
                 MakeSerialiser(o => IsSimpleValue(o.GetType()), SerializeSimpleValue),
                 MakeSerialiser(o => o.GetType().IsEnum, SerializeEnum),
-                MakeSerialiser(o => o.GetType().IsClass || o.GetType().IsValueType, SerializeClassOrStruct)
+                MakeSerialiser(ShouldSerializeClassOrStruct, SerializeClassOrStruct)
             };
             
             DeserializationRules = new List<Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>>>
@@ -38,6 +38,11 @@ namespace Hatchet
                 MakeDeserializer(c => c.OutputType == typeof(Guid), DeserializeGuid),
                 MakeDeserializer(c => IsComplexType(c.OutputType), DeserializeComplexType)
             };
+        }
+
+        private static bool ShouldSerializeClassOrStruct(object value)
+        {
+            return value.GetType().IsClass || value.GetType().IsValueType;
         }
 
         private static void SerializeString(SerializationContext c)

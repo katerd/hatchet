@@ -68,6 +68,7 @@
     <Compile Include="HatchetConvertTests\DeserializeTests\StringListTests.cs" />
     <Compile Include="HatchetConvertTests\HatchetIgnoreTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\ArrayTests.cs" />
+    <Compile Include="HatchetConvertTests\SerializeTests\DontSerializeIfAllPropertiesAreDefault.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\HatchetValueAttributeTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\DictionaryTests.cs" />
     <Compile Include="HatchetConvertTests\SerializeTests\EnumerableTests.cs" />
