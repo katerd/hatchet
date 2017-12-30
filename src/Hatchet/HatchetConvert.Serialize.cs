@@ -222,5 +222,10 @@ namespace Hatchet
             Serialize(value, prettyPrinter, forceClassName);
             prettyPrinter.Deindent();
         }
+
+        private static void SerializeBoolean(SerializationContext context)
+        {
+            context.Printer.Append((bool)context.Input ? "true" : "false");
+        }
     }
 }

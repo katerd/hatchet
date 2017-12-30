@@ -96,7 +96,7 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             var result = HatchetConvert.Serialize(value);
 
             // Assert
-            result.Should().Be("True");
+            result.Should().Be("true");
         }
 
         [Test]

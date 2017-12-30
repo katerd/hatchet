@@ -20,6 +20,7 @@ namespace Hatchet
                 MakeSerialiser(o => o is IDictionary, SerializeDictionary),
                 MakeSerialiser(o => o.GetType().GenericTypeArguments.Length == 1, SerializeGenericEnumerable),
                 MakeSerialiser(o => o is ICollection, SerializeCollection),
+                MakeSerialiser(o => o is bool, SerializeBoolean),
                 MakeSerialiser(o => IsSimpleValue(o.GetType()), SerializeSimpleValue),
                 MakeSerialiser(o => o.GetType().IsEnum, SerializeEnum),
                 MakeSerialiser(ShouldSerializeClassOrStruct, SerializeClassOrStruct)

@@ -230,7 +230,7 @@ namespace Hatchet.Tests.ParserTests
         public void Parse_ObjectDefinitionWithSingleLineComments_ReturnsObjectWithCorrectValue()
         {
             // Arrange
-            var input = "{ // Magic incoming \n needsMagic True \n//\n// We always need magic\n// \n }";
+            var input = "{ // Magic incoming \n needsMagic true \n//\n// We always need magic\n// \n }";
 
             var parser = new Parser();
 
@@ -239,7 +239,7 @@ namespace Hatchet.Tests.ParserTests
 
             // Assert
             result.Should().NotBeNull();
-            ((string) result["needsMagic"]).Should().Be("True");
+            ((string) result["needsMagic"]).Should().Be("true");
         }
     }
 }
