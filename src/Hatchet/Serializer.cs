@@ -36,7 +36,7 @@ namespace Hatchet
         {
             PushObjectRef(input);
             
-            var context = new SerializationContext(input, this, forceClassName);
+            var context = new SerializationContext(this, forceClassName);
 
             var prettyPrinter = context.Serializer.PrettyPrinter;
             
@@ -46,7 +46,7 @@ namespace Hatchet
                     SerializeArray(arrayInput, context);
                     break;
                 case IDictionary dictionaryInput:
-                    SerializeDictionary(dictionaryInput, context);
+                    SerializeDictionary(dictionaryInput);
                     break;
                 case object genericEnumerable when genericEnumerable.GetType().GenericTypeArguments.Length == 1:
                     SerializeGenericEnumerable(genericEnumerable, context);
@@ -61,13 +61,13 @@ namespace Hatchet
                     SerializeBoolean(boolInput, prettyPrinter);
                     break;
                 case object simpleValue when IsSimpleValue(simpleValue.GetType()):
-                    SerializeSimpleValue(simpleValue, prettyPrinter);
+                    SerializeSimpleValue(simpleValue);
                     break;
                 case ICollection collectionInput:
                     SerializeCollection(collectionInput, context);
                     break;
                 case Enum enumValue when enumValue.GetType().IsEnum:
-                    SerializeEnum(enumValue, prettyPrinter);
+                    SerializeEnum(enumValue);
                     break;
                 case object classOrStruct when classOrStruct.GetType().IsClass || classOrStruct.GetType().IsValueType:
                     SerializeClassOrStruct(classOrStruct, context);
@@ -79,7 +79,7 @@ namespace Hatchet
             PopObjectRef(input);
         }
         
-        private static bool IsSimpleValue(Type inputType)
+        private bool IsSimpleValue(Type inputType)
         {
             return inputType.IsPrimitive 
                    || inputType == typeof(decimal) 
@@ -107,15 +107,15 @@ namespace Hatchet
             prettyPrinter.AppendOpenBlock();
             if (context.ForceClassName)
             {
-                WriteClassName(prettyPrinter, inputType);
+                WriteClassName(inputType);
             }
-            SerializeFieldsAndProperties(context);
+            SerializeFieldsAndProperties(input);
             prettyPrinter.AppendCloseBlock();
         }
         
-        private void SerializeFieldsAndProperties(SerializationContext context)
+        private void SerializeFieldsAndProperties(object input)
         {
-            var propertiesAndFields = GetPropertiesAndFields(context.Input);
+            var propertiesAndFields = GetPropertiesAndFields(input);
 
             foreach (var member in propertiesAndFields)
             {
@@ -128,16 +128,15 @@ namespace Hatchet
             SerializeKeyValue(member.Name, member.Value, member.IsValueAbstract);
         }
         
-        private static void WriteClassName(Serializer serializer, Type inputType)
+        private void WriteClassName(Type inputType)
         {
-            serializer.Append(' ', serializer.IndentLevel * IndentCount);
-            serializer.Append(' ', IndentCount);
-            serializer.AppendFormat("Class {0}", inputType.Name);
-            serializer.Append(LineEnding);
+            Append(' ', IndentLevel * IndentCount);
+            Append(' ', IndentCount);
+            AppendFormat("Class {0}", inputType.Name);
+            Append(LineEnding);
         }
 
-        private void SerializeKeyValue(string key, 
-            object value, bool forceClassName = false)
+        private void SerializeKeyValue(string key, object value, bool forceClassName = false)
         {
             if (value == null)
                 return;
@@ -187,14 +186,14 @@ namespace Hatchet
             }
         }
         
-        private static void SerializeEnum(object value, PrettyPrinter prettyPrinter)
+        private void SerializeEnum(object value)
         {
-            prettyPrinter.AppendEnum(value);
+             PrettyPrinter.AppendEnum(value);
         }
         
-        private static void SerializeSimpleValue(object input, PrettyPrinter prettyPrinter)
+        private void SerializeSimpleValue(object input)
         {
-            prettyPrinter.Append(input);
+            PrettyPrinter.Append(input);
         }
         
         private void SerializeGenericEnumerable(object input, SerializationContext context)
@@ -230,10 +229,9 @@ namespace Hatchet
             prettyPrinter.Append("]");
         }
         
-        private void SerializeDictionary(IDictionary input, SerializationContext context)
+        private void SerializeDictionary(IDictionary input)
         {
-            var serializer = context.Serializer;
-            var prettyPrinter = serializer.PrettyPrinter;
+            var prettyPrinter = PrettyPrinter;
 
             if (input.Count == 0)
             {
