@@ -38,8 +38,6 @@ namespace Hatchet
             
             var context = new SerializationContext(this, forceClassName);
 
-            var prettyPrinter = context.Serializer.PrettyPrinter;
-            
             switch (input)
             {
                 case Array arrayInput when arrayInput.GetType().IsArray:
@@ -52,13 +50,13 @@ namespace Hatchet
                     SerializeGenericEnumerable(genericEnumerable, context);
                     break;
                 case string strInput:
-                    SerializeString(strInput, prettyPrinter);
+                    SerializeString(strInput);
                     break;
                 case DateTime dateTimeInput:
-                    SerializeDateTime(dateTimeInput, prettyPrinter);
+                    SerializeDateTime(dateTimeInput);
                     break;
                 case bool boolInput:
-                    SerializeBoolean(boolInput, prettyPrinter);
+                    SerializeBoolean(boolInput);
                     break;
                 case object simpleValue when IsSimpleValue(simpleValue.GetType()):
                     SerializeSimpleValue(simpleValue);
@@ -100,17 +98,17 @@ namespace Hatchet
             if (customOutputValue != null)
             {
                 var value = customOutputValue.GetValue(input);
-                prettyPrinter.Append(value);
+                prettyPrinter.PrettyPrinter.Append(value);
                 return;
             }
-            
-            prettyPrinter.AppendOpenBlock();
+
+            prettyPrinter.PrettyPrinter.AppendOpenBlock();
             if (context.ForceClassName)
             {
                 WriteClassName(inputType);
             }
             SerializeFieldsAndProperties(input);
-            prettyPrinter.AppendCloseBlock();
+            prettyPrinter.PrettyPrinter.AppendCloseBlock();
         }
         
         private void SerializeFieldsAndProperties(object input)
@@ -130,10 +128,10 @@ namespace Hatchet
         
         private void WriteClassName(Type inputType)
         {
-            Append(' ', IndentLevel * IndentCount);
-            Append(' ', IndentCount);
-            AppendFormat("Class {0}", inputType.Name);
-            Append(LineEnding);
+            PrettyPrinter.Append(' ', IndentLevel * IndentCount);
+            PrettyPrinter.Append(' ', IndentCount);
+            PrettyPrinter.AppendFormat("Class {0}", new[] {inputType.Name});
+            PrettyPrinter.Append(LineEnding);
         }
 
         private void SerializeKeyValue(string key, object value, bool forceClassName = false)
@@ -155,20 +153,20 @@ namespace Hatchet
                 if (value.Equals(comparable) && !SerializeOptions.IncludeDefaultValues)
                     return;
             }
-            
-            Append(' ', IndentLevel * IndentCount);
-            Append(' ', IndentCount);
-            Append(key);
-            Append(' ');
+
+            PrettyPrinter.Append(' ', IndentLevel * IndentCount);
+            PrettyPrinter.Append(' ', IndentCount);
+            PrettyPrinter.Append(key);
+            PrettyPrinter.Append(' ');
             IndentAndSerialize(value, forceClassName);
-            Append(LineEnding);
+            PrettyPrinter.Append(LineEnding);
         }
 
         private void IndentAndSerialize(object value, bool forceClassName)
         {
-            Indent();
+            PrettyPrinter.Indent();
             StaticSerialize(value, forceClassName);
-            Deindent();
+            PrettyPrinter.Deindent();
         }
         
         private static IEnumerable<ISerializableMember> GetPropertiesAndFields(object input)
@@ -198,7 +196,6 @@ namespace Hatchet
         
         private void SerializeGenericEnumerable(object input, SerializationContext context)
         {
-            var prettyPrinter = context.Serializer;
             var forceClassName = context.ForceClassName;
 
             var elementType = input.GetType().GenericTypeArguments[0];
@@ -208,7 +205,7 @@ namespace Hatchet
 
             var enumerableType = typeof(IEnumerable<>).MakeGenericType(elementType);
 
-            prettyPrinter.Append("[");
+            PrettyPrinter.Append("[");
 
             if (enumerableType.IsInstanceOfType(input))
             {
@@ -218,7 +215,7 @@ namespace Hatchet
                 while (enumerator.MoveNext())
                 {
                     if (addSpace)
-                        prettyPrinter.AppendFormat(" ");
+                        PrettyPrinter.AppendFormat(" ");
                     addSpace = true;
 
                     var element = enumerator.Current;
@@ -226,25 +223,23 @@ namespace Hatchet
                 }
             }
 
-            prettyPrinter.Append("]");
+            PrettyPrinter.Append("]");
         }
         
         private void SerializeDictionary(IDictionary input)
         {
-            var prettyPrinter = PrettyPrinter;
-
             if (input.Count == 0)
             {
-                prettyPrinter.Append("{}");
+                PrettyPrinter.Append("{}");
                 return;
             }
 
-            prettyPrinter.AppendOpenBlock();
+            PrettyPrinter.AppendOpenBlock();
             foreach (var key in input.Keys)
             {
                 SerializeKeyValue(key.ToString(), input[key]);
             }
-            prettyPrinter.AppendCloseBlock();
+            PrettyPrinter.AppendCloseBlock();
         }
         
         private void SerializeCollection(IEnumerable collectionInput, SerializationContext context)
@@ -257,27 +252,26 @@ namespace Hatchet
             }
         }
         
-        private static void SerializeArray(Array inputArray, SerializationContext context)
+        private void SerializeArray(Array inputArray, SerializationContext context)
         {
             var values = inputArray.Select(x => HatchetConvert.Serialize(x, context.Serializer.SerializeOptions));
-            
-            context.Serializer.AppendFormat("[{0}]", string.Join(" ", 
-                values));
+
+            PrettyPrinter.AppendFormat("[{0}]", new[] {string.Join(" ", values)});
         }
 
-        private static void SerializeString(string input, PrettyPrinter prettyPrinter)
+        private void SerializeString(string input)
         {
-            prettyPrinter.AppendString(input);
+            PrettyPrinter.AppendString(input);
         }
 
-        private static void SerializeDateTime(DateTime input, PrettyPrinter prettyPrinter)
+        private void SerializeDateTime(DateTime input)
         {
-            prettyPrinter.AppendDateTime(input);
+            PrettyPrinter.AppendDateTime(input);
         }
 
-        private static void SerializeBoolean(bool input, PrettyPrinter prettyPrinter)
+        private void SerializeBoolean(bool input)
         {
-            prettyPrinter.Append(input ? "true" : "false");
+            PrettyPrinter.Append(input ? "true" : "false");
         }
 
         private void PushObjectRef(object obj)
@@ -298,51 +292,6 @@ namespace Hatchet
         private void PopObjectRef(object obj)
         {
             _metObjects.Remove(obj);
-        }
-
-        private void AppendFormat(string str, params object[] args)
-        {
-            PrettyPrinter.AppendFormat(str, args);
-        }
-
-        private void Indent()
-        {
-            PrettyPrinter.Indent();
-        }
-
-        private void Deindent()
-        {
-            PrettyPrinter.Deindent();
-        }
-
-        private void Append(string str)
-        {
-            PrettyPrinter.Append(str);
-        }
-
-        private void Append(char chr, int count)
-        {
-            PrettyPrinter.Append(chr, count);
-        }
-
-        private void Append(char chr)
-        {
-            PrettyPrinter.Append(chr);
-        }
-
-        private void Append(object obj)
-        {
-            PrettyPrinter.Append(obj);
-        }
-
-        private void AppendOpenBlock()
-        {
-            PrettyPrinter.AppendOpenBlock();
-        }
-
-        private void AppendCloseBlock()
-        {
-            PrettyPrinter.AppendCloseBlock();
         }
     }
 }
