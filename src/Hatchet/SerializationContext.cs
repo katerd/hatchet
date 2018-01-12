@@ -3,12 +3,12 @@ namespace Hatchet
     internal struct SerializationContext
     {
         public object Input { get; }
-        public Serializer Printer { get; }
+        public Serializer Serializer { get; }
         public bool ForceClassName { get; }
-        public SerializationContext(object input, Serializer printer, bool forceClassName)
+        public SerializationContext(object input, Serializer serializer, bool forceClassName)
         {
             Input = input;
-            Printer = printer;
+            Serializer = serializer;
             ForceClassName = forceClassName;
         }
     }

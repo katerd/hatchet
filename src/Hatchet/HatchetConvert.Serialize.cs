@@ -28,91 +28,10 @@ namespace Hatchet
             return stringBuilder.ToString();
         }
         
-        private static bool IsSimpleValue(Type inputType)
-        {
-            return inputType.IsPrimitive 
-                   || inputType == typeof(decimal) 
-                   || inputType == typeof(DateTime)
-                   || inputType == typeof(Guid);
-        }
-
-        private static void SerializeArray(SerializationContext context)
-        {
-            var inputArray = (Array) context.Input;
-            context.Printer.AppendFormat("[{0}]", string.Join(" ", inputArray.Select(Serialize)));
-        }
-
-        private static void SerializeCollection(SerializationContext context)
-        {
-            var input = context.Input;
-            var prettyPrinter = context.Printer;
-            var forceClassName = context.ForceClassName;
-            
-            var inputList = (ICollection) input;
-
-            foreach (var item in inputList)
-            {
-                IndentAndSerialize(prettyPrinter, item, forceClassName);
-            }
-        }
-
-        private static void SerializeGenericEnumerable(SerializationContext context)
-        {
-            var input = context.Input;
-            var prettyPrinter = context.Printer;
-            var forceClassName = context.ForceClassName;
-
-            var elementType = input.GetType().GenericTypeArguments[0];
-
-            if (elementType.IsAbstract)
-                forceClassName = true;
-
-            var enumerableType = typeof(IEnumerable<>).MakeGenericType(elementType);
-
-            prettyPrinter.Append("[");
-
-            if (enumerableType.IsInstanceOfType(input))
-            {
-                var enumerator = ((IEnumerable) input).GetEnumerator();
-
-                var addSpace = false;
-                while (enumerator.MoveNext())
-                {
-                    if (addSpace)
-                        prettyPrinter.AppendFormat(" ");
-                    addSpace = true;
-
-                    var element = enumerator.Current;
-                    IndentAndSerialize(prettyPrinter, element, forceClassName);
-                }
-            }
-
-            prettyPrinter.Append("]");
-        }
-
-        private static void SerializeDictionary(SerializationContext context)
-        {
-            var inputDictionary = (IDictionary) context.Input;
-            var prettyPrinter = context.Printer;
-
-            if (inputDictionary.Count == 0)
-            {
-                prettyPrinter.Append("{}");
-                return;
-            }
-
-            prettyPrinter.AppendOpenBlock();
-            foreach (var key in inputDictionary.Keys)
-            {
-                SerializeKeyValue(prettyPrinter, key.ToString(), inputDictionary[key]);
-            }
-            prettyPrinter.AppendCloseBlock();
-        }
-
         private static void SerializeClassOrStruct(SerializationContext context)
         {   
             var input = context.Input;
-            var prettyPrinter = context.Printer;
+            var prettyPrinter = context.Serializer;
 
             var inputType = input.GetType();
 
@@ -142,7 +61,7 @@ namespace Hatchet
 
             foreach (var member in propertiesAndFields)
             {
-                SerializeMember(context.Printer, member);
+                SerializeMember(context.Serializer, member);
             }
         }
 
@@ -174,7 +93,7 @@ namespace Hatchet
             serializer.Append(LineEnding);
         }
 
-        private static void SerializeKeyValue(Serializer serializer, string key, object value, bool forceClassName = false)
+        internal static void SerializeKeyValue(Serializer serializer, string key, object value, bool forceClassName = false)
         {
             if (value == null)
                 return;
@@ -202,16 +121,11 @@ namespace Hatchet
             serializer.Append(LineEnding);
         }
 
-        private static void IndentAndSerialize(Serializer serializer, object value, bool forceClassName)
+        internal static void IndentAndSerialize(Serializer serializer, object value, bool forceClassName)
         {
             serializer.Indent();
             Serializer.Serialize(value, serializer, forceClassName);
             serializer.Deindent();
-        }
-
-        private static void SerializeBoolean(SerializationContext context)
-        {
-            context.Printer.Append((bool)context.Input ? "true" : "false");
         }
     }
 }
