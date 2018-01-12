@@ -24,31 +24,10 @@ namespace Hatchet
             var prettyPrinter = new PrettyPrinter(stringBuilder);
             var serializer = new Serializer(prettyPrinter, stringBuilder, serializeOptions);
 
-            Serialize(input, serializer);
+            serializer.Serialize(input, serializer);
             return stringBuilder.ToString();
         }
         
-        private static void Serialize(
-            object input, 
-            Serializer serializer,
-            bool forceClassName = false)
-        {
-            serializer.PushObjectRef(input);
-            
-            var context = new SerializationContext(input, serializer, forceClassName);
-            
-            foreach (var conversionFunction in SerializationRules)
-            {
-                if (conversionFunction.Item1(input))
-                {
-                    conversionFunction.Item2(context);
-                    serializer.PopObjectRef(input);
-                    return;
-                }
-            }
-            throw new HatchetException($"Could not serialize {input} of type {input.GetType()}");
-        }
-
         private static bool IsSimpleValue(Type inputType)
         {
             return inputType.IsPrimitive 
@@ -226,7 +205,7 @@ namespace Hatchet
         private static void IndentAndSerialize(Serializer serializer, object value, bool forceClassName)
         {
             serializer.Indent();
-            Serialize(value, serializer, forceClassName);
+            serializer.Serialize(value, serializer, forceClassName);
             serializer.Deindent();
         }
 

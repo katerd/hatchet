@@ -25,6 +25,27 @@ namespace Hatchet
             _metObjects = new List<object>();
         }
 
+        internal void Serialize(
+            object input, 
+            Serializer serializer,
+            bool forceClassName = false)
+        {
+            serializer.PushObjectRef(input);
+            
+            var context = new SerializationContext(input, serializer, forceClassName);
+            
+            foreach (var conversionFunction in HatchetConvert.SerializationRules)
+            {
+                if (conversionFunction.Item1(input))
+                {
+                    conversionFunction.Item2(context);
+                    serializer.PopObjectRef(input);
+                    return;
+                }
+            }
+            throw new HatchetException($"Could not serialize {input} of type {input.GetType()}");
+        }
+
         public void PushObjectRef(object obj)
         {
             var type = obj.GetType();

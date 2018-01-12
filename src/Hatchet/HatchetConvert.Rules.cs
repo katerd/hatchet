@@ -7,8 +7,8 @@ namespace Hatchet
     public static partial class HatchetConvert
     {
         private static List<Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>>> DeserializationRules { get; }
-        
-        private static List<Tuple<Func<object, bool>, Action<SerializationContext>>> SerializationRules { get; }
+
+        internal static List<Tuple<Func<object, bool>, Action<SerializationContext>>> SerializationRules { get; }
         
         static HatchetConvert()
         {
