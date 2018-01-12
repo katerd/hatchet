@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularReferenceException.cs" />
+    <Compile Include="SerializeOptions.cs" />
     <Compile Include="DeserializationContext.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />

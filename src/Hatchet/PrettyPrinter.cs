@@ -10,15 +10,17 @@ namespace Hatchet
         private const int IndentCount = 2;
         
         private StringBuilder StringBuilder { get; }
+        public SerializeOptions SerializeOptions { get; }
 
         private readonly List<object> _metObjects;
         
         public int IndentLevel;
 
 
-        public PrettyPrinter(StringBuilder stringBuilder)
+        public PrettyPrinter(StringBuilder stringBuilder, SerializeOptions serializeOptions)
         {
             StringBuilder = stringBuilder;
+            SerializeOptions = serializeOptions;
             _metObjects = new List<object>();
         }
 

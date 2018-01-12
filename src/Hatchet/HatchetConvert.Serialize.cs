@@ -7,7 +7,7 @@ using Hatchet.Extensions;
 using Hatchet.Reflection;
 
 namespace Hatchet
-{    
+{
     public static partial class HatchetConvert
     {
         private const string LineEnding = "\n";
@@ -15,8 +15,14 @@ namespace Hatchet
 
         public static string Serialize(object input)
         {
+            return Serialize(input, new SerializeOptions());
+        }
+        
+        public static string Serialize(object input, SerializeOptions serializeOptions)
+        {
             var stringBuilder = new StringBuilder();
-            var prettyPrinter = new PrettyPrinter(stringBuilder);
+            var prettyPrinter = new PrettyPrinter(stringBuilder, serializeOptions);
+
             Serialize(input, prettyPrinter);
             return stringBuilder.ToString();
         }
@@ -204,7 +210,7 @@ namespace Hatchet
             if (type.IsValueType)
             {
                 var comparable = Activator.CreateInstance(type);
-                if (value.Equals(comparable))
+                if (value.Equals(comparable) && !prettyPrinter.SerializeOptions.IncludeDefaultValues)
                     return;
             }
             

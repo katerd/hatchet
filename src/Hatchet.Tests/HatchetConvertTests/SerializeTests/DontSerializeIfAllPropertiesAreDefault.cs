@@ -30,5 +30,31 @@ namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
             // Assert
             response.Should().Be("{\n}");
         }
+
+        [Test]
+        public void Serialize_StructWherePropertiesOnValueAreDefault_ValueIsNotSerialized()
+        {
+            // Arrange
+            var input = new Value();
+
+            // Act
+            var response = HatchetConvert.Serialize(input, new SerializeOptions { IncludeDefaultValues = false });
+
+            // Assert
+            response.Should().Be("{\n}");
+        }
+        
+        [Test]
+        public void Serialize_ObjectWhenPropertiesOnValueAreDefaultButConfigSaysOtherwise_ValuesAreSerialized()
+        {
+            // Arrange
+            var input = new Value();
+
+            // Act
+            var response = HatchetConvert.Serialize(input, new SerializeOptions { IncludeDefaultValues = true });
+
+            // Assert
+            response.Should().Be("{\n  A 0\n  B 0\n  C 0\n}");
+        }
     }
 }
