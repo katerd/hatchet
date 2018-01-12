@@ -7,18 +7,21 @@ namespace Hatchet
     internal class Serializer
     {
         private const string LineEnding = "\n";
-        private const int IndentCount = 2;
-        
+
+        public PrettyPrinter PrettyPrinter { get; }
         private StringBuilder StringBuilder { get; }
         public SerializeOptions SerializeOptions { get; }
 
-        private readonly List<object> _metObjects;
+        public int IndentLevel => PrettyPrinter.IndentLevel;
         
-        public int IndentLevel;
+        private readonly List<object> _metObjects;
 
-
-        public Serializer(StringBuilder stringBuilder, SerializeOptions serializeOptions)
+        public Serializer(
+            PrettyPrinter prettyPrinter, 
+            StringBuilder stringBuilder, 
+            SerializeOptions serializeOptions)
         {
+            PrettyPrinter = prettyPrinter;
             StringBuilder = stringBuilder;
             SerializeOptions = serializeOptions;
             _metObjects = new List<object>();
@@ -51,32 +54,32 @@ namespace Hatchet
 
         public void Indent()
         {
-            IndentLevel++;
+            PrettyPrinter.Indent();
         }
 
         public void Deindent()
         {
-            IndentLevel--;
+            PrettyPrinter.Deindent();
         }
 
         public void Append(string str)
         {
-            StringBuilder.Append(str);
+            PrettyPrinter.Append(str);
         }
 
         public void Append(char chr, int count)
         {
-            StringBuilder.Append(chr, count);
+            PrettyPrinter.Append(chr, count);
         }
 
         public void Append(char chr)
         {
-            StringBuilder.Append(chr);
+            PrettyPrinter.Append(chr);
         }
 
         public void Append(object obj)
         {
-            StringBuilder.Append(obj);
+            PrettyPrinter.Append(obj);
         }
 
         public void AppendOpenBlock()
@@ -87,8 +90,8 @@ namespace Hatchet
 
         public void AppendCloseBlock()
         {
-            Append(' ', IndentLevel * IndentCount);
-            Append("}");
+            PrettyPrinter.AppendCloseBlock();
+           
         }
 
         public void AppendEnum(object input)

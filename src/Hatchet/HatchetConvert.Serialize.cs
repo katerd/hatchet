@@ -21,9 +21,10 @@ namespace Hatchet
         public static string Serialize(object input, SerializeOptions serializeOptions)
         {
             var stringBuilder = new StringBuilder();
-            var prettyPrinter = new Serializer(stringBuilder, serializeOptions);
+            var prettyPrinter = new PrettyPrinter(stringBuilder);
+            var serializer = new Serializer(prettyPrinter, stringBuilder, serializeOptions);
 
-            Serialize(input, prettyPrinter);
+            Serialize(input, serializer);
             return stringBuilder.ToString();
         }
         
