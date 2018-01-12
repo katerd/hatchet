@@ -4,6 +4,7 @@ namespace Hatchet
 {
     internal class PrettyPrinter
     {
+        private const string LineEnding = "\n";
         private const int IndentCount = 2;
         
         public StringBuilder StringBuilder { get; }
@@ -22,6 +23,11 @@ namespace Hatchet
         public void Deindent()
         {
             IndentLevel--;
+        }
+        
+        public void AppendFormat(string str, params object[] args)
+        {
+            StringBuilder.AppendFormat(str, args);
         }
 
         public void AppendCloseBlock()
@@ -48,6 +54,25 @@ namespace Hatchet
         public void Append(object obj)
         {
             StringBuilder.Append(obj);
+        }
+        
+        public void AppendOpenBlock()
+        {
+            Append("{");
+            Append(LineEnding);
+        }
+        
+        public void AppendEnum(object input)
+        {
+            var strRepr = input.ToString();
+            if (strRepr.IndexOf(',') > 0)
+            {
+                AppendFormat("[{0}]", strRepr);
+            }
+            else
+            {
+                Append(strRepr);
+            }
         }
     }
 }

@@ -6,8 +6,6 @@ namespace Hatchet
 {
     internal class Serializer
     {
-        private const string LineEnding = "\n";
-
         public PrettyPrinter PrettyPrinter { get; }
         private StringBuilder StringBuilder { get; }
         public SerializeOptions SerializeOptions { get; }
@@ -49,7 +47,7 @@ namespace Hatchet
 
         public void AppendFormat(string str, params object[] args)
         {
-            StringBuilder.AppendFormat(str, args);
+            PrettyPrinter.AppendFormat(str, args);
         }
 
         public void Indent()
@@ -84,27 +82,17 @@ namespace Hatchet
 
         public void AppendOpenBlock()
         {
-            Append("{");
-            Append(LineEnding);
+            PrettyPrinter.AppendOpenBlock();
         }
 
         public void AppendCloseBlock()
         {
             PrettyPrinter.AppendCloseBlock();
-           
         }
 
         public void AppendEnum(object input)
         {
-            var strRepr = input.ToString();
-            if (strRepr.IndexOf(',') > 0)
-            {
-                AppendFormat("[{0}]", strRepr);
-            }
-            else
-            {
-                Append(strRepr);
-            }
+            PrettyPrinter.AppendEnum(input);
         }
 
         public void AppendDateTime(object input)
