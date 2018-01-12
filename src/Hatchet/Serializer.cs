@@ -97,70 +97,12 @@ namespace Hatchet
 
         public void AppendDateTime(object input)
         {
-            var inputAsDateTime = (DateTime) input;
-            AppendFormat("\"{0:O}\"", inputAsDateTime);
+            PrettyPrinter.AppendDateTime(input);
         }
 
         public void AppendString(string inputAsString)
         {
-            if (string.Equals(inputAsString, ""))
-            {
-                Append("\"\"");
-            }
-            else if (ContainsNewLines(inputAsString))
-            {
-                AppendFormat("![{0}]!", inputAsString);
-            }
-            else if (ShouldWriteWithSingleQuotes(inputAsString))
-            {
-                AppendFormat("'{0}'", inputAsString);
-            }
-            else if (ShouldWriteWithDoubleQuotes(inputAsString))
-            {
-                AppendFormat("\"{0}\"", inputAsString);
-            }
-            else if (ContainsSpaces(inputAsString))
-            {
-                AppendFormat("\"{0}\"", inputAsString.Replace("\"", "\\\""));
-            }
-            else
-            {
-                Append(inputAsString);
-            }
-        }
-
-        private static bool ShouldWriteWithDoubleQuotes(string inputAsString)
-        {
-            return ContainsSingleQuotes(inputAsString) && !ContainsDoubleQuotes(inputAsString);
-        }
-
-        private static bool ShouldWriteWithSingleQuotes(string inputAsString)
-        {
-            return ContainsDoubleQuotes(inputAsString) && !ContainsSingleQuotes(inputAsString);
-        }
-
-        private static bool ContainsNewLines(string inputAsString)
-        {
-            var containsNewLines = inputAsString.Contains("\r") || inputAsString.Contains("\n");
-            return containsNewLines;
-        }
-
-        private static bool ContainsSingleQuotes(string inputAsString)
-        {
-            var containsSingleQuotes = inputAsString.Contains("'");
-            return containsSingleQuotes;
-        }
-
-        private static bool ContainsDoubleQuotes(string inputAsString)
-        {
-            var containsDoubleQuotes = inputAsString.Contains("\"");
-            return containsDoubleQuotes;
-        }
-
-        private static bool ContainsSpaces(string inputAsString)
-        {
-            var containsSpaces = inputAsString.Contains(" ");
-            return containsSpaces;
+            PrettyPrinter.AppendString(inputAsString);
         }
     }
 }
