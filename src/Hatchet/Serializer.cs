@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +5,7 @@ namespace Hatchet
 {
     internal class Serializer
     {
-        public PrettyPrinter PrettyPrinter { get; }
+        private PrettyPrinter PrettyPrinter { get; }
         private StringBuilder StringBuilder { get; }
         public SerializeOptions SerializeOptions { get; }
 
@@ -25,7 +24,7 @@ namespace Hatchet
             _metObjects = new List<object>();
         }
 
-        internal void Serialize(
+        internal static void Serialize(
             object input, 
             Serializer serializer,
             bool forceClassName = false)
@@ -46,7 +45,7 @@ namespace Hatchet
             throw new HatchetException($"Could not serialize {input} of type {input.GetType()}");
         }
 
-        public void PushObjectRef(object obj)
+        private void PushObjectRef(object obj)
         {
             var type = obj.GetType();
 
@@ -61,7 +60,7 @@ namespace Hatchet
             _metObjects.Add(obj);
         }
 
-        public void PopObjectRef(object obj)
+        private void PopObjectRef(object obj)
         {
             _metObjects.Remove(obj);
         }

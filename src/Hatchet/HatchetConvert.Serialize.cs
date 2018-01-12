@@ -24,7 +24,7 @@ namespace Hatchet
             var prettyPrinter = new PrettyPrinter(stringBuilder);
             var serializer = new Serializer(prettyPrinter, stringBuilder, serializeOptions);
 
-            serializer.Serialize(input, serializer);
+            Serializer.Serialize(input, serializer);
             return stringBuilder.ToString();
         }
         
@@ -205,7 +205,7 @@ namespace Hatchet
         private static void IndentAndSerialize(Serializer serializer, object value, bool forceClassName)
         {
             serializer.Indent();
-            serializer.Serialize(value, serializer, forceClassName);
+            Serializer.Serialize(value, serializer, forceClassName);
             serializer.Deindent();
         }
 
