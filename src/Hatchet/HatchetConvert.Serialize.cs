@@ -18,7 +18,7 @@ namespace Hatchet
             var prettyPrinter = new PrettyPrinter(stringBuilder);
             var serializer = new Serializer(prettyPrinter, stringBuilder, serializeOptions);
 
-            Serializer.Serialize(input, serializer);
+            serializer.StaticSerialize(input);
             return stringBuilder.ToString();
         }
         

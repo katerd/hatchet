@@ -32,14 +32,11 @@ namespace Hatchet
             _metObjects = new List<object>();
         }
 
-        internal static void Serialize(
-            object input, 
-            Serializer serializer,
-            bool forceClassName = false)
+        internal void StaticSerialize(object input, bool forceClassName = false)
         {
-            serializer.PushObjectRef(input);
+            PushObjectRef(input);
             
-            var context = new SerializationContext(input, serializer, forceClassName);
+            var context = new SerializationContext(input, this, forceClassName);
 
             var prettyPrinter = context.Serializer.PrettyPrinter;
             
@@ -79,7 +76,7 @@ namespace Hatchet
                     throw new HatchetException($"Could not serialize {input} of type {input.GetType()}");
             }
             
-            serializer.PopObjectRef(input);
+            PopObjectRef(input);
         }
         
         private static bool IsSimpleValue(Type inputType)
@@ -90,7 +87,7 @@ namespace Hatchet
                    || inputType == typeof(Guid);
         }
         
-        private static void SerializeClassOrStruct(object input, SerializationContext context)
+        private void SerializeClassOrStruct(object input, SerializationContext context)
         {   
             var prettyPrinter = context.Serializer;
 
@@ -116,19 +113,19 @@ namespace Hatchet
             prettyPrinter.AppendCloseBlock();
         }
         
-        private static void SerializeFieldsAndProperties(SerializationContext context)
+        private void SerializeFieldsAndProperties(SerializationContext context)
         {
             var propertiesAndFields = GetPropertiesAndFields(context.Input);
 
             foreach (var member in propertiesAndFields)
             {
-                SerializeMember(context.Serializer, member);
+                SerializeMember(member);
             }
         }
         
-        private static void SerializeMember(Serializer serializer, ISerializableMember member)
+        private void SerializeMember(ISerializableMember member)
         {
-            SerializeKeyValue(serializer, member.Name, member.Value, member.IsValueAbstract);
+            SerializeKeyValue(member.Name, member.Value, member.IsValueAbstract);
         }
         
         private static void WriteClassName(Serializer serializer, Type inputType)
@@ -139,7 +136,7 @@ namespace Hatchet
             serializer.Append(LineEnding);
         }
 
-        private static void SerializeKeyValue(Serializer serializer, string key, 
+        private void SerializeKeyValue(string key, 
             object value, bool forceClassName = false)
         {
             if (value == null)
@@ -156,23 +153,23 @@ namespace Hatchet
             if (type.IsValueType)
             {
                 var comparable = Activator.CreateInstance(type);
-                if (value.Equals(comparable) && !serializer.SerializeOptions.IncludeDefaultValues)
+                if (value.Equals(comparable) && !SerializeOptions.IncludeDefaultValues)
                     return;
             }
             
-            serializer.Append(' ', serializer.IndentLevel * IndentCount);
-            serializer.Append(' ', IndentCount);
-            serializer.Append(key);
-            serializer.Append(' ');
-            IndentAndSerialize(serializer, value, forceClassName);
-            serializer.Append(LineEnding);
+            Append(' ', IndentLevel * IndentCount);
+            Append(' ', IndentCount);
+            Append(key);
+            Append(' ');
+            IndentAndSerialize(value, forceClassName);
+            Append(LineEnding);
         }
 
-        private static void IndentAndSerialize(Serializer serializer, object value, bool forceClassName)
+        private void IndentAndSerialize(object value, bool forceClassName)
         {
-            serializer.Indent();
-            Serialize(value, serializer, forceClassName);
-            serializer.Deindent();
+            Indent();
+            StaticSerialize(value, forceClassName);
+            Deindent();
         }
         
         private static IEnumerable<ISerializableMember> GetPropertiesAndFields(object input)
@@ -200,7 +197,7 @@ namespace Hatchet
             prettyPrinter.Append(input);
         }
         
-        private static void SerializeGenericEnumerable(object input, SerializationContext context)
+        private void SerializeGenericEnumerable(object input, SerializationContext context)
         {
             var prettyPrinter = context.Serializer;
             var forceClassName = context.ForceClassName;
@@ -226,14 +223,14 @@ namespace Hatchet
                     addSpace = true;
 
                     var element = enumerator.Current;
-                    IndentAndSerialize(prettyPrinter, element, forceClassName);
+                    IndentAndSerialize(element, forceClassName);
                 }
             }
 
             prettyPrinter.Append("]");
         }
         
-        private static void SerializeDictionary(IDictionary input, SerializationContext context)
+        private void SerializeDictionary(IDictionary input, SerializationContext context)
         {
             var serializer = context.Serializer;
             var prettyPrinter = serializer.PrettyPrinter;
@@ -247,18 +244,18 @@ namespace Hatchet
             prettyPrinter.AppendOpenBlock();
             foreach (var key in input.Keys)
             {
-                SerializeKeyValue(serializer, key.ToString(), input[key]);
+                SerializeKeyValue(key.ToString(), input[key]);
             }
             prettyPrinter.AppendCloseBlock();
         }
         
-        private static void SerializeCollection(IEnumerable collectionInput, SerializationContext context)
+        private void SerializeCollection(IEnumerable collectionInput, SerializationContext context)
         {
             var forceClassName = context.ForceClassName;
 
             foreach (var item in collectionInput)
             {
-                IndentAndSerialize(context.Serializer, item, forceClassName);
+                IndentAndSerialize(item, forceClassName);
             }
         }
         
