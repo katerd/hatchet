@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hatchet
 {
-    internal class PrettyPrinter
+    internal class Serializer
     {
         private const string LineEnding = "\n";
         private const int IndentCount = 2;
@@ -17,7 +17,7 @@ namespace Hatchet
         public int IndentLevel;
 
 
-        public PrettyPrinter(StringBuilder stringBuilder, SerializeOptions serializeOptions)
+        public Serializer(StringBuilder stringBuilder, SerializeOptions serializeOptions)
         {
             StringBuilder = stringBuilder;
             SerializeOptions = serializeOptions;

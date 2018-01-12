@@ -21,7 +21,7 @@ namespace Hatchet
         public static string Serialize(object input, SerializeOptions serializeOptions)
         {
             var stringBuilder = new StringBuilder();
-            var prettyPrinter = new PrettyPrinter(stringBuilder, serializeOptions);
+            var prettyPrinter = new Serializer(stringBuilder, serializeOptions);
 
             Serialize(input, prettyPrinter);
             return stringBuilder.ToString();
@@ -29,19 +29,19 @@ namespace Hatchet
         
         private static void Serialize(
             object input, 
-            PrettyPrinter prettyPrinter,
+            Serializer serializer,
             bool forceClassName = false)
         {
-            prettyPrinter.PushObjectRef(input);
+            serializer.PushObjectRef(input);
             
-            var context = new SerializationContext(input, prettyPrinter, forceClassName);
+            var context = new SerializationContext(input, serializer, forceClassName);
             
             foreach (var conversionFunction in SerializationRules)
             {
                 if (conversionFunction.Item1(input))
                 {
                     conversionFunction.Item2(context);
-                    prettyPrinter.PopObjectRef(input);
+                    serializer.PopObjectRef(input);
                     return;
                 }
             }
@@ -166,9 +166,9 @@ namespace Hatchet
             }
         }
 
-        private static void SerializeMember(PrettyPrinter prettyPrinter, ISerializableMember member)
+        private static void SerializeMember(Serializer serializer, ISerializableMember member)
         {
-            SerializeKeyValue(prettyPrinter, member.Name, member.Value, member.IsValueAbstract);
+            SerializeKeyValue(serializer, member.Name, member.Value, member.IsValueAbstract);
         }
 
         private static IEnumerable<ISerializableMember> GetPropertiesAndFields(object input)
@@ -186,15 +186,15 @@ namespace Hatchet
             }
         }
 
-        private static void WriteClassName(PrettyPrinter prettyPrinter, Type inputType)
+        private static void WriteClassName(Serializer serializer, Type inputType)
         {
-            prettyPrinter.Append(' ', prettyPrinter.IndentLevel * IndentCount);
-            prettyPrinter.Append(' ', IndentCount);
-            prettyPrinter.AppendFormat("Class {0}", inputType.Name);
-            prettyPrinter.Append(LineEnding);
+            serializer.Append(' ', serializer.IndentLevel * IndentCount);
+            serializer.Append(' ', IndentCount);
+            serializer.AppendFormat("Class {0}", inputType.Name);
+            serializer.Append(LineEnding);
         }
 
-        private static void SerializeKeyValue(PrettyPrinter prettyPrinter, string key, object value, bool forceClassName = false)
+        private static void SerializeKeyValue(Serializer serializer, string key, object value, bool forceClassName = false)
         {
             if (value == null)
                 return;
@@ -210,23 +210,23 @@ namespace Hatchet
             if (type.IsValueType)
             {
                 var comparable = Activator.CreateInstance(type);
-                if (value.Equals(comparable) && !prettyPrinter.SerializeOptions.IncludeDefaultValues)
+                if (value.Equals(comparable) && !serializer.SerializeOptions.IncludeDefaultValues)
                     return;
             }
             
-            prettyPrinter.Append(' ', prettyPrinter.IndentLevel * IndentCount);
-            prettyPrinter.Append(' ', IndentCount);
-            prettyPrinter.Append(key);
-            prettyPrinter.Append(' ');
-            IndentAndSerialize(prettyPrinter, value, forceClassName);
-            prettyPrinter.Append(LineEnding);
+            serializer.Append(' ', serializer.IndentLevel * IndentCount);
+            serializer.Append(' ', IndentCount);
+            serializer.Append(key);
+            serializer.Append(' ');
+            IndentAndSerialize(serializer, value, forceClassName);
+            serializer.Append(LineEnding);
         }
 
-        private static void IndentAndSerialize(PrettyPrinter prettyPrinter, object value, bool forceClassName)
+        private static void IndentAndSerialize(Serializer serializer, object value, bool forceClassName)
         {
-            prettyPrinter.Indent();
-            Serialize(value, prettyPrinter, forceClassName);
-            prettyPrinter.Deindent();
+            serializer.Indent();
+            Serialize(value, serializer, forceClassName);
+            serializer.Deindent();
         }
 
         private static void SerializeBoolean(SerializationContext context)
