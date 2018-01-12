@@ -15,9 +15,9 @@ namespace Hatchet
         
         private PrettyPrinter PrettyPrinter { get; }
         private StringBuilder StringBuilder { get; }
-        public SerializeOptions SerializeOptions { get; }
+        private SerializeOptions SerializeOptions { get; }
 
-        public int IndentLevel => PrettyPrinter.IndentLevel;
+        private int IndentLevel => PrettyPrinter.IndentLevel;
         
         private readonly List<object> _metObjects;
 
@@ -226,7 +226,7 @@ namespace Hatchet
                     addSpace = true;
 
                     var element = enumerator.Current;
-                    HatchetConvert.IndentAndSerialize(prettyPrinter, element, forceClassName);
+                    IndentAndSerialize(prettyPrinter, element, forceClassName);
                 }
             }
 
@@ -247,7 +247,7 @@ namespace Hatchet
             prettyPrinter.AppendOpenBlock();
             foreach (var key in input.Keys)
             {
-                HatchetConvert.SerializeKeyValue(serializer, key.ToString(), input[key]);
+                SerializeKeyValue(serializer, key.ToString(), input[key]);
             }
             prettyPrinter.AppendCloseBlock();
         }
@@ -258,7 +258,7 @@ namespace Hatchet
 
             foreach (var item in collectionInput)
             {
-                HatchetConvert.IndentAndSerialize(context.Serializer, item, forceClassName);
+                IndentAndSerialize(context.Serializer, item, forceClassName);
             }
         }
         
@@ -305,47 +305,47 @@ namespace Hatchet
             _metObjects.Remove(obj);
         }
 
-        public void AppendFormat(string str, params object[] args)
+        private void AppendFormat(string str, params object[] args)
         {
             PrettyPrinter.AppendFormat(str, args);
         }
 
-        public void Indent()
+        private void Indent()
         {
             PrettyPrinter.Indent();
         }
 
-        public void Deindent()
+        private void Deindent()
         {
             PrettyPrinter.Deindent();
         }
 
-        public void Append(string str)
+        private void Append(string str)
         {
             PrettyPrinter.Append(str);
         }
 
-        public void Append(char chr, int count)
+        private void Append(char chr, int count)
         {
             PrettyPrinter.Append(chr, count);
         }
 
-        public void Append(char chr)
+        private void Append(char chr)
         {
             PrettyPrinter.Append(chr);
         }
 
-        public void Append(object obj)
+        private void Append(object obj)
         {
             PrettyPrinter.Append(obj);
         }
 
-        public void AppendOpenBlock()
+        private void AppendOpenBlock()
         {
             PrettyPrinter.AppendOpenBlock();
         }
 
-        public void AppendCloseBlock()
+        private void AppendCloseBlock()
         {
             PrettyPrinter.AppendCloseBlock();
         }
