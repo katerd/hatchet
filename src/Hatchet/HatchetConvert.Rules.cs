@@ -14,8 +14,6 @@ namespace Hatchet
         {
             SerializationRules = new List<Tuple<Func<object, bool>, Action<SerializationContext>>>
             {
-                MakeSerialiser(o => o is string, SerializeString),
-                MakeSerialiser(o => o is DateTime, SerializeDateTime),
                 MakeSerialiser(o => o.GetType().IsArray, SerializeArray),
                 MakeSerialiser(o => o is IDictionary, SerializeDictionary),
                 MakeSerialiser(o => o.GetType().GenericTypeArguments.Length == 1, SerializeGenericEnumerable),
@@ -46,14 +44,14 @@ namespace Hatchet
             return value.GetType().IsClass || value.GetType().IsValueType;
         }
 
-        private static void SerializeString(SerializationContext c)
+        internal static void SerializeString(string input, SerializationContext c)
         {
-            c.Printer.AppendString(c.Input as string);
+            c.Printer.AppendString(input);
         }
 
-        private static void SerializeDateTime(SerializationContext c)
+        internal static void SerializeDateTime(DateTime input, SerializationContext c)
         {
-            c.Printer.AppendDateTime((DateTime)c.Input);
+            c.Printer.AppendDateTime(input);
         }
 
         private static void SerializeSimpleValue(SerializationContext c)

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Hatchet
@@ -32,6 +34,16 @@ namespace Hatchet
             serializer.PushObjectRef(input);
             
             var context = new SerializationContext(input, serializer, forceClassName);
+
+            switch (input)
+            {
+                case string strInput:
+                    HatchetConvert.SerializeString(strInput, context);
+                    return;
+                case DateTime dateTimeInput:
+                    HatchetConvert.SerializeDateTime(dateTimeInput, context);
+                    return;
+            }
             
             foreach (var conversionFunction in HatchetConvert.SerializationRules)
             {
