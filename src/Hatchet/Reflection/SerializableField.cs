@@ -5,7 +5,7 @@ namespace Hatchet.Reflection
     internal class SerializableField : ISerializableMember
     {
         private readonly FieldInfo _fieldInfo;
-        private object _obj;
+        private readonly object _obj;
 
         public SerializableField(FieldInfo fieldInfo, object obj)
         {

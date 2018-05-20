@@ -7,8 +7,9 @@ namespace Hatchet
     {
         private const string LineEnding = "\n";
         private const int IndentCount = 2;
+
+        private StringBuilder StringBuilder { get; }
         
-        public StringBuilder StringBuilder { get; }
         public int IndentLevel;
 
         public PrettyPrinter(StringBuilder stringBuilder)

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Hatchet.Extensions;
 using Hatchet.Reflection;
 
@@ -14,7 +13,6 @@ namespace Hatchet
         private const int IndentCount = 2;
         
         private PrettyPrinter PrettyPrinter { get; }
-        private StringBuilder StringBuilder { get; }
         private SerializeOptions SerializeOptions { get; }
 
         private int IndentLevel => PrettyPrinter.IndentLevel;
@@ -23,25 +21,23 @@ namespace Hatchet
 
         public Serializer(
             PrettyPrinter prettyPrinter, 
-            StringBuilder stringBuilder, 
             SerializeOptions serializeOptions)
         {
             PrettyPrinter = prettyPrinter;
-            StringBuilder = stringBuilder;
             SerializeOptions = serializeOptions;
             _metObjects = new List<object>();
         }
-
-        internal void StaticSerialize(object input, bool forceClassName = false)
+        
+        public void Serialize(object input, bool forceClassName = false)
         {
             PushObjectRef(input);
             
-            var context = new SerializationContext(this, forceClassName);
+            var context = new SerializationContext(forceClassName);
 
             switch (input)
             {
                 case Array arrayInput when arrayInput.GetType().IsArray:
-                    SerializeArray(arrayInput, context);
+                    SerializeArray(arrayInput);
                     break;
                 case IDictionary dictionaryInput:
                     SerializeDictionary(dictionaryInput);
@@ -86,9 +82,7 @@ namespace Hatchet
         }
         
         private void SerializeClassOrStruct(object input, SerializationContext context)
-        {   
-            var prettyPrinter = context.Serializer;
-
+        {
             var inputType = input.GetType();
 
             var customOutputValue = inputType
@@ -98,17 +92,17 @@ namespace Hatchet
             if (customOutputValue != null)
             {
                 var value = customOutputValue.GetValue(input);
-                prettyPrinter.PrettyPrinter.Append(value);
+                PrettyPrinter.Append(value);
                 return;
             }
 
-            prettyPrinter.PrettyPrinter.AppendOpenBlock();
+            PrettyPrinter.AppendOpenBlock();
             if (context.ForceClassName)
             {
                 WriteClassName(inputType);
             }
             SerializeFieldsAndProperties(input);
-            prettyPrinter.PrettyPrinter.AppendCloseBlock();
+            PrettyPrinter.AppendCloseBlock();
         }
         
         private void SerializeFieldsAndProperties(object input)
@@ -130,7 +124,7 @@ namespace Hatchet
         {
             PrettyPrinter.Append(' ', IndentLevel * IndentCount);
             PrettyPrinter.Append(' ', IndentCount);
-            PrettyPrinter.AppendFormat("Class {0}", new[] {inputType.Name});
+            PrettyPrinter.AppendFormat("Class {0}", inputType.Name);
             PrettyPrinter.Append(LineEnding);
         }
 
@@ -165,7 +159,7 @@ namespace Hatchet
         private void IndentAndSerialize(object value, bool forceClassName)
         {
             PrettyPrinter.Indent();
-            StaticSerialize(value, forceClassName);
+            Serialize(value, forceClassName);
             PrettyPrinter.Deindent();
         }
         
@@ -252,11 +246,11 @@ namespace Hatchet
             }
         }
         
-        private void SerializeArray(Array inputArray, SerializationContext context)
+        private void SerializeArray(Array inputArray)
         {
-            var values = inputArray.Select(x => HatchetConvert.Serialize(x, context.Serializer.SerializeOptions));
+            var values = inputArray.Select(x => HatchetConvert.Serialize(x, SerializeOptions));
 
-            PrettyPrinter.AppendFormat("[{0}]", new[] {string.Join(" ", values)});
+            PrettyPrinter.AppendFormat("[{0}]", string.Join(" ", values));
         }
 
         private void SerializeString(string input)
