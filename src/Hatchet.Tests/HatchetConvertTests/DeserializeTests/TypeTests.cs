@@ -59,6 +59,34 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
         }
 
         [Test]
+        public void Deserialize_CollectionOfAbstractTypesByName_CollectionIsReturned()
+        {
+            // Arrange
+            var input = "[ @One { Value COne } @Two { Value CTwo } ]";
+
+            // Act
+            var result = HatchetConvert.Deserialize<IEnumerable<Base>>(input).ToList();
+
+            // Assert
+            result.Should().HaveCount(2);
+            ((One) result[0]).Value.Should().Be("COne");
+            ((Two) result[1]).Value.Should().Be("CTwo");
+        }
+        
+        [Test]
+        public void Deserialize_CollectionOfAbstractTypesByNameWithDefaultValues_CollectionIsReturned()
+        {
+            // Arrange
+            var input = "[ @One @Two ]";
+
+            // Act
+            var result = HatchetConvert.Deserialize<IEnumerable<Base>>(input).ToList();
+
+            // Assert
+            result.Should().HaveCount(2);
+        }
+
+        [Test]
         public void Deserialize_CollectionOfAbstractTypes_CollectionIsReturned()
         {
             // Arrange

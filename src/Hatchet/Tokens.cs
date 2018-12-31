@@ -23,5 +23,7 @@
 
         public const string TextBlockOpen = "![";
         public const string TextBlockClose = "]!";
+        
+        public const string ShortFormClass = "@";
     }
 }

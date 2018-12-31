@@ -9,7 +9,7 @@ namespace Hatchet
 {
     public static partial class HatchetConvert
     {
-        private const string ClassNameKey = "Class";
+        internal const string ClassNameKey = "Class";
 
         public static T Deserialize<T>(string input)
         {

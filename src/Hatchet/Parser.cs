@@ -68,6 +68,27 @@ namespace Hatchet
                     return ReadTextBlock();
                 }
 
+                if (Peek(Tokens.ShortFormClass))
+                {
+                    Expect(Tokens.ShortFormClass);
+                    var className = ReadValue();
+                    ChompWhitespace();
+
+                    if (!Peek(Tokens.ObjectOpen))
+                    {
+                        return new Dictionary<string, object>
+                        {
+                            {
+                                HatchetConvert.ClassNameKey, className
+                            }
+                        };
+                    }
+                    
+                    var definition = ReadDefinitions();
+                    definition[HatchetConvert.ClassNameKey] = className;
+                    return definition;
+                }
+
                 return ReadNakedValue();
             }
         }
