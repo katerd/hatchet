@@ -38,7 +38,7 @@ Hatchet is a text-based data format with features borrowed or ignored from JSON,
 
 ## Requirements
 
-  - .NET Framework 4.5
+  - .NET Standard 2.0
 
 ## Installation
 
@@ -93,10 +93,10 @@ MIT
   * Stream support.
   * Custom object serialization handlers.
   * ~~Deserialization of objects without parameterless constructors.~~
-  * Support .net core.
+  * ~~Support .net core.~~
 
 ## Building and packaging
 
 ```
-PS> build.ps1 -packageVersion 0.x.y
+PS> build.ps1 -PackageVersion 0.x.y
 ```

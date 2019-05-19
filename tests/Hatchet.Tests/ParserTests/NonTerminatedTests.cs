@@ -17,7 +17,7 @@ namespace Hatchet.Tests.ParserTests
             // Act
             // Assert
             parser.Invoking(p => p.Parse(ref input))
-                .ShouldThrow<HatchetException>()
+                .Should().Throw<HatchetException>()
                 .WithMessage("Expected any of `}` at byte 5");
         }
 
@@ -32,7 +32,7 @@ namespace Hatchet.Tests.ParserTests
             // Act
             // Assert
             parser.Invoking(p => p.Parse(ref input))
-                .ShouldThrow<HatchetException>()
+                .Should().Throw<HatchetException>()
                 .WithMessage("List opened at byte 1 is not closed");
         }
 
@@ -47,7 +47,7 @@ namespace Hatchet.Tests.ParserTests
             // Act
             // Assert
             parser.Invoking(p => p.Parse(ref input))
-                .ShouldThrow<HatchetException>()
+                .Should().Throw<HatchetException>()
                 .WithMessage("Expected `}` at byte 2");
         }
 
@@ -62,7 +62,7 @@ namespace Hatchet.Tests.ParserTests
             // Act
             // Assert
             parser.Invoking(p => p.Parse(ref input))
-                .ShouldThrow<HatchetException>()
+                .Should().Throw<HatchetException>()
                 .WithMessage("String starting at byte 1 is not terminated");
         }
 
@@ -77,7 +77,7 @@ namespace Hatchet.Tests.ParserTests
             // Act
             // Assert
             parser.Invoking(p => p.Parse(ref input))
-                .ShouldThrow<HatchetException>()
+                .Should().Throw<HatchetException>()
                 .WithMessage("String starting at byte 15 is not terminated");
         }
     }

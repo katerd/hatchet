@@ -17,7 +17,7 @@ namespace Hatchet.Tests.ParserTests
             // Act
             // Assert
             parser.Invoking(p => p.Parse(ref input))
-                .ShouldThrow<HatchetException>()
+                .Should().Throw<HatchetException>()
                 .WithMessage("Property `name` defined at byte 3 is missing a value");
         }
     }

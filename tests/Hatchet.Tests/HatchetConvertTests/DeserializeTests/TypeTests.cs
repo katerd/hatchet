@@ -137,7 +137,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             Action act = () => HatchetConvert.Deserialize<TwoTaggedConstructors>(input);
 
             // Assert
-            act.ShouldThrow<HatchetException>()
+            act.Should().Throw<HatchetException>()
                 .WithMessage("Only one constructor can be tagged with [HatchetConstructor]");
         }
 

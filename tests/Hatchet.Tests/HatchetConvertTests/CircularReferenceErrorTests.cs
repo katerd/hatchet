@@ -44,7 +44,7 @@ namespace Hatchet.Tests.HatchetConvertTests
             Action t = () => HatchetConvert.Serialize(input);
             
             // Assert
-            t.ShouldThrow<CircularReferenceException>();
+            t.Should().Throw<CircularReferenceException>();
         }
 
         [Test]

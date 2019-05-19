@@ -35,7 +35,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             Action action = () => HatchetConvert.Deserialize<NoValidCtor>(input);
 
             // Assert
-            action.ShouldThrow<HatchetException>().And.Message.Should()
+            action.Should().Throw<HatchetException>().And.Message.Should()
                 .Contain("NoValidCtor").And.Contain("constructor");
         }
 
@@ -49,7 +49,7 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             Action action = () => HatchetConvert.Deserialize<Demo>(input);
 
             // Assert
-            action.ShouldThrow<HatchetException>().And.Message.Should()
+            action.Should().Throw<HatchetException>().And.Message.Should()
                 .Contain("Type is not registered").And.Contain("Demo");
         }
     }

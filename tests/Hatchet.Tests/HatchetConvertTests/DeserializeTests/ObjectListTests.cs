@@ -59,5 +59,21 @@ namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
             result.Should().HaveCount(3);
             result[2].Value.Should().Be("StaticConstructor-TastyBacon");
         }
+
+        [Test]
+        public void Deserialize_ListOfTestObjectUsingSingleParameterHatchetConstructor_InstancesAreCreated()
+        {
+            // Arrange
+            var input = "[super tasty bacon]";
+            
+            // Act
+            var result = HatchetConvert.Deserialize<List<TestListObject>>(input);
+
+            // Assert
+            result.Should().HaveCount(3);
+            result[0].Value.Should().Be("StaticConstructor-super");
+            result[1].Value.Should().Be("StaticConstructor-tasty");
+            result[2].Value.Should().Be("StaticConstructor-bacon");
+        }
     }
 }
