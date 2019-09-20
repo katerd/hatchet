@@ -35,8 +35,16 @@ namespace Hatchet
             return withAttrs;
         }
 
+        private static readonly Dictionary<Type, MethodInfo>
+            SingleStringConstructor = new Dictionary<Type, MethodInfo>();
+        
         internal static MethodInfo FindStaticConstructorMethodWithSingleStringParameter(Type type)
         {
+            if (SingleStringConstructor.TryGetValue(type, out var method))
+            {
+                return method;
+            }
+            
             var scm = type.GetMethods()
                 .Where(x => x.HasAttribute<HatchetConstructorAttribute>())
                 .Where(x => x.IsStatic)
@@ -49,6 +57,9 @@ namespace Hatchet
 
                     return pc[0].ParameterType == typeof(string);
                 });
+
+            SingleStringConstructor[type] = scm;
+            
             return scm;
         }
 

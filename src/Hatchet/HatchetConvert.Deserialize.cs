@@ -22,9 +22,11 @@ namespace Hatchet
         private static object DeserializeObject(object result, Type type)
         {
             var context = new DeserializationContext(result, type);
-            
-            foreach (var rule in DeserializationRules)
+
+            var count = DeserializationRules.Count;
+            for (var index = 0; index < count; index++)
             {
+                var rule = DeserializationRules[index];
                 if (rule.Item1(context))
                 {
                     return rule.Item2(context);
@@ -253,19 +255,19 @@ namespace Hatchet
             return type;
         }
 
-        private static void SetComplexTypeProperties(Type type, Dictionary<string, object> inputValues, object output)
+        private static void SetComplexTypeProperties(
+            Type type, 
+            Dictionary<string, object> inputValues, 
+            object output)
         {
-            var props = type.GetProperties();
-            foreach (var prop in props)
+            var props = GetWritablePropertiesForType(type);
+
+            var propsCount = props.Length;
+            for (var index = 0; index < propsCount; index++)
             {
-                if (prop.HasAttribute<HatchetIgnoreAttribute>())
-                    continue;
-
+                var prop = props[index];
                 var propName = prop.Name;
-
-                if (!prop.CanWrite)
-                    continue;
-
+                
                 if (!inputValues.ContainsKey(propName))
                     continue;
 
@@ -274,14 +276,50 @@ namespace Hatchet
             }
         }
 
-        private static void SetComplexTypeFields(Type type, Dictionary<string, object> inputValues, object output)
-        {
-            var fields = type.GetFields();
-            foreach (var field in fields)
-            {
-                if (field.HasAttribute<HatchetIgnoreAttribute>())
-                    continue;
+        private static readonly Dictionary<Type, PropertyInfo[]> PropertyInfoCache =
+            new Dictionary<Type, PropertyInfo[]>();
 
+        private static PropertyInfo[] GetWritablePropertiesForType(Type type)
+        {
+            if (PropertyInfoCache.TryGetValue(type, out var propertyInfo))
+                return propertyInfo;
+
+            propertyInfo = type
+                .GetProperties()
+                .Where(x => x.CanWrite && !x.HasAttribute<HatchetIgnoreAttribute>())
+                .ToArray();
+
+            PropertyInfoCache[type] = propertyInfo;
+
+            return propertyInfo;
+        }
+        
+        private static readonly Dictionary<Type, FieldInfo[]> FieldInfoCache =
+            new Dictionary<Type, FieldInfo[]>();
+
+        private static FieldInfo[] GetFieldsForType(Type type)
+        {
+            if (FieldInfoCache.TryGetValue(type, out var fieldInfo))
+                return fieldInfo;
+
+            fieldInfo = type.GetFields()
+                .Where(x => !x.HasAttribute<HatchetIgnoreAttribute>())
+                .ToArray();
+
+            FieldInfoCache[type] = fieldInfo;
+
+            return fieldInfo;
+        }
+        
+        private static void SetComplexTypeFields(
+            Type type, 
+            Dictionary<string, object> inputValues, 
+            object output)
+        {
+            var fields = GetFieldsForType(type);
+            for (var index = 0; index < fields.Length; index++)
+            {
+                var field = fields[index];
                 var fieldName = field.Name;
 
                 if (!inputValues.ContainsKey(fieldName))

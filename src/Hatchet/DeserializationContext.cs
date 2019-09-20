@@ -4,8 +4,8 @@ namespace Hatchet
 {
     internal struct DeserializationContext
     {
-        public object Input { get; }
-        public Type OutputType { get; }
+        public readonly object Input;
+        public readonly Type OutputType;
 
         public DeserializationContext(object input, Type outputType)
         {

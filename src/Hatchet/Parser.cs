@@ -10,15 +10,22 @@ namespace Hatchet
     {
         private int _index;
         private string _input;
-
+        
+        public static readonly Dictionary<string, object> Cache = new Dictionary<string, object>();
+        
         public object Parse(ref string input)
         {
-            Debug.WriteLine($"Parser Input '{input}'");
-
+            if (Cache.TryGetValue(input, out var obj))
+                return obj;
+            
             _input = input;
             _index = 0;
 
-            return ReadValue();
+            obj = ReadValue();
+
+            Cache[input] = obj;
+            
+            return obj;
         }
 
         private object ReadValue()
