@@ -4,11 +4,8 @@ namespace Hatchet;
 
 public static partial class HatchetConvert
 {
-    public static string Serialize(object input)
-    {
-        return Serialize(input, new SerializeOptions());
-    }
-        
+    public static string Serialize(object input) => Serialize(input, new SerializeOptions());
+
     public static string Serialize(object input, SerializeOptions serializeOptions)
     {
         var stringBuilder = new StringBuilder();
