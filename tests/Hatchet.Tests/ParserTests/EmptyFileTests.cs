@@ -1,24 +1,23 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.ParserTests
+namespace Hatchet.Tests.ParserTests;
+
+[TestFixture]
+public class EmptyFileTests
 {
-    [TestFixture]
-    public class EmptyFileTests
+    [Test]
+    public void Parse_EmptyFile_ReturnsNull()
     {
-        [Test]
-        public void Parse_EmptyFile_ReturnsNull()
-        {
-            // Arrange
-            var input = "";
+        // Arrange
+        var input = "";
 
-            var parser = new Parser();
+        var parser = new Parser();
 
-            // Act
-            var result = parser.Parse(ref input);
+        // Act
+        var result = parser.Parse(ref input);
 
-            // Assert
-            result.Should().BeNull();
-        } 
-    }
+        // Assert
+        result.Should().BeNull();
+    } 
 }

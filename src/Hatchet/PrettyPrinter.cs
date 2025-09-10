@@ -1,148 +1,142 @@
 ﻿using System;
 using System.Text;
 
-namespace Hatchet
+namespace Hatchet;
+
+internal class PrettyPrinter(StringBuilder stringBuilder)
 {
-    internal class PrettyPrinter
+    private const string LineEnding = "\n";
+    private const int IndentCount = 2;
+
+    private StringBuilder StringBuilder { get; } = stringBuilder;
+
+    public int IndentLevel;
+
+    public void Indent()
     {
-        private const string LineEnding = "\n";
-        private const int IndentCount = 2;
+        IndentLevel++;
+    }
 
-        private StringBuilder StringBuilder { get; }
+    public void Deindent()
+    {
+        IndentLevel--;
+    }
         
-        public int IndentLevel;
+    public void AppendFormat(string str, params object[] args)
+    {
+        StringBuilder.AppendFormat(str, args);
+    }
 
-        public PrettyPrinter(StringBuilder stringBuilder)
-        {
-            StringBuilder = stringBuilder;
-        }
-
-        public void Indent()
-        {
-            IndentLevel++;
-        }
-
-        public void Deindent()
-        {
-            IndentLevel--;
-        }
+    public void AppendCloseBlock()
+    {
+        Append(' ', IndentLevel * IndentCount);
+        Append("}");
+    }
         
-        public void AppendFormat(string str, params object[] args)
-        {
-            StringBuilder.AppendFormat(str, args);
-        }
+    public void Append(string str)
+    {
+        StringBuilder.Append(str);
+    }
 
-        public void AppendCloseBlock()
-        {
-            Append(' ', IndentLevel * IndentCount);
-            Append("}");
-        }
+    public void Append(char chr, int count)
+    {
+        StringBuilder.Append(chr, count);
+    }
+
+    public void Append(char chr)
+    {
+        StringBuilder.Append(chr);
+    }
+
+    public void Append(object obj)
+    {
+        StringBuilder.Append(obj);
+    }
         
-        public void Append(string str)
-        {
-            StringBuilder.Append(str);
-        }
-
-        public void Append(char chr, int count)
-        {
-            StringBuilder.Append(chr, count);
-        }
-
-        public void Append(char chr)
-        {
-            StringBuilder.Append(chr);
-        }
-
-        public void Append(object obj)
-        {
-            StringBuilder.Append(obj);
-        }
+    public void AppendOpenBlock()
+    {
+        Append("{");
+        Append(LineEnding);
+    }
         
-        public void AppendOpenBlock()
+    public void AppendEnum(object input)
+    {
+        var strRepr = input.ToString();
+        if (strRepr.IndexOf(',') > 0)
         {
-            Append("{");
-            Append(LineEnding);
+            AppendFormat("[{0}]", strRepr);
         }
+        else
+        {
+            Append(strRepr);
+        }
+    }
         
-        public void AppendEnum(object input)
-        {
-            var strRepr = input.ToString();
-            if (strRepr.IndexOf(',') > 0)
-            {
-                AppendFormat("[{0}]", strRepr);
-            }
-            else
-            {
-                Append(strRepr);
-            }
-        }
+    public void AppendDateTime(object input)
+    {
+        var inputAsDateTime = (DateTime) input;
+        AppendFormat("\"{0:O}\"", inputAsDateTime);
+    }
         
-        public void AppendDateTime(object input)
+    public void AppendString(string inputAsString)
+    {
+        if (string.Equals(inputAsString, ""))
         {
-            var inputAsDateTime = (DateTime) input;
-            AppendFormat("\"{0:O}\"", inputAsDateTime);
+            Append("\"\"");
         }
+        else if (ContainsNewLines(inputAsString))
+        {
+            AppendFormat("![{0}]!", inputAsString);
+        }
+        else if (ShouldWriteWithSingleQuotes(inputAsString))
+        {
+            AppendFormat("'{0}'", inputAsString);
+        }
+        else if (ShouldWriteWithDoubleQuotes(inputAsString))
+        {
+            AppendFormat("\"{0}\"", inputAsString);
+        }
+        else if (ContainsSpaces(inputAsString))
+        {
+            AppendFormat("\"{0}\"", inputAsString.Replace("\"", "\\\""));
+        }
+        else
+        {
+            Append(inputAsString);
+        }
+    }
         
-        public void AppendString(string inputAsString)
-        {
-            if (string.Equals(inputAsString, ""))
-            {
-                Append("\"\"");
-            }
-            else if (ContainsNewLines(inputAsString))
-            {
-                AppendFormat("![{0}]!", inputAsString);
-            }
-            else if (ShouldWriteWithSingleQuotes(inputAsString))
-            {
-                AppendFormat("'{0}'", inputAsString);
-            }
-            else if (ShouldWriteWithDoubleQuotes(inputAsString))
-            {
-                AppendFormat("\"{0}\"", inputAsString);
-            }
-            else if (ContainsSpaces(inputAsString))
-            {
-                AppendFormat("\"{0}\"", inputAsString.Replace("\"", "\\\""));
-            }
-            else
-            {
-                Append(inputAsString);
-            }
-        }
-        
-        private static bool ShouldWriteWithDoubleQuotes(string inputAsString)
-        {
-            return ContainsSingleQuotes(inputAsString) && !ContainsDoubleQuotes(inputAsString);
-        }
+    private static bool ShouldWriteWithDoubleQuotes(string inputAsString)
+    {
+        return ContainsSingleQuotes(inputAsString) && !ContainsDoubleQuotes(inputAsString);
+    }
 
-        private static bool ShouldWriteWithSingleQuotes(string inputAsString)
-        {
-            return ContainsDoubleQuotes(inputAsString) && !ContainsSingleQuotes(inputAsString);
-        }
+    private static bool ShouldWriteWithSingleQuotes(string inputAsString)
+    {
+        return ContainsDoubleQuotes(inputAsString) && !ContainsSingleQuotes(inputAsString);
+    }
 
-        private static bool ContainsNewLines(string inputAsString)
-        {
-            var containsNewLines = inputAsString.Contains("\r") || inputAsString.Contains("\n");
-            return containsNewLines;
-        }
+    private static bool ContainsNewLines(string inputAsString)
+    {
+        var containsNewLines = inputAsString.Contains("\r") || inputAsString.Contains("\n");
+        return containsNewLines;
+    }
 
-        private static bool ContainsSingleQuotes(string inputAsString)
-        {
-            var containsSingleQuotes = inputAsString.Contains("'");
-            return containsSingleQuotes;
-        }
+    private static bool ContainsSingleQuotes(string inputAsString)
+    {
+        var containsSingleQuotes = inputAsString.Contains("'");
+        return containsSingleQuotes;
+    }
 
-        private static bool ContainsDoubleQuotes(string inputAsString)
-        {
-            var containsDoubleQuotes = inputAsString.Contains("\"");
-            return containsDoubleQuotes;
-        }
+    private static bool ContainsDoubleQuotes(string inputAsString)
+    {
+        var containsDoubleQuotes = inputAsString.Contains("\"");
+        return containsDoubleQuotes;
+    }
 
-        private static bool ContainsSpaces(string inputAsString)
-        {
-            var containsSpaces = inputAsString.Contains(" ");
-            return containsSpaces;
-        }
+    private static bool ContainsSpaces(string inputAsString)
+    {
+        var containsSpaces = inputAsString.Contains(" ");
+        return containsSpaces;
     }
 }

@@ -1,9 +1,5 @@
 ﻿using System;
 
-namespace Hatchet
-{
-    public class HatchetException : Exception
-    {
-        public HatchetException(string message) : base(message) { }
-    }
-}
+namespace Hatchet;
+
+public class HatchetException(string message) : Exception(message);

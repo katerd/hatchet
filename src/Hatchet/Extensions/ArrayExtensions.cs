@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 
-namespace Hatchet.Extensions
+namespace Hatchet.Extensions;
+
+internal static class ArrayExtensions
 {
-    internal static class ArrayExtensions
+    public static IEnumerable<T> Select<T>(this Array array, Func<object, T> func)
     {
-        public static IEnumerable<T> Select<T>(this Array array, Func<object, T> func)
+        foreach (var item in array)
         {
-            foreach (var item in array)
-            {
-                yield return func(item);
-            }
+            yield return func(item);
         }
     }
 }

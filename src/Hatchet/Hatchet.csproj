@@ -1,13 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <Authors>Kate Reidy</Authors>
         <Description>A text-based serialization format.</Description>
         <Copyright>(c)2019 Kate Reidy</Copyright>
         <PackageProjectUrl>https://github.com/katerd/hatchet</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/katerd/hatchet/blob/master/LICENSE</PackageLicenseUrl>
         <PackageTags>serialization text storage</PackageTags>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
 </Project>

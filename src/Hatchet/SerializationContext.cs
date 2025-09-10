@@ -1,12 +1,6 @@
-namespace Hatchet
+namespace Hatchet;
+
+internal readonly struct SerializationContext(bool forceClassName)
 {
-    internal struct SerializationContext
-    {
-        public bool ForceClassName { get; }
-        
-        public SerializationContext(bool forceClassName)
-        {
-            ForceClassName = forceClassName;
-        }
-    }
+    public bool ForceClassName { get; } = forceClassName;
 }

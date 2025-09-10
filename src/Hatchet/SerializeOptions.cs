@@ -1,12 +1,6 @@
-﻿namespace Hatchet
-{
-    public class SerializeOptions
-    {
-        public bool IncludeDefaultValues { get; set; }
+﻿namespace Hatchet;
 
-        public SerializeOptions()
-        {
-            IncludeDefaultValues = false;
-        }
-    }
+public class SerializeOptions
+{
+    public bool IncludeDefaultValues { get; set; }
 }
