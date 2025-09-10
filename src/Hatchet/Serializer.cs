@@ -19,7 +19,7 @@ internal class Serializer(PrettyPrinter prettyPrinter, SerializeOptions serializ
         
     private readonly List<object> _metObjects = [];
 
-    public void Serialize(object input, bool forceClassName = false)
+    public void Serialize(object? input, bool forceClassName = false)
     {
         PushObjectRef(input);
             
@@ -57,13 +57,21 @@ internal class Serializer(PrettyPrinter prettyPrinter, SerializeOptions serializ
             case not null when input.GetType().IsClass || input.GetType().IsValueType:
                 SerializeClassOrStruct(input, context);
                 break;
+            case null:
+                SerializeNull();
+                break;
             default:
                 throw new HatchetException($"Could not serialize {input} of type {input?.GetType()}");
         }
             
         PopObjectRef(input);
     }
-        
+
+    private void SerializeNull()
+    {
+        PrettyPrinter.Append("null");
+    }
+
     private bool IsSimpleValue(Type inputType)
     {
         return inputType.IsPrimitive 
@@ -147,7 +155,7 @@ internal class Serializer(PrettyPrinter prettyPrinter, SerializeOptions serializ
         PrettyPrinter.Append(LineEnding);
     }
 
-    private void IndentAndSerialize(object value, bool forceClassName)
+    private void IndentAndSerialize(object? value, bool forceClassName)
     {
         PrettyPrinter.Indent();
         Serialize(value, forceClassName);
@@ -195,6 +203,7 @@ internal class Serializer(PrettyPrinter prettyPrinter, SerializeOptions serializ
         if (enumerableType.IsInstanceOfType(input))
         {
             var enumerator = ((IEnumerable) input).GetEnumerator();
+            using var enumeratorDisposable = enumerator as IDisposable;
 
             var addSpace = false;
             while (enumerator.MoveNext())
@@ -259,8 +268,11 @@ internal class Serializer(PrettyPrinter prettyPrinter, SerializeOptions serializ
         PrettyPrinter.Append(input ? "true" : "false");
     }
 
-    private void PushObjectRef(object obj)
+    private void PushObjectRef(object? obj)
     {
+        if (obj == null)
+            return;
+        
         var type = obj.GetType();
 
         if (obj is string)
@@ -274,8 +286,11 @@ internal class Serializer(PrettyPrinter prettyPrinter, SerializeOptions serializ
         _metObjects.Add(obj);
     }
 
-    private void PopObjectRef(object obj)
+    private void PopObjectRef(object? obj)
     {
+        if (obj == null)
+            return;
+        
         _metObjects.Remove(obj);
     }
 }

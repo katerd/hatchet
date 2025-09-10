@@ -10,39 +10,52 @@ public class ArrayTests
     public void Deserialize_ArrayOfIntegers_ReturnsArrayOfIntegers()
     {
         // Arrange
-        var input = "[1 2 -3 4 5]";
+        const string input = "[1 2 -3 4 5]";
 
         // Act
         var result = HatchetConvert.Deserialize<int[]>(input);
 
         // Assert
-        result.Should().ContainInOrder(1, 2, -3, 4, 5);
+        result.Should().Equal(1, 2, -3, 4, 5);
     }
 
     [Test]
     public void Deserialize_ArrayOfStrings_ReturnsArrayOfStrings()
     {
         // Arrange
-        var input = "[This is a test]";
+        const string input = "[This is a test]";
 
         // Act
         var result = HatchetConvert.Deserialize<string[]>(input);
 
         // Assert
-        result.Should().ContainInOrder("This", "is", "a", "test");
+        result.Should().Equal("This", "is", "a", "test");
     }
 
     [Test]
     public void Deserialize_EmptyArrayOfStrings_ReturnEmptyStringArray()
     {
         // Arrange
-        var input = "[]";
+        const string input = "[]";
 
         // Act
         var result = HatchetConvert.Deserialize<string[]>(input);
 
         // Assert
-        result.Should().HaveCount(0);
-        result.Should().BeOfType(typeof (string[]));
+        result.Should().BeOfType<string[]>();
+        result.Should().BeEmpty();
+    }
+    
+    [Test]
+    public void Deserialize_ArrayOfNulls_ReturnEmptyStringArray()
+    {
+        // Arrange
+        const string input = "[null null null]";
+
+        // Act
+        var result = HatchetConvert.Deserialize<object[]>(input);
+
+        // Assert
+        result.Should().Equal((object)null, null, null);
     }
 }

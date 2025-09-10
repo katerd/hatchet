@@ -116,4 +116,25 @@ public class ObjectTests
         // Assert
         result.Should().Be("{\n}");
     }
+
+    public class TestListOfGenericNulls
+    {
+        public List<object> NullList { get; set; } = [];
+    }
+    
+    [Test]
+    public void Serialize_TestListOfGenericNulls_ReturnsValueAsString()
+    {
+        // Arrange
+        var input = new TestListOfGenericNulls
+        {
+            NullList = [null, null, null]
+        };
+
+        // Act
+        var result = HatchetConvert.Serialize(input);
+
+        // Assert
+        result.Should().Be("{\n  NullList [null null null]\n}");
+    }
 }

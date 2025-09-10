@@ -8,12 +8,13 @@ public static partial class HatchetConvert
 {
     private static readonly List<Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object?>>>
         DeserializationRules;
-        
+
     static HatchetConvert()
     {
         DeserializationRules =
         [
             MakeDeserializer(c => c.OutputType == typeof(string), c => c.Input),
+            MakeDeserializer(c => c.OutputType == typeof(object) && c.Input is "null", _ => null),
             MakeDeserializer(c => c.OutputType == typeof(object), c => c.Input),
             MakeDeserializer(c => c.OutputType.IsArray, DeserializeArray),
             MakeDeserializer(
