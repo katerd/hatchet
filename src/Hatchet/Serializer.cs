@@ -151,7 +151,7 @@ internal class Serializer(PrettyPrinter prettyPrinter, SerializeOptions serializ
     {
         PrettyPrinter.Indent();
         Serialize(value, forceClassName);
-        PrettyPrinter.Deindent();
+        PrettyPrinter.Unindent();
     }
         
     private static IEnumerable<ISerializableMember> GetPropertiesAndFields(object input)

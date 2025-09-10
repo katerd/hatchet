@@ -17,7 +17,7 @@ internal class PrettyPrinter(StringBuilder stringBuilder)
         IndentLevel++;
     }
 
-    public void Deindent()
+    public void Unindent()
     {
         IndentLevel--;
     }
