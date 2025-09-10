@@ -95,9 +95,3 @@ MIT
   * Custom object serialization handlers.
   * ~~Deserialization of objects without parameterless constructors.~~
   * ~~Support .net core.~~
-
-## Building and packaging
-
-```
-PS> build.ps1 -PackageVersion 0.x.y
-```

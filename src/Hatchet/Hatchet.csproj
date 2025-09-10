@@ -2,12 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Authors>Kate Reidy</Authors>
+        <Authors>katerd</Authors>
         <Description>A text-based serialization format.</Description>
-        <Copyright>(c)2019 Kate Reidy</Copyright>
+        <Copyright>(c)2025 katerd</Copyright>
         <PackageProjectUrl>https://github.com/katerd/hatchet</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/katerd/hatchet/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>serialization text storage</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <LangVersion>default</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -16,4 +17,11 @@
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Content Include="..\..\README.md" Pack="true" PackagePath="\">
+        <Link>README.md</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+    
 </Project>
