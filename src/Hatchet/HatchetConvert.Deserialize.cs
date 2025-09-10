@@ -86,7 +86,7 @@ public static partial class HatchetConvert
             return DeserializeList(elementType, inputList);
         }
 
-        throw new HatchetException($"Unable to deserialize generic collection");
+        throw new HatchetException("Unable to deserialize generic collection");
     }
 
     private static object DeserializeList(Type elementType, List<object> inputList)
@@ -191,14 +191,14 @@ public static partial class HatchetConvert
 
             if (ctorMethod != null)
             {
-                return ctorMethod.Invoke(null, new[] {input});
+                return ctorMethod.Invoke(null, [input]);
             }
                 
             var ctor = FindConstructorWithSingleStringParameter(type);
 
             if (ctor != null)
             {
-                return ctor.Invoke(new[] { input });
+                return ctor.Invoke([input]);
             }
 
             throw new HatchetException($"Can't convert {input} to {type}"); 

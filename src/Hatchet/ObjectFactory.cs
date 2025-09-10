@@ -10,30 +10,20 @@ internal static class ObjectFactory
 {
     internal static object CreateComplexType(Type type, Dictionary<string, object> inputValues)
     {
-        object output;
-
         var withAttrs = FindConstructorsWithAttribute(type);
 
-        if (withAttrs.Count > 0)
-        {
-            output = CreateWithConstructorAttributes(inputValues, withAttrs);
-        }
-        else
-        {
-            output = CreateWithDefaultConstructor(type);
-        }
+        var output = withAttrs.Count > 0
+            ? CreateWithConstructorAttributes(inputValues, withAttrs)
+            : CreateWithDefaultConstructor(type);
             
         return output;
     }
 
-    private static List<ConstructorInfo> FindConstructorsWithAttribute(Type type)
-    {
-        var ctors = type.GetConstructors();
-            
-        var withAttrs = ctors.Where(x => x.HasAttribute<HatchetConstructorAttribute>())
+    private static List<ConstructorInfo> FindConstructorsWithAttribute(Type type) =>
+        type
+            .GetConstructors()
+            .Where(x => x.HasAttribute<HatchetConstructorAttribute>())
             .ToList();
-        return withAttrs;
-    }
 
     private static readonly Dictionary<Type, MethodInfo> SingleStringConstructor = new();
         
@@ -85,12 +75,10 @@ internal static class ObjectFactory
         return output;
     }
 
-    private static ConstructorInfo FindDefaultConstructor(Type type)
-    {
-        var ctors = type.GetConstructors();
-        var singleCtor = ctors.SingleOrDefault(x => x.GetParameters().Length == 0);
-        return singleCtor;
-    }
+    private static ConstructorInfo FindDefaultConstructor(Type type) =>
+        type
+            .GetConstructors()
+            .SingleOrDefault(x => x.GetParameters().Length == 0);
 
     private static object CreateWithConstructorAttributes(
         IReadOnlyDictionary<string, object> inputValues, 
@@ -102,24 +90,15 @@ internal static class ObjectFactory
         var ctor = withAttrs.First();
         var ctorParams = ctor.GetParameters();
         var args = CreateArgumentList(inputValues, ctorParams);
-
-        var output = ctor.Invoke(args.ToArray());
+        var output = ctor.Invoke(args);
             
         return output;
     }
 
-    private static List<object> CreateArgumentList(
-        IReadOnlyDictionary<string, object> inputValues, 
-        IEnumerable<ParameterInfo> ctorParams)
-    {
-        var args = new List<object>();
-
-        foreach (var parameterInfo in ctorParams)
-        {
-            var argValue = inputValues[parameterInfo.Name];
-            args.Add(argValue);
-        }
-
-        return args;
-    }
+    private static object[] CreateArgumentList(
+        IReadOnlyDictionary<string, object> inputValues,
+        IEnumerable<ParameterInfo> ctorParams) =>
+        ctorParams
+            .Select(parameterInfo => inputValues[parameterInfo.Name])
+            .ToArray();
 }

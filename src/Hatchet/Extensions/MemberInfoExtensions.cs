@@ -7,8 +7,7 @@ namespace Hatchet.Extensions;
 
 internal static class MemberInfoExtensions
 {
-    private static readonly Dictionary<MemberInfo, CustomAttributeData[]> Attributes =
-        new Dictionary<MemberInfo, CustomAttributeData[]>();
+    private static readonly Dictionary<MemberInfo, CustomAttributeData[]> Attributes = new();
         
     public static bool HasAttribute<T>(this MemberInfo memberInfo) where T : Attribute
     {
@@ -18,13 +17,6 @@ internal static class MemberInfoExtensions
             Attributes[memberInfo] = values;
         }
 
-        for (var index = 0; index < values.Length; index++)
-        {
-            var value = values[index];
-            if (value.AttributeType == typeof(T))
-                return true;
-        }
-
-        return false;            
+        return values.Any(value => value.AttributeType == typeof(T));
     }
 }

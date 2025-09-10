@@ -105,38 +105,20 @@ internal class PrettyPrinter(StringBuilder stringBuilder)
             Append(inputAsString);
         }
     }
-        
-    private static bool ShouldWriteWithDoubleQuotes(string inputAsString)
-    {
-        return ContainsSingleQuotes(inputAsString) && !ContainsDoubleQuotes(inputAsString);
-    }
 
-    private static bool ShouldWriteWithSingleQuotes(string inputAsString)
-    {
-        return ContainsDoubleQuotes(inputAsString) && !ContainsSingleQuotes(inputAsString);
-    }
+    private static bool ShouldWriteWithDoubleQuotes(string inputAsString) =>
+        ContainsSingleQuotes(inputAsString) &&
+        !ContainsDoubleQuotes(inputAsString);
 
-    private static bool ContainsNewLines(string inputAsString)
-    {
-        var containsNewLines = inputAsString.Contains("\r") || inputAsString.Contains("\n");
-        return containsNewLines;
-    }
+    private static bool ShouldWriteWithSingleQuotes(string inputAsString) =>
+        ContainsDoubleQuotes(inputAsString) && 
+        !ContainsSingleQuotes(inputAsString);
 
-    private static bool ContainsSingleQuotes(string inputAsString)
-    {
-        var containsSingleQuotes = inputAsString.Contains("'");
-        return containsSingleQuotes;
-    }
+    private static bool ContainsNewLines(string inputAsString) =>
+        inputAsString.Contains("\r") || 
+        inputAsString.Contains("\n");
 
-    private static bool ContainsDoubleQuotes(string inputAsString)
-    {
-        var containsDoubleQuotes = inputAsString.Contains("\"");
-        return containsDoubleQuotes;
-    }
-
-    private static bool ContainsSpaces(string inputAsString)
-    {
-        var containsSpaces = inputAsString.Contains(" ");
-        return containsSpaces;
-    }
+    private static bool ContainsSingleQuotes(string inputAsString) => inputAsString.Contains("'");
+    private static bool ContainsDoubleQuotes(string inputAsString) => inputAsString.Contains("\"");
+    private static bool ContainsSpaces(string inputAsString) => inputAsString.Contains(" ");
 }

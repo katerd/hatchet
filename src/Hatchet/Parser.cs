@@ -366,13 +366,8 @@ public class Parser
         }
     }
 
-    private static bool IsWhitespaceOrLineBreak(char c)
-    {
-        return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
-    }
+    private static bool IsWhitespaceOrLineBreak(char c) => c is ' ' or '\t' or '\n' or '\r';
 
-    private static bool IsValidValueCharacter(char c)
-    {
-        return "1234567890:\\/-+_.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
-    }
+    private static bool IsValidValueCharacter(char c) =>
+        "1234567890:\\/-+_.qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".IndexOf(c) >= 0;
 }

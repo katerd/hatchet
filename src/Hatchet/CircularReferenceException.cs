@@ -1,12 +1,7 @@
 ﻿namespace Hatchet;
 
-public class CircularReferenceException : HatchetException
+public class CircularReferenceException(object item)
+    : HatchetException($"Circular reference detected {item} {item.GetType()}")
 {
-    public object Item { get; }
-
-    public CircularReferenceException(object item) 
-        : base($"Circular reference detected {item} {item.GetType()}")
-    {
-        Item = item;
-    }
+    public object Item { get; } = item;
 }
