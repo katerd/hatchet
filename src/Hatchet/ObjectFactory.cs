@@ -27,7 +27,7 @@ internal static class ObjectFactory
 
     private static readonly Dictionary<Type, MethodInfo> SingleStringConstructor = new();
         
-    internal static MethodInfo FindStaticConstructorMethodWithSingleStringParameter(Type type)
+    internal static MethodInfo? FindStaticConstructorMethodWithSingleStringParameter(Type type)
     {
         if (SingleStringConstructor.TryGetValue(type, out var method))
         {
@@ -75,7 +75,7 @@ internal static class ObjectFactory
         return output;
     }
 
-    private static ConstructorInfo FindDefaultConstructor(Type type) =>
+    private static ConstructorInfo? FindDefaultConstructor(Type type) =>
         type
             .GetConstructors()
             .SingleOrDefault(x => x.GetParameters().Length == 0);

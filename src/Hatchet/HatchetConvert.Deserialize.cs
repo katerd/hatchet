@@ -11,15 +11,20 @@ public static partial class HatchetConvert
 {
     internal const string ClassNameKey = "Class";
 
-    public static T Deserialize<T>(string input)
+    public static T? Deserialize<T>(string input)
     {
         var parser = new Parser();
         var result = parser.Parse(ref input);
         var type = typeof(T);
-        return (T)DeserializeObject(result, type);
+        if (result == null)
+        {
+            return default;
+        }
+
+        return (T?)DeserializeObject(result, type);
     }
 
-    private static object DeserializeObject(object result, Type type)
+    private static object? DeserializeObject(object result, Type type)
     {
         var context = new DeserializationContext(result, type);
 
@@ -51,7 +56,7 @@ public static partial class HatchetConvert
         return type.IsClass || type.IsValueType || type.IsInterface;
     }
 
-    private static object DeserializeNullableValueType(DeserializationContext context)
+    private static object? DeserializeNullableValueType(DeserializationContext context)
     {
         var input = context.Input;
         var type = context.OutputType;
@@ -109,19 +114,21 @@ public static partial class HatchetConvert
 
         foreach (var inputItem in inputList)
         {
-            genericListType.InvokeMember("Add", BindingFlags.InvokeMethod, null, outputList,
-                new[] {DeserializeObject(inputItem, elementType)});
+            genericListType.InvokeMember(
+                "Add",
+                BindingFlags.InvokeMethod,
+                null,
+                outputList,
+                [DeserializeObject(inputItem, elementType)]);
         }
 
         return outputList;
     }
 
-    private static bool IsSimpleValueType(Type type)
-    {
-        return type.IsPrimitive 
-               || type == typeof(decimal) 
-               || type == typeof(DateTime);
-    }
+    private static bool IsSimpleValueType(Type type) =>
+        type.IsPrimitive
+        || type == typeof(decimal)
+        || type == typeof(DateTime);
 
     private static object DeserializeEnum(DeserializationContext context)
     {
@@ -156,6 +163,10 @@ public static partial class HatchetConvert
         foreach (var key in inputDictionary.Keys)
         {
             var newKeyValue = DeserializeObject(key, outputKeyType);
+            if (newKeyValue == null)
+            {
+                throw new Exception("Dictionary key deserialized to null");
+            }
 
             var value = inputDictionary[key];
             var newValue = DeserializeObject(value, outputValueType);
@@ -169,6 +180,11 @@ public static partial class HatchetConvert
     private static object DeserializeArray(DeserializationContext context)
     {
         var arrayType = context.OutputType.GetElementType();
+        if (arrayType == null)
+        {
+            throw new HatchetException("Unable to determine array element type");
+        }
+        
         var inputList = (List<object>) context.Input;
         var outputArray = Array.CreateInstance(arrayType, inputList.Count);
 
@@ -214,20 +230,15 @@ public static partial class HatchetConvert
 
         return instance;
     }
-        
-    private static object DeserializeGuid(DeserializationContext context)
-    {
-        return new Guid(context.Input.ToString());
-    }
 
-    private static object DeserializeSimpleValue(DeserializationContext context)
-    {
-        return Convert.ChangeType(context.Input, context.OutputType);
-    }
+    private static object DeserializeGuid(DeserializationContext context) =>
+        new Guid(context.Input.ToString());
 
-    private static ConstructorInfo FindConstructorWithSingleStringParameter(Type type)
-    {
-        var ctor = type.GetConstructors()
+    private static object DeserializeSimpleValue(DeserializationContext context) =>
+        Convert.ChangeType(context.Input, context.OutputType);
+
+    private static ConstructorInfo? FindConstructorWithSingleStringParameter(Type type) =>
+        type.GetConstructors()
             .SingleOrDefault(x =>
             {
                 var pc = x.GetParameters();
@@ -236,8 +247,6 @@ public static partial class HatchetConvert
 
                 return pc[0].ParameterType == typeof(string);
             });
-        return ctor;
-    }
 
     private static Type FindComplexType(Type type, Dictionary<string, object> inputValues)
     {

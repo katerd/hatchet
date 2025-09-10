@@ -6,7 +6,7 @@ namespace Hatchet;
 
 public static partial class HatchetConvert
 {
-    private static readonly List<Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>>>
+    private static readonly List<Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object?>>>
         DeserializationRules;
         
     static HatchetConvert()
@@ -30,9 +30,9 @@ public static partial class HatchetConvert
         ];
     }
 
-    private static Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>> MakeDeserializer(
-        Func<DeserializationContext, bool> test, Func<DeserializationContext, object> action)
+    private static Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object?>> MakeDeserializer(
+        Func<DeserializationContext, bool> test, Func<DeserializationContext, object?> action)
     {
-        return new Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object>>( test, action);
+        return new Tuple<Func<DeserializationContext, bool>, Func<DeserializationContext, object?>>( test, action);
     }
 }

@@ -9,11 +9,11 @@ namespace Hatchet;
 public class Parser
 {
     private int _index;
-    private string _input;
+    private string _input = string.Empty;
 
-    private static readonly Dictionary<string, object> Cache = new();
+    private static readonly Dictionary<string, object?> Cache = new();
         
-    public object Parse(ref string input)
+    public object? Parse(ref string input)
     {
         if (Cache.TryGetValue(input, out var obj))
             return obj;
@@ -28,7 +28,7 @@ public class Parser
         return obj;
     }
 
-    private object ReadValue()
+    private object? ReadValue()
     {
         while (true)
         {
@@ -83,7 +83,7 @@ public class Parser
 
                 if (!Peek(Tokens.ObjectOpen))
                 {
-                    return new Dictionary<string, object>
+                    return new Dictionary<string, object?>
                     {
                         {
                             HatchetConvert.ClassNameKey, className
@@ -208,13 +208,13 @@ public class Parser
         }
     }
 
-    private Dictionary<string, object> ReadDefinitions()
+    private Dictionary<string, object?> ReadDefinitions()
     {
         Debug.WriteLine("Open object");
 
         Expect(Tokens.ObjectOpen);
 
-        var obj = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        var obj = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
 
         while (true)
         {
@@ -279,7 +279,7 @@ public class Parser
         return result;
     }
 
-    private string ReadNakedValue()
+    private string? ReadNakedValue()
     {
         ChompWhitespace();
 
