@@ -2,70 +2,69 @@
 using NUnit.Framework;
 #pragma warning disable 649
 
-namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
+namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests;
+
+[TestFixture]
+public class ObjectWithSingleFieldTests
 {
-    [TestFixture]
-    public class ObjectWithSingleFieldTests
+    private class TestClass
     {
-        private class TestClass
-        {
-            public string StringField;
-        }
+        public string StringField;
+    }
 
-        [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertySingleWord_ThePropertyShouldBePopulated()
-        {
-            // Arrange
-            var input = "{ stringField Hello }";
+    [Test]
+    public void Deserialize_WithAnObjectWithOneStringPropertySingleWord_ThePropertyShouldBePopulated()
+    {
+        // Arrange
+        var input = "{ stringField Hello }";
 
-            // Act
-            var result = HatchetConvert.Deserialize<TestClass>(input);
+        // Act
+        var result = HatchetConvert.Deserialize<TestClass>(input);
 
-            // Assert
-            result.Should().NotBeNull();
-            result.StringField.Should().Be("Hello");
-        }
+        // Assert
+        result.Should().NotBeNull();
+        result.StringField.Should().Be("Hello");
+    }
 
-        [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertyLongString_ThePropertyShouldBePopulated()
-        {
-            // Arrange
-            var input = "{ stringField \"Hello World.\" }";
+    [Test]
+    public void Deserialize_WithAnObjectWithOneStringPropertyLongString_ThePropertyShouldBePopulated()
+    {
+        // Arrange
+        var input = "{ stringField \"Hello World.\" }";
 
-            // Act
-            var result = HatchetConvert.Deserialize<TestClass>(input);
+        // Act
+        var result = HatchetConvert.Deserialize<TestClass>(input);
 
-            // Assert
-            result.Should().NotBeNull();
-            result.StringField.Should().Be("Hello World.");
-        }
+        // Assert
+        result.Should().NotBeNull();
+        result.StringField.Should().Be("Hello World.");
+    }
 
-        [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertyEmptyString_ThePropertyShouldBePopulated()
-        {
-            // Arrange
-            var input = "{ stringField \"\" }";
+    [Test]
+    public void Deserialize_WithAnObjectWithOneStringPropertyEmptyString_ThePropertyShouldBePopulated()
+    {
+        // Arrange
+        var input = "{ stringField \"\" }";
 
-            // Act
-            var result = HatchetConvert.Deserialize<TestClass>(input);
+        // Act
+        var result = HatchetConvert.Deserialize<TestClass>(input);
 
-            // Assert
-            result.Should().NotBeNull();
-            result.StringField.Should().Be(string.Empty);
-        }
+        // Assert
+        result.Should().NotBeNull();
+        result.StringField.Should().Be(string.Empty);
+    }
 
-        [Test]
-        public void Deserialize_WithAnObjectWithOneStringPropertyContainingParenthesesString_ThePropertyShouldBePopulated()
-        {
-            // Arrange
-            var input = "{ stringField \"{ Nasty String { Very Nasty String } }\" }";
+    [Test]
+    public void Deserialize_WithAnObjectWithOneStringPropertyContainingParenthesesString_ThePropertyShouldBePopulated()
+    {
+        // Arrange
+        var input = "{ stringField \"{ Nasty String { Very Nasty String } }\" }";
 
-            // Act
-            var result = HatchetConvert.Deserialize<TestClass>(input);
+        // Act
+        var result = HatchetConvert.Deserialize<TestClass>(input);
 
-            // Assert
-            result.Should().NotBeNull();
-            result.StringField.Should().Be("{ Nasty String { Very Nasty String } }");
-        }
+        // Assert
+        result.Should().NotBeNull();
+        result.StringField.Should().Be("{ Nasty String { Very Nasty String } }");
     }
 }

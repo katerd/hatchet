@@ -1,9 +1,8 @@
-﻿namespace Hatchet.Reflection
+﻿namespace Hatchet.Reflection;
+
+internal interface ISerializableMember
 {
-    internal interface ISerializableMember
-    {
-        string Name { get; }
-        object Value { get; }
-        bool IsValueAbstract { get; }
-    }
+    string Name { get; }
+    object Value { get; }
+    bool IsValueAbstract { get; }
 }

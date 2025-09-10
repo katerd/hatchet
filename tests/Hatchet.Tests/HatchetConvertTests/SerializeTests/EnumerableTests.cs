@@ -1,26 +1,25 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
+namespace Hatchet.Tests.HatchetConvertTests.SerializeTests;
+
+[TestFixture]
+public class EnumerableTests
 {
-    [TestFixture]
-    public class EnumerableTests
+    class Test
     {
-        class Test
-        {
-            public IEnumerable<string> Items;
-        }
+        public IEnumerable<string> Items;
+    }
 
-        [Test]
-        public void Serialize_ObjectWithIEnumerable_ItemsAreWritten()
-        {
-            // Arrange
-            var obj = new Test {Items = new List<string> {"Hi", "There"}};
+    [Test]
+    public void Serialize_ObjectWithIEnumerable_ItemsAreWritten()
+    {
+        // Arrange
+        var obj = new Test {Items = new List<string> {"Hi", "There"}};
 
-            // Act
-            var result = HatchetConvert.Serialize(obj);
+        // Act
+        var result = HatchetConvert.Serialize(obj);
 
-            // Assert
-        }
+        // Assert
     }
 }

@@ -2,48 +2,47 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests
+namespace Hatchet.Tests.HatchetConvertTests.DeserializeTests;
+
+[TestFixture]
+public class EmptyListTests
 {
-    [TestFixture]
-    public class EmptyListTests
+    [Test]
+    public void Deserialize_AnEmptyStringList_ShouldReturnAnEmptyList()
     {
-        [Test]
-        public void Deserialize_AnEmptyStringList_ShouldReturnAnEmptyList()
-        {
-            // Arrange
-            var input = "[]";
+        // Arrange
+        var input = "[]";
 
-            // Act
-            var result = HatchetConvert.Deserialize<List<string>>(input);
+        // Act
+        var result = HatchetConvert.Deserialize<List<string>>(input);
 
-            // Assert
-            result.Should().HaveCount(0);
-        }
+        // Assert
+        result.Should().HaveCount(0);
+    }
 
-        [Test]
-        public void Deserialize_AnEmptyIntegerList_ShouldReturnAnEmptyList()
-        {
-            // Arrange
-            var input = "[]";
+    [Test]
+    public void Deserialize_AnEmptyIntegerList_ShouldReturnAnEmptyList()
+    {
+        // Arrange
+        var input = "[]";
 
-            // Act
-            var result = HatchetConvert.Deserialize<List<int>>(input);
+        // Act
+        var result = HatchetConvert.Deserialize<List<int>>(input);
 
-            // Assert
-            result.Should().HaveCount(0);
-        }
+        // Assert
+        result.Should().HaveCount(0);
+    }
 
-        [Test]
-        public void Deserialize_AnEmptyFloatList_ShouldReturnAnEmptyList()
-        {
-            // Arrange
-            var input = "[]";
+    [Test]
+    public void Deserialize_AnEmptyFloatList_ShouldReturnAnEmptyList()
+    {
+        // Arrange
+        var input = "[]";
 
-            // Act
-            var result = HatchetConvert.Deserialize<List<float>>(input);
+        // Act
+        var result = HatchetConvert.Deserialize<List<float>>(input);
 
-            // Assert
-            result.Should().HaveCount(0);
-        }
+        // Assert
+        result.Should().HaveCount(0);
     }
 }

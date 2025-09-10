@@ -2,35 +2,34 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
+namespace Hatchet.Tests.HatchetConvertTests.SerializeTests;
+
+[TestFixture]
+public class HashSetTests
 {
-    [TestFixture]
-    public class HashSetTests
+    [Test]
+    public void Serialize_HashSetOfValues_SetIsOutput()
     {
-        [Test]
-        public void Serialize_HashSetOfValues_SetIsOutput()
-        {
-            // Arrange
-            var obj = new HashSet<int> { 10, 20, 30 };
+        // Arrange
+        var obj = new HashSet<int> { 10, 20, 30 };
 
-            // Act
-            var result = HatchetConvert.Serialize(obj);
+        // Act
+        var result = HatchetConvert.Serialize(obj);
 
-            // Assert
-            result.Should().Be("[10 20 30]");
-        }
+        // Assert
+        result.Should().Be("[10 20 30]");
+    }
 
-        [Test]
-        public void Serialize_EmptyHashSet_EmptySetIsOutput()
-        {
-            // Arrange
-            var obj = new HashSet<int>();
+    [Test]
+    public void Serialize_EmptyHashSet_EmptySetIsOutput()
+    {
+        // Arrange
+        var obj = new HashSet<int>();
 
-            // Act
-            var result = HatchetConvert.Serialize(obj);
+        // Act
+        var result = HatchetConvert.Serialize(obj);
 
-            // Assert
-            result.Should().Be("[]");
-        }
+        // Assert
+        result.Should().Be("[]");
     }
 }

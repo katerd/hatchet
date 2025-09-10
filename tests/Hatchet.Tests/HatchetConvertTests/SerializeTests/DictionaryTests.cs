@@ -2,106 +2,105 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.HatchetConvertTests.SerializeTests
+namespace Hatchet.Tests.HatchetConvertTests.SerializeTests;
+
+[TestFixture]
+public class DictionaryTests
 {
-    [TestFixture]
-    public class DictionaryTests
+    [Test]
+    public void Serialize_EmptyDictionary_ReturnsValueAsAString()
     {
-        [Test]
-        public void Serialize_EmptyDictionary_ReturnsValueAsAString()
+        // Arrange
+        var dictionary = new Dictionary<string, string>();
+
+        // Act
+        var result = HatchetConvert.Serialize(dictionary);
+
+        // Assert
+        result.Should().Be("{}");
+    }
+
+    [Test]
+    public void Serialize_DictionaryWithSpacesInKey_ThrowsException()
+    {
+        // Arrange
+        var dictionary = new Dictionary<string, string>();
+        dictionary["Example Key"] = "1000";
+
+        // Act
+        HatchetException caughtException = null;
+        try
         {
-            // Arrange
-            var dictionary = new Dictionary<string, string>();
-
-            // Act
-            var result = HatchetConvert.Serialize(dictionary);
-
-            // Assert
-            result.Should().Be("{}");
+            HatchetConvert.Serialize(dictionary);
+        }
+        catch (HatchetException hatchetException)
+        {
+            caughtException = hatchetException;
         }
 
-        [Test]
-        public void Serialize_DictionaryWithSpacesInKey_ThrowsException()
-        {
-            // Arrange
-            var dictionary = new Dictionary<string, string>();
-            dictionary["Example Key"] = "1000";
+        // Assert
+        caughtException.Should().NotBeNull();
+        caughtException.Message.Should()
+            .Contain("`Example Key` is an invalid key. Key cannot contain spaces.");
+    }
 
-            // Act
-            HatchetException caughtException = null;
-            try
-            {
-                HatchetConvert.Serialize(dictionary);
-            }
-            catch (HatchetException hatchetException)
-            {
-                caughtException = hatchetException;
-            }
+    [Test]
+    public void Serialize_ADictionaryOfStrings_ReturnsDictionaryAsAString()
+    {
+        // Arrange
+        var dictionary = new Dictionary<string, string>();
+        dictionary["a"] = "1000";
+        dictionary["b"] = "2000";
 
-            // Assert
-            caughtException.Should().NotBeNull();
-            caughtException.Message.Should()
-                .Contain("`Example Key` is an invalid key. Key cannot contain spaces.");
-        }
+        // Act
+        var result = HatchetConvert.Serialize(dictionary);
 
-        [Test]
-        public void Serialize_ADictionaryOfStrings_ReturnsDictionaryAsAString()
-        {
-            // Arrange
-            var dictionary = new Dictionary<string, string>();
-            dictionary["a"] = "1000";
-            dictionary["b"] = "2000";
+        // Assert
+        result.Should().Be(
+            "{\n" +
+            "  a 1000\n" +
+            "  b 2000\n" +
+            "}");
+    }
 
-            // Act
-            var result = HatchetConvert.Serialize(dictionary);
+    [Test]
+    public void Serialize_ADictionaryOfLists_ReturnsDictionaryAsAString()
+    {
+        // Arrange
+        var dictionary = new Dictionary<string, int[]>();
+        dictionary["a"] = new[] {100, 200};
+        dictionary["b"] = new int[0];
 
-            // Assert
-            result.Should().Be(
-                "{\n" +
-                "  a 1000\n" +
-                "  b 2000\n" +
-                "}");
-        }
+        // Act
+        var result = HatchetConvert.Serialize(dictionary);
 
-        [Test]
-        public void Serialize_ADictionaryOfLists_ReturnsDictionaryAsAString()
-        {
-            // Arrange
-            var dictionary = new Dictionary<string, int[]>();
-            dictionary["a"] = new[] {100, 200};
-            dictionary["b"] = new int[0];
+        // Assert
+        result.Should().Be(
+            "{\n" +
+            "  a [100 200]\n" +
+            "  b []\n" + 
+            "}");
+    }
 
-            // Act
-            var result = HatchetConvert.Serialize(dictionary);
+    [Test]
+    public void Serialize_NestedDictionaries_ReturnsNestedDictionarysAsAString()
+    {
+        // Arrange
+        var outer = new Dictionary<string, object>();
+        var inner = new Dictionary<string, object>();
 
-            // Assert
-            result.Should().Be(
-                "{\n" +
-                "  a [100 200]\n" +
-                "  b []\n" + 
-                "}");
-        }
+        outer["value"] = inner;
+        inner["value"] = "InnerValue";
 
-        [Test]
-        public void Serialize_NestedDictionaries_ReturnsNestedDictionarysAsAString()
-        {
-            // Arrange
-            var outer = new Dictionary<string, object>();
-            var inner = new Dictionary<string, object>();
+        // Act
+        var result = HatchetConvert.Serialize(outer);
 
-            outer["value"] = inner;
-            inner["value"] = "InnerValue";
-
-            // Act
-            var result = HatchetConvert.Serialize(outer);
-
-            // Assert
-            result.Should().Be(
-                "{\n" +
-                "  value {\n" +
-                "    value InnerValue\n" +
-                "  }\n" +
-                "}");
-        }
+        // Assert
+        result.Should().Be(
+            "{\n" +
+            "  value {\n" +
+            "    value InnerValue\n" +
+            "  }\n" +
+            "}");
     }
 }

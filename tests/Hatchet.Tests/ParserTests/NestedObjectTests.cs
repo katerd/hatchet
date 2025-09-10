@@ -2,57 +2,56 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Hatchet.Tests.ParserTests
+namespace Hatchet.Tests.ParserTests;
+
+[TestFixture]
+public class NestedObjectTests
 {
-    [TestFixture]
-    public class NestedObjectTests
+    [Test]
+    public void Parse_NestedObjects_ObjectsAreNestedWithTheirProperties()
     {
-        [Test]
-        public void Parse_NestedObjects_ObjectsAreNestedWithTheirProperties()
-        {
-            // Arrange
-            var input = "{ outer { inner { name innerProperty } name outerProperty } } }";
+        // Arrange
+        var input = "{ outer { inner { name innerProperty } name outerProperty } } }";
 
-            var parser = new Parser();
+        var parser = new Parser();
 
-            // Act
-            var result = (Dictionary<string, object>)parser.Parse(ref input);
+        // Act
+        var result = (Dictionary<string, object>)parser.Parse(ref input);
 
-            // Assert
-            result.Should().NotBeNull();
+        // Assert
+        result.Should().NotBeNull();
 
-            var outer = (Dictionary<string, object>) result["outer"];
-            outer.Should().NotBeNull();
+        var outer = (Dictionary<string, object>) result["outer"];
+        outer.Should().NotBeNull();
 
-            var inner = (Dictionary<string, object>)outer["inner"];
-            inner.Should().NotBeNull();
+        var inner = (Dictionary<string, object>)outer["inner"];
+        inner.Should().NotBeNull();
 
-            ((string) outer["name"]).Should().Be("outerProperty");
-            ((string) inner["name"]).Should().Be("innerProperty");
-        }
+        ((string) outer["name"]).Should().Be("outerProperty");
+        ((string) inner["name"]).Should().Be("innerProperty");
+    }
 
-        [Test]
-        public void Parse_NestedObjectsCondensedString_ObjectsAreNestedWithTheirProperties()
-        {
-            // Arrange
-            var input = "{outer{inner{name'innerProperty'}name'outerProperty'}}}";
+    [Test]
+    public void Parse_NestedObjectsCondensedString_ObjectsAreNestedWithTheirProperties()
+    {
+        // Arrange
+        var input = "{outer{inner{name'innerProperty'}name'outerProperty'}}}";
 
-            var deserializer = new Parser();
+        var deserializer = new Parser();
 
-            // Act
-            var parser = (Dictionary<string, object>)deserializer.Parse(ref input);
+        // Act
+        var parser = (Dictionary<string, object>)deserializer.Parse(ref input);
 
-            // Assert
-            parser.Should().NotBeNull();
+        // Assert
+        parser.Should().NotBeNull();
 
-            var outer = (Dictionary<string, object>)parser["outer"];
-            outer.Should().NotBeNull();
+        var outer = (Dictionary<string, object>)parser["outer"];
+        outer.Should().NotBeNull();
 
-            var inner = (Dictionary<string, object>)outer["inner"];
-            inner.Should().NotBeNull();
+        var inner = (Dictionary<string, object>)outer["inner"];
+        inner.Should().NotBeNull();
 
-            ((string)outer["name"]).Should().Be("outerProperty");
-            ((string)inner["name"]).Should().Be("innerProperty");
-        }
+        ((string)outer["name"]).Should().Be("outerProperty");
+        ((string)inner["name"]).Should().Be("innerProperty");
     }
 }

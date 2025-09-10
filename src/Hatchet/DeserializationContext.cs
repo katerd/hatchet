@@ -1,16 +1,9 @@
 using System;
 
-namespace Hatchet
-{
-    internal struct DeserializationContext
-    {
-        public readonly object Input;
-        public readonly Type OutputType;
+namespace Hatchet;
 
-        public DeserializationContext(object input, Type outputType)
-        {
-            Input = input;
-            OutputType = outputType;
-        }
-    }
+internal struct DeserializationContext(object input, Type outputType)
+{
+    public readonly object Input = input;
+    public readonly Type OutputType = outputType;
 }
