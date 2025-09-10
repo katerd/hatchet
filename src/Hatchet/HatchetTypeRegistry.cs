@@ -40,7 +40,7 @@ public static class HatchetTypeRegistry
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static Type GetType(string name)
+    public static Type? GetType(string name)
     {
         TypeLookup.TryGetValue(name, out var result);
         return result;

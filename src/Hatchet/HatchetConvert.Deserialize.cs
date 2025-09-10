@@ -248,21 +248,17 @@ public static partial class HatchetConvert
                 return pc[0].ParameterType == typeof(string);
             });
 
-    private static Type FindComplexType(Type type, Dictionary<string, object> inputValues)
+    private static Type FindComplexType(Type inType, Dictionary<string, object> inputValues)
     {
         if (!inputValues.TryGetValue(ClassNameKey, out var value))
         {
-            return type;
+            return inType;
         }
 
         var name = value.ToString();
-        type = HatchetTypeRegistry.GetType(name);
-
-        if (type == null)
-        {
-            throw new HatchetException($"Can't create type - Type is not registered `{name}`");
-        }
-        return type;
+        var outType = HatchetTypeRegistry.GetType(name);
+        return outType ??
+               throw new HatchetException($"Can't create type - Type is not registered `{name}`");
     }
 
     private static void SetComplexTypeProperties(
