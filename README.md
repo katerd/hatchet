@@ -19,6 +19,7 @@ Hatchet is a text-based data format with features borrowed or ignored from JSON,
      ]!
   versions [0.1 0.2 0.3 0.4]
   tagcloud ['json' xml "data-storage"]
+  scandinavian_country_codes [ DK NO SE FO FI IS ]
   dependencies [
     { name "nunit" version "2" }
     { name "fluentassertions" version "" } // todo: find actual version number
